@@ -8,7 +8,7 @@ export default function Navigation() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/about', label: 'Research' },
+    { href: '/about', label: 'CV' },
     { href: '/publications', label: 'Publications' },
     { href: '/tools', label: 'Interactive Tools' },
     { href: '/contact', label: 'Contact' },

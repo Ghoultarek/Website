@@ -1132,7 +1132,7 @@ export default function BHEVModel() {
               GEV PDF with Crash Risk (P(X{' >'}0) shaded)
             </h3>
             <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={gevData}>
+              <ComposedChart data={gevData} margin={{ top: 20, right: 20, bottom: 60, left: 20 }}>
                 <defs>
                   <linearGradient id="crashRiskGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#ef4444" stopOpacity={0.6}/>
@@ -1158,7 +1158,7 @@ export default function BHEVModel() {
                   formatter={(value: number) => value.toFixed(4)}
                   labelFormatter={(label) => `x = ${parseFloat(label).toFixed(3)}`}
                 />
-                <Legend />
+                <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: '40px' }} />
                 {/* Crash risk area (x >= 0 only) - red shaded - plot first so line appears on top */}
                 {crashRiskData.length > 0 && (
                   <Area 
@@ -1211,7 +1211,7 @@ export default function BHEVModel() {
           <div className="bg-gray-50 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">GEV PDF with VaR Levels</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={gevData}>
+              <ComposedChart data={gevData} margin={{ top: 20, right: 20, bottom: 60, left: 20 }}>
                 <defs>
                   <linearGradient id="crashRiskGradient2" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#ef4444" stopOpacity={0.6}/>
@@ -1237,7 +1237,7 @@ export default function BHEVModel() {
                   formatter={(value: number) => value.toFixed(4)}
                   labelFormatter={(label) => `x = ${parseFloat(label).toFixed(3)}`}
                 />
-                <Legend />
+                <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: '40px' }} />
                 {/* Crash risk area (x >= 0 only) - red shaded - plot first so line appears on top */}
                 {crashRiskData.length > 0 && (
                   <Area 

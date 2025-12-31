@@ -98,7 +98,7 @@ export default function Tools() {
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Transformers</h3>
               <p className="text-gray-600 text-sm mb-4">
-                Understand how transformers work through interactive demos. Explore decoder-only (GPT), encoder-only (BERT), and encoder-decoder (T5) architectures.
+                Master self-attention, the core mechanism powering transformers. Learn through intuitive analogies, step-by-step examples, and interactive QKV visualizations that make the Attention(Q, K, V) formula clear and understandable.
               </p>
               <div className="flex items-center text-primary-600 font-medium text-sm">
                 Explore Tutorial
