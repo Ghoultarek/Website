@@ -483,8 +483,8 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4">Try It Yourself: Neural Network from Scratch</h3>
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-6">
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Try It Yourself: Neural Network from Scratch</h3>
       
       <div className="mb-6">
         <CodeSnippets
@@ -499,7 +499,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
         {/* Configuration Panel */}
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-semibold text-gray-900">Network Configuration</h4>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Network Configuration</h4>
             <button
               onClick={() => {
                 // Suggested hyperparameters for each dataset - optimized for convergence
@@ -515,7 +515,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 handleReset();
               }}
               disabled={isTraining}
-              className="px-3 py-1 text-xs bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Suggested Hyperparameters
             </button>
@@ -523,7 +523,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Hidden Layer Size: {hiddenSize}
               </label>
               <input
@@ -538,13 +538,13 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-white mt-1">
                 Larger: More capacity, but slower & risk of overfitting. Smaller: Faster, but may underfit.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Learning Rate: {learningRate.toFixed(3)}
               </label>
               <input
@@ -560,13 +560,13 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-white mt-1">
                 Larger: Faster convergence, but may overshoot. Smaller: More stable, but slower training.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Epochs: {epochs}
               </label>
               <input
@@ -579,13 +579,13 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-white mt-1">
                 Larger: Better learning, but slower & risk of overfitting. Smaller: Faster, but may underfit.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Dataset
               </label>
               <select
@@ -600,7 +600,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 <option value="linear">Linear Regression (1 input, 1 output)</option>
                 <option value="circle">Circle Classification (2 inputs, 1 output)</option>
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-white mt-1">
                 {currentDataset.description}
               </p>
             </div>
@@ -623,13 +623,13 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                   to new x values it hasn't seen during training.
                 </p>
                 
-                <div className="bg-white rounded p-3 mb-3 border border-blue-200">
+                <div className="bg-white dark:bg-[#171717] rounded p-3 mb-3 border border-blue-200 dark:border-blue-800">
                   <h6 className="text-xs font-semibold text-blue-900 mb-3">Training Data vs Model Predictions</h6>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Training Data */}
                     <div>
-                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">Training Data (Ground Truth)</p>
-                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                      <p className="text-xs font-semibold text-gray-700 dark:text-white mb-2 text-center">Training Data (Ground Truth)</p>
+                      <svg width="200" height="200" className="border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-[#0D0D0D] mx-auto">
                         {/* Axes */}
                         <line x1="20" y1="170" x2="180" y2="170" stroke="#666" strokeWidth="1" />
                         <line x1="20" y1="170" x2="20" y2="30" stroke="#666" strokeWidth="1" />
@@ -691,17 +691,17 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                           );
                         })}
                       </svg>
-                      <p className="text-xs text-gray-600 mt-2 text-center">
+                      <p className="text-xs text-gray-600 dark:text-white mt-2 text-center">
                         Training points on line: <strong>y = {currentDataset.metadata?.slope?.toFixed(2) || 'mx'}x {currentDataset.metadata?.intercept && currentDataset.metadata.intercept >= 0 ? '+' : ''} {currentDataset.metadata?.intercept?.toFixed(2) || '+ b'}</strong>
                       </p>
                     </div>
                     
                     {/* Model Predictions */}
                     <div>
-                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">
+                      <p className="text-xs font-semibold text-gray-700 dark:text-white mb-2 text-center">
                         Model Predictions {predictions.length > 0 && isTraining && `(Epoch ${currentEpoch})`}
                       </p>
-                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                      <svg width="200" height="200" className="border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-[#0D0D0D] mx-auto">
                         {/* Axes */}
                         <line x1="20" y1="170" x2="180" y2="170" stroke="#666" strokeWidth="1" />
                         <line x1="20" y1="170" x2="20" y2="30" stroke="#666" strokeWidth="1" />
@@ -804,7 +804,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                           </text>
                         )}
                       </svg>
-                      <p className="text-xs text-gray-600 mt-2 text-center">
+                      <p className="text-xs text-gray-600 dark:text-white mt-2 text-center">
                         {predictions.length > 0 ? (
                           <>
                             <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
@@ -857,8 +857,8 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Training Data */}
                     <div>
-                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">Training Data (Ground Truth)</p>
-                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                      <p className="text-xs font-semibold text-gray-700 dark:text-white mb-2 text-center">Training Data (Ground Truth)</p>
+                      <svg width="200" height="200" className="border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-[#0D0D0D] mx-auto">
                         {/* Axes */}
                         <line x1="20" y1="100" x2="180" y2="100" stroke="#666" strokeWidth="1" />
                         <line x1="100" y1="20" x2="100" y2="180" stroke="#666" strokeWidth="1" />
@@ -910,7 +910,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                           );
                         })}
                       </svg>
-                      <p className="text-xs text-gray-600 mt-2 text-center">
+                      <p className="text-xs text-gray-600 dark:text-white mt-2 text-center">
                         <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
                         Inside (Class 0) &nbsp;&nbsp;
                         <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-2"></span>
@@ -926,10 +926,10 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                     
                     {/* Model Predictions */}
                     <div>
-                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">
+                      <p className="text-xs font-semibold text-gray-700 dark:text-white mb-2 text-center">
                         Model Predictions {predictions.length > 0 && isTraining && `(Epoch ${currentEpoch})`}
                       </p>
-                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                      <svg width="200" height="200" className="border border-gray-300 dark:border-gray-700 rounded bg-gray-50 dark:bg-[#0D0D0D] mx-auto">
                         {/* Axes */}
                         <line x1="20" y1="100" x2="180" y2="100" stroke="#666" strokeWidth="1" />
                         <line x1="100" y1="20" x2="100" y2="180" stroke="#666" strokeWidth="1" />
@@ -970,7 +970,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                           </text>
                         )}
                       </svg>
-                      <p className="text-xs text-gray-600 mt-2 text-center">
+                      <p className="text-xs text-gray-600 dark:text-white mt-2 text-center">
                         <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
                         Predicted Inside &nbsp;&nbsp;
                         <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-2"></span>
@@ -1031,7 +1031,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
             <button
               onClick={handleTrain}
               disabled={isTraining}
-              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isTraining ? 'Training...' : 'Train Network'}
             </button>

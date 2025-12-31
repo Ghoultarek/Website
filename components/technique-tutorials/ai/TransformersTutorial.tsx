@@ -23,14 +23,14 @@ export default function TransformersTutorial() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Understanding Self-Attention</h1>
-        <p className="text-lg text-gray-700">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Understanding Self-Attention</h1>
+        <p className="text-lg text-gray-700 dark:text-white">
           The core mechanism that powers transformers. Explained clearly, step by step.
         </p>
       </div>
 
       {/* Navigation */}
-      <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4 z-10">
+      <div className="mb-8 bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sticky top-4 z-10">
         <div className="flex flex-wrap gap-2">
           {sections.map((section) => (
             <button
@@ -43,7 +43,7 @@ export default function TransformersTutorial() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeSection === section.id
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-[#0D0D0D] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-[#171717]'
               }`}
             >
               {section.title}
@@ -54,17 +54,17 @@ export default function TransformersTutorial() {
 
       {/* Introduction Section */}
       <section id="intro" className="mb-12 scroll-mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Introduction</h2>
+        <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Introduction</h2>
           
           <div className="prose max-w-none mb-6">
-            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-5 mb-6">
-              <p className="text-gray-800 mb-4 leading-relaxed text-lg">
+            <div className="bg-red-50 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-800 rounded-lg p-5 mb-6">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed text-lg">
                 <strong>"Self-attention"</strong> is mentioned everywhere in modern AI, in papers, tutorials, and 
                 discussions about transformers. Yet, despite its ubiquity, it remains one of the most poorly 
                 understood concepts.
               </p>
-              <p className="text-gray-800 mb-4 leading-relaxed">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed">
                 You've probably seen the formula: <InlineMath math="\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V" />. 
                 But what does it actually <em>do</em>? Why does it work? And how can something so simple 
                 be so powerful?
@@ -76,10 +76,10 @@ export default function TransformersTutorial() {
 
       {/* Analogy Section */}
       <section id="analogy" className="mb-12 scroll-mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">The Core Intuition: Library Search</h2>
+        <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">The Core Intuition: Library Search</h2>
           
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 dark:text-white mb-6 leading-relaxed">
             Before diving into mathematics, let's build intuition with a simple analogy. Self-attention works 
             like searching a library: you have a query, you compare it to index cards (keys), and you retrieve 
             the relevant books (values) based on how well they match.
@@ -99,10 +99,10 @@ export default function TransformersTutorial() {
 
       {/* Concrete Example Section */}
       <section id="example" className="mb-12 scroll-mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Concrete Example: "The cat sat on the mat"</h2>
+        <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Concrete Example: "The cat sat on the mat"</h2>
           
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 dark:text-white mb-6 leading-relaxed">
             Now let's see self-attention in action with a real example. We'll use the sentence 
             <strong> "The cat sat on the mat"</strong> and trace through exactly how the word "cat" 
             uses self-attention to gather information from all other words.

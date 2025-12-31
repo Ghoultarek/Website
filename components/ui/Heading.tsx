@@ -12,10 +12,10 @@ export default function Heading({
   ...props 
 }: HeadingProps) {
   const levelClasses = {
-    1: 'text-4xl font-bold text-gray-800 mb-2',
-    2: 'text-3xl font-bold text-gray-800 mb-2',
-    3: 'text-2xl font-semibold text-gray-800 mb-2',
-    4: 'text-xl font-semibold text-gray-800 mb-2',
+    1: 'text-4xl font-bold text-gray-800 dark:text-white mb-2',
+    2: 'text-3xl font-bold text-gray-800 dark:text-white mb-2',
+    3: 'text-2xl font-semibold text-gray-800 dark:text-white mb-2',
+    4: 'text-xl font-semibold text-gray-800 dark:text-white mb-2',
   };
 
   const classes = `${levelClasses[level]} ${className}`;

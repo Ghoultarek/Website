@@ -118,15 +118,15 @@ export default function ClusteringTutorial() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Fundamentals: Clustering</h1>
-        <p className="text-lg text-gray-700">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">AI Fundamentals: Clustering</h1>
+        <p className="text-lg text-gray-700 dark:text-white">
           Explore clustering algorithms: KNN, K-means, DBSCAN, HDBSCAN, and Fuzzy C-means. Visualize how they work 
           and see their implementations.
         </p>
       </div>
 
       {/* Navigation */}
-      <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="mb-8 bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-2">
           {sections.map((section) => (
             <button
@@ -139,7 +139,7 @@ export default function ClusteringTutorial() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeSection === section.id
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-[#0D0D0D] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-[#171717]'
               }`}
             >
               {section.title}
@@ -150,18 +150,18 @@ export default function ClusteringTutorial() {
 
       {/* Introduction Section */}
       <section id="intro" className="mb-12 scroll-mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Introduction to Clustering</h2>
+        <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Introduction to Clustering</h2>
           
           <div className="prose max-w-none mb-6">
-            <div className="bg-gray-50 border border-gray-300 rounded-lg p-5 mb-6">
-              <p className="text-gray-800 mb-4 leading-relaxed">
+            <div className="bg-gray-50 dark:bg-[#0D0D0D] border border-gray-300 dark:border-gray-700 rounded-lg p-5 mb-6">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed">
                 Clustering is an unsupervised learning technique that groups similar data points together. Unlike 
                 classification, clustering doesn't require labeled data - it discovers patterns and structures in 
                 the data automatically.
               </p>
               
-              <p className="text-gray-800 mb-4 leading-relaxed">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed">
                 This tutorial covers five important clustering algorithms, each with different strengths and use cases. 
                 We'll use libraries (scikit-learn, hdbscan) but also visualize the clustering process and show simplified 
                 implementations to understand how they work.
@@ -171,7 +171,7 @@ export default function ClusteringTutorial() {
                 Algorithms Covered:
               </p>
               
-              <ul className="list-disc list-inside text-gray-800 space-y-2 mb-4 ml-4">
+              <ul className="list-disc list-inside text-gray-800 dark:text-white space-y-2 mb-4 ml-4">
                 <li><strong>KNN:</strong> <em>(Not technically clustering)</em> Supervised classification algorithm that demonstrates distance-based methods</li>
                 <li><strong>K-Means:</strong> Partitional clustering with fixed number of clusters</li>
                 <li><strong>DBSCAN:</strong> Density-based clustering, finds clusters of arbitrary shape</li>
@@ -225,9 +225,9 @@ export default function ClusteringTutorial() {
       </section>
 
       {/* Footer */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mt-12">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Next Steps</h3>
-        <p className="text-gray-700 text-sm mb-4">
+      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-6 border border-gray-200 dark:border-gray-700 mt-12">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Next Steps</h3>
+        <p className="text-gray-700 dark:text-white text-sm mb-4">
           Now that you understand clustering algorithms, you can explore:
         </p>
         <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">

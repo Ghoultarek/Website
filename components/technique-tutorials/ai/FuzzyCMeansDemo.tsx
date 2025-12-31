@@ -189,7 +189,7 @@ export default function FuzzyCMeansDemo({ data: propData }: FuzzyCMeansDemoProps
           <div className="flex items-center gap-2">
             <button
               onClick={runIteration}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
             >
               Run Iteration
             </button>
@@ -208,7 +208,7 @@ export default function FuzzyCMeansDemo({ data: propData }: FuzzyCMeansDemoProps
         </div>
         <button
           onClick={() => setShowImplementation(!showImplementation)}
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
         >
           {showImplementation ? 'Hide' : 'Show'} Implementation
         </button>

@@ -8,31 +8,31 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gray-900 dark:bg-[#0D0D0D] text-gray-300 dark:text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Tarek Ghoul</h3>
-            <p className="text-sm">
+            <h3 className="text-white dark:text-white text-lg font-semibold mb-4">Tarek Ghoul</h3>
+            <p className="text-sm dark:text-white">
               Researcher developing trustworthy and reliable AI for real-world transportation systems.
             </p>
           </div>
           
           <div>
-            <h4 className="text-white text-sm font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-white dark:text-white text-sm font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about" className="hover:text-white transition-colors">
+                <Link href="/about" className="hover:text-white dark:hover:text-white dark:text-white transition-colors">
                   CV
                 </Link>
               </li>
               <li>
-                <Link href="/publications" className="hover:text-white transition-colors">
+                <Link href="/publications" className="hover:text-white dark:hover:text-white dark:text-white transition-colors">
                   Publications
                 </Link>
               </li>
               <li>
-                <Link href="/tools" className="hover:text-white transition-colors">
+                <Link href="/tools" className="hover:text-white dark:hover:text-white dark:text-white transition-colors">
                   Interactive Tools
                 </Link>
               </li>
@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white text-sm font-semibold mb-4">Connect</h4>
+            <h4 className="text-white dark:text-white text-sm font-semibold mb-4">Connect</h4>
             <ul className="space-y-2 text-sm">
               {socialLinks.map((link) => (
                 <li key={link.href}>
@@ -48,7 +48,7 @@ export default function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white dark:hover:text-white dark:text-white transition-colors"
                   >
                     {link.label}
                   </a>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+        <div className="mt-8 pt-8 border-t border-gray-800 dark:border-gray-700 text-center text-sm dark:text-white">
           <p>&copy; {new Date().getFullYear()} Tarek Ghoul. All rights reserved.</p>
         </div>
       </div>

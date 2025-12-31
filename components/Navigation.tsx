@@ -15,65 +15,55 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="text-xl font-semibold text-gray-900 hover:text-primary-600 transition-colors">
-            Tarek Ghoul
-          </Link>
-          
+    <nav className="bg-lighter dark:bg-[#0D0D0D] sticky top-0 z-50 py-4">
+      <div className="max-w-3xl mx-auto px-4 sm:px-10">
+        <div className="flex flex-row items-center justify-center bg-white dark:bg-[#171717] border border-neutral-400/20 dark:border-neutral-600/10 rounded-3xl p-1.5 text-sm text-neutral-500">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden sm:flex flex-wrap items-center justify-center gap-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
-              >
-                {link.label}
+              <Link key={link.href} href={link.href}>
+                <div className="py-[8px] px-6 dark:hover:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:text-white hover:text-black rounded-full text-base font-normal text-start text-black dark:text-white">
+                  {link.label}
+                </div>
               </Link>
             ))}
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-100"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {/* Mobile Menu Button */}
+          <div className="relative flex sm:hidden">
+            <button
+              className="py-1.5 px-4 dark:hover:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:text-white hover:text-black rounded-full"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
             >
-              {isOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden pb-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
-                onClick={() => setIsOpen(false)}
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-7 h-7 text-black dark:text-neutral-200"
               >
-                {link.label}
-              </Link>
-            ))}
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6h16.5M3.75 12.5h16.5m-16.5 6.5h16.5" />
+              </svg>
+            </button>
+            {isOpen && (
+              <div className="absolute right-0 top-full mt-2 z-50">
+                <div className="bg-white dark:bg-dark border border-neutral-400/20 dark:border-neutral-600/10 rounded-3xl p-4 shadow-lg min-w-[200px]">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block py-2 px-4 dark:hover:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:text-white hover:text-black rounded-full text-base font-normal text-start text-black dark:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );

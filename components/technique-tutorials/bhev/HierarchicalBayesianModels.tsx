@@ -151,7 +151,7 @@ export default function HierarchicalBayesianModels() {
                     <label className="block text-sm text-gray-700 mb-1">Generate Data:</label>
                     <button
                       onClick={() => setMultiSiteDataKey(prev => prev + 1)}
-                      className="w-full px-3 py-1 bg-primary-600 text-white rounded text-sm hover:bg-primary-700 transition-colors"
+                      className="w-full px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
                     >
                       Generate New Multi-Site Data
                     </button>

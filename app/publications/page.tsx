@@ -17,23 +17,23 @@ export default function Publications() {
   const underReviewCount = publications.filter(p => p.status === 'under-review' || p.status === 'submitted').length;
 
   return (
-    <div className="min-h-screen bg-beige-50">
+    <div className="min-h-screen bg-beige-50 dark:bg-[#0D0D0D]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Publications</h1>
-          <p className="text-lg text-gray-700">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Publications</h1>
+          <p className="text-lg text-gray-700 dark:text-white">
             Research contributions in transportation safety, AI, and intelligent transportation systems
           </p>
         </div>
 
         {/* Filter Tabs */}
-        <div className="mb-8 flex flex-wrap gap-2 border-b border-gray-200">
+        <div className="mb-8 flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 font-medium transition-colors ${
               filter === 'all'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+                : 'text-gray-600 dark:text-white hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             All ({publications.length})
@@ -42,8 +42,8 @@ export default function Publications() {
             onClick={() => setFilter('published')}
             className={`px-4 py-2 font-medium transition-colors ${
               filter === 'published'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+                : 'text-gray-600 dark:text-white hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Published ({publishedCount})
@@ -52,8 +52,8 @@ export default function Publications() {
             onClick={() => setFilter('under-review')}
             className={`px-4 py-2 font-medium transition-colors ${
               filter === 'under-review'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+                : 'text-gray-600 dark:text-white hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Under Review ({underReviewCount})
@@ -73,7 +73,7 @@ export default function Publications() {
             href="https://scholar.google.com/citations?user=-vy503AAAAAJ&hl=en"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-3xl font-semibold hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-primary-600 dark:bg-primary-500 text-white rounded-3xl font-semibold hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors"
           >
             View on Google Scholar →
           </a>

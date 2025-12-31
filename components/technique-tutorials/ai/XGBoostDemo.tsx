@@ -327,10 +327,10 @@ export default function XGBoostDemo({
   }, [testDataWithPredictions]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">XGBoost (Extreme Gradient Boosting)</h2>
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">XGBoost (Extreme Gradient Boosting)</h2>
       
-      <p className="text-gray-700 mb-6">
+      <p className="text-gray-700 dark:text-white mb-6">
         XGBoost is an advanced gradient boosting algorithm that builds trees sequentially, where each new tree 
         corrects the errors of the previous ones. It includes regularization to prevent overfitting and is one of 
         the most successful ML algorithms in practice.
@@ -347,7 +347,7 @@ export default function XGBoostDemo({
       {/* Library Usage Section */}
       <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
         <h3 className="font-semibold text-green-900 mb-3">1. Using XGBoost Library</h3>
-        <div className="bg-white rounded p-3 font-mono text-sm mb-3">
+        <div className="bg-white dark:bg-[#0D0D0D] rounded p-3 font-mono text-sm mb-3">
           <pre className="text-xs">{`import xgboost as xgb
 
 # Create and train
@@ -373,24 +373,24 @@ accuracy = model.score(X_test, y_test)`}</pre>
         <h4 className="font-semibold text-yellow-900 mb-4 text-lg">How XGBoost Works</h4>
         
         <div className="space-y-4 text-sm text-yellow-900">
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 1: Start with a Simple Guess</h5>
             <p className="mb-2">
               XGBoost starts by making a simple initial prediction for every point. For classification, 
               it might start by saying "every point has a 50% chance of being class 1."
             </p>
-            <p className="text-xs text-gray-700 italic">
+            <p className="text-xs text-gray-700 dark:text-white italic">
               This is like making an educated guess before you have any information.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 2: Build a Tree to Fix Mistakes</h5>
             <p className="mb-2">
               After the initial guess, XGBoost looks at how wrong it was for each training point. 
               It then builds a decision tree that tries to predict these errors.
             </p>
-            <div className="bg-gray-50 rounded p-3 my-2 text-xs">
+            <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded p-3 my-2 text-xs">
               <p className="font-semibold mb-1">Example:</p>
               <p>Point A: Predicted 0.3 (30% chance of class 1), Actual = 1 → Error = -0.7</p>
               <p>Point B: Predicted 0.8 (80% chance of class 1), Actual = 0 → Error = +0.8</p>
@@ -398,7 +398,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 3: Update Predictions Gradually</h5>
             <p className="mb-2">
               Instead of completely replacing the old prediction, XGBoost makes a small correction:
@@ -412,13 +412,13 @@ accuracy = model.score(X_test, y_test)`}</pre>
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 4: Repeat Many Times</h5>
             <p className="mb-2">
               This process repeats: build a tree to predict errors, update predictions, build another tree 
               to predict the new errors, and so on. Each tree focuses on fixing what the previous trees got wrong.
             </p>
-            <div className="bg-gray-50 rounded p-3 my-2 text-xs">
+            <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded p-3 my-2 text-xs">
               <p className="font-semibold mb-1">After 1 tree:</p>
               <p>Accuracy: 60% - Still learning the basic pattern</p>
               <p className="font-semibold mb-1 mt-2">After 5 trees:</p>
@@ -428,7 +428,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Why This Works Better Than Random Forest</h5>
             <p className="mb-2">
               Random Forest builds all trees independently and averages them. XGBoost builds trees sequentially, 
@@ -459,12 +459,12 @@ accuracy = model.score(X_test, y_test)`}</pre>
       </div>
 
       {/* Key Formula */}
-      <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">The Core Idea</h3>
-        <div className="bg-white rounded p-4 flex justify-center">
+      <div className="mb-6 bg-gray-50 dark:bg-[#0D0D0D] border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">The Core Idea</h3>
+        <div className="bg-white dark:bg-[#171717] rounded p-4 flex justify-center">
           <BlockMath math="F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x)" />
         </div>
-        <p className="text-sm text-gray-700 mt-2">
+        <p className="text-sm text-gray-700 dark:text-white mt-2">
           Where <InlineMath math="F_m" /> is the model after <InlineMath math="m" /> trees, 
           <InlineMath math="\eta" /> is the learning rate, and <InlineMath math="h_m" /> is the <InlineMath math="m" />-th tree 
           that predicts the gradient/residual.
@@ -476,11 +476,11 @@ accuracy = model.score(X_test, y_test)`}</pre>
         <h3 className="font-semibold text-gray-900 mb-4">Classification Problem: Sample Data</h3>
         
         <div className="mb-4">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Training Data Sample (First 10 points)</h4>
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-white mb-2">Training Data Sample (First 10 points)</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse border border-gray-300">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-gray-100 dark:bg-[#0D0D0D]">
                   <th className="border border-gray-300 p-2 text-left">ID</th>
                   <th className="border border-gray-300 p-2 text-left">Feature 1 (X)</th>
                   <th className="border border-gray-300 p-2 text-left">Feature 2 (Y)</th>
@@ -489,7 +489,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
               </thead>
               <tbody>
                 {trainingData.slice(0, 10).map((point, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white dark:bg-[#171717]' : 'bg-gray-50 dark:bg-[#0D0D0D]'}>
                     <td className="border border-gray-300 p-2">{idx + 1}</td>
                     <td className="border border-gray-300 p-2">{point.x.toFixed(2)}</td>
                     <td className="border border-gray-300 p-2">{point.y.toFixed(2)}</td>
@@ -506,16 +506,16 @@ accuracy = model.score(X_test, y_test)`}</pre>
         </div>
 
         <div className="mb-4">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-white mb-2">
             Test Data Predictions (After {selectedIteration} trees)
           </h4>
-          <p className="text-xs text-gray-600 mb-2">
+          <p className="text-xs text-gray-600 dark:text-white mb-2">
             Each point gets a probability score. If probability {'>'} 50%, we predict Class 1, otherwise Class 0.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse border border-gray-300">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-gray-100 dark:bg-[#0D0D0D]">
                   <th className="border border-gray-300 p-2 text-left">ID</th>
                   <th className="border border-gray-300 p-2 text-left">Feature 1</th>
                   <th className="border border-gray-300 p-2 text-left">Feature 2</th>
@@ -565,7 +565,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse border border-gray-300">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-gray-100 dark:bg-[#0D0D0D]">
                   <th className="border border-gray-300 p-2 text-left">Iteration</th>
                   <th className="border border-gray-300 p-2 text-left">Probability</th>
                   <th className="border border-gray-300 p-2 text-left">Predicted</th>
@@ -614,7 +614,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
         <h3 className="font-semibold text-gray-900 mb-4">Parameters</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm text-gray-700 mb-2">
+            <label className="block text-sm text-gray-700 dark:text-white mb-2">
               Number of Trees: {nEstimators}
             </label>
             <input
@@ -629,10 +629,10 @@ accuracy = model.score(X_test, y_test)`}</pre>
               }}
               className="w-full"
             />
-            <p className="text-xs text-gray-600 mt-1">More trees = better accuracy (up to a point)</p>
+            <p className="text-xs text-gray-600 dark:text-white mt-1">More trees = better accuracy (up to a point)</p>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-2">
+            <label className="block text-sm text-gray-700 dark:text-white mb-2">
               Learning Rate: {learningRate.toFixed(2)}
             </label>
             <input
@@ -644,10 +644,10 @@ accuracy = model.score(X_test, y_test)`}</pre>
               onChange={(e) => setLearningRate(parseFloat(e.target.value))}
               className="w-full"
             />
-            <p className="text-xs text-gray-600 mt-1">Lower = slower learning, more stable</p>
+            <p className="text-xs text-gray-600 dark:text-white mt-1">Lower = slower learning, more stable</p>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-2">
+            <label className="block text-sm text-gray-700 dark:text-white mb-2">
               Iteration to View: {selectedIteration} of {nEstimators}
             </label>
             <input
@@ -659,10 +659,10 @@ accuracy = model.score(X_test, y_test)`}</pre>
               onChange={(e) => setSelectedIteration(parseInt(e.target.value))}
               className="w-full"
             />
-            <p className="text-xs text-gray-600 mt-1">See predictions at this iteration</p>
+            <p className="text-xs text-gray-600 dark:text-white mt-1">See predictions at this iteration</p>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-2">
+            <label className="block text-sm text-gray-700 dark:text-white mb-2">
               Example Point: #{selectedPointIndex + 1} of {testData.length}
             </label>
             <input
@@ -673,7 +673,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
               onChange={(e) => setSelectedPointIndex(parseInt(e.target.value))}
               className="w-full"
             />
-            <p className="text-xs text-gray-600 mt-1">
+            <p className="text-xs text-gray-600 dark:text-white mt-1">
               Point: ({selectedPoint.x.toFixed(2)}, {selectedPoint.y.toFixed(2)}), True: Class {selectedPoint.label}
             </p>
           </div>
@@ -699,8 +699,8 @@ accuracy = model.score(X_test, y_test)`}</pre>
 
         {/* Training Curve */}
         <div className="mb-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Accuracy Improvement Over Iterations</h4>
-          <p className="text-sm text-gray-600 mb-2">
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Accuracy Improvement Over Iterations</h4>
+          <p className="text-sm text-gray-600 dark:text-white mb-2">
             Each tree learns from the mistakes of previous trees, gradually improving accuracy.
           </p>
           <ResponsiveContainer width="100%" height={250}>
@@ -718,13 +718,13 @@ accuracy = model.score(X_test, y_test)`}</pre>
 
       {/* Visualization (Secondary) */}
       <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Visual Representation</h3>
-        <p className="text-sm text-gray-700 mb-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Visual Representation</h3>
+        <p className="text-sm text-gray-700 dark:text-white mb-4">
           Here's a visual view of the classification problem. Blue points are Class 0, red points are Class 1.
         </p>
         
         <div>
-          <h4 className="text-sm font-semibold text-gray-900 mb-2">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
             Test Data Predictions (Iteration {selectedIteration})
           </h4>
           <ResponsiveContainer width="100%" height={300}>
@@ -738,7 +738,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
                   if (active && payload && payload[0]) {
                     const point = payload[0].payload as DataPoint;
                     return (
-                      <div className="bg-white border border-gray-300 rounded p-2">
+                      <div className="bg-white dark:bg-[#171717] border border-gray-300 dark:border-gray-700 rounded p-2">
                         <p>True: Class {point.label}</p>
                         <p>Predicted: Class {point.predicted}</p>
                         <p>Confidence: {((point.probability || 0) * 100).toFixed(1)}%</p>

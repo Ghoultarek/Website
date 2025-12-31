@@ -12,8 +12,8 @@ export default function Section({
   ...props 
 }: SectionProps) {
   const backgroundClasses = {
-    white: 'bg-white',
-    gray: 'bg-beige-50',
+    white: 'bg-white dark:bg-[#0D0D0D]',
+    gray: 'bg-beige-50 dark:bg-[#0D0D0D]',
   };
 
   const baseClasses = 'py-6';

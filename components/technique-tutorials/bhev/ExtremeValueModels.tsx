@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useRef, useEffect, ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, ComposedChart, ReferenceLine, ScatterChart, Scatter, Cell } from 'recharts';
+import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 import { GEVParameters, Covariate, VaRLevel, BlockMaximaPoint, BlockMaximaData, GEVDataPoint, POTDataPoint } from './types';
 import { calculateGEVParams, gevCDF, gevPDF, gevQuantile, gevRandom, calculateCrashRisk, calculateCVaR, calculateMeanExcess, calculateParameterStability } from './calculations';
 
@@ -12,6 +14,7 @@ export default function ExtremeValueModels() {
   const [conflictDensity, setConflictDensity] = useState(5); // conflicts per minute
   const [potThreshold, setPotThreshold] = useState(-1.5); // Threshold for POT
   const [dataKey, setDataKey] = useState(0); // Key to force regeneration
+  const [mounted, setMounted] = useState(false);
   const [parameters, setParameters] = useState<GEVParameters>({
     mu0: -3.3,
     zeta0: 0.2,
@@ -36,6 +39,12 @@ export default function ExtremeValueModels() {
   // Track previous crash risk for delta indicator
   const previousCrashRiskRef = useRef<number | null>(null);
   const [crashRiskDelta, setCrashRiskDelta] = useState<number | null>(null);
+
+  // Ensure component is mounted before rendering random data to avoid hydration errors
+  // Use a state that starts as false and only becomes true after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (previousCrashRiskRef.current !== null) {
@@ -93,8 +102,10 @@ export default function ExtremeValueModels() {
   }, [mu, sigma, xi, varLevel, varValue]);
 
   // Generate raw data for Block Maxima and POT
+  // Only generate on client to avoid hydration errors
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const rawProcessData = useMemo(() => {
+    if (!mounted) return []; // Return empty array during SSR
     const genMu = -1.9;
     const genZeta = -0.3;
     const genSigma = Math.exp(genZeta);
@@ -113,7 +124,7 @@ export default function ExtremeValueModels() {
       }
     }
     return allPoints;
-  }, [conflictDensity, dataKey]);
+  }, [conflictDensity, dataKey, mounted]);
 
   // Process data for Block Maxima
   const blockMaximaData = useMemo(() => {
@@ -268,42 +279,82 @@ export default function ExtremeValueModels() {
     );
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 animate-fade-in">
-      {/* Header Section */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Extreme Value Models for Traffic Safety</h2>
-        <p className="text-gray-700 mb-3">
-          Traffic conflicts are near-miss events that can predict crashes. This tutorial introduces Extreme Value Theory (EVT) 
-          and demonstrates how Generalized Extreme Value (GEV) and Generalized Pareto (GPD) distributions can quantify crash risk 
-          from conflict data.
-        </p>
-        <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-sm text-blue-900 font-mono">
-            GEV(μ, σ, ξ) where:<br />
-            μ = μ₀ + Σ(β_μ × covariate)<br />
-            σ = exp(ζ₀ + Σ(β_ζ × covariate))<br />
-            ξ = fixed
+  // Prevent hydration errors by not rendering data-dependent content during SSR
+  // Return the same static content during SSR and initial client render
+  // Use suppressHydrationWarning on the root to prevent React from complaining about mismatches
+  if (!mounted) {
+    return (
+      <div className="bg-white dark:bg-[#171717] rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 animate-fade-in">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Extreme Value Models for Traffic Safety</h2>
+          <p className="text-gray-700 dark:text-white mb-3">
+            Traffic collisions are rare and random events. Traditional crash-based safety analysis is fundamentally reactive, we essentially 
+            wait for crashes to occur, which means waiting for people to get hurt or die to collect meaningful data. This approach requires 
+            years of crash history to identify problematic locations, and by the time patterns emerge, lives have already been lost.
+          </p>
+          <p className="text-gray-700 dark:text-white mb-3">
+            Traffic conflicts, or near-miss events, offer a proactive alternative. These are situations where vehicles come dangerously 
+            close to colliding but avoid impact, think of a vehicle that has to brake hard to avoid a collision, or two vehicles that 
+            narrowly miss each other at an intersection. We can extract these events from traffic trajectory data collected from cameras, 
+            connected vehicles, or other sensors, providing a rich dataset of safety-critical events without anyone getting hurt.
+          </p>
+          <p className="text-gray-700 dark:text-white mb-3">
+            This tutorial introduces Extreme Value Theory (EVT), a statistical framework designed specifically for modeling rare, extreme 
+            events. Since crashes represent the extreme tail of the conflict distribution, EVT provides the mathematical foundation to 
+            extrapolate from frequent near-misses to rare crashes. We demonstrate how Generalized Extreme Value (GEV) and Generalized 
+            Pareto (GPD) distributions can quantify crash risk from conflict data, enabling transportation agencies to identify high-risk 
+            locations, evaluate safety countermeasures, and prioritize interventions before crashes occur.
           </p>
         </div>
+        <div className="flex items-center justify-center py-12">
+          <p className="text-gray-500 dark:text-white">Loading interactive content...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Main content - wrap in suppressHydrationWarning to prevent warnings from chart internals
+  return (
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 animate-fade-in">
+      {/* Header Section */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Extreme Value Models for Traffic Safety</h2>
+        <p className="text-gray-700 dark:text-white mb-3">
+          Traffic collisions are rare and random events. Traditional crash-based safety analysis is fundamentally reactive, we essentially 
+          wait for crashes to occur, which means waiting for people to get hurt or die to collect meaningful data. This approach requires 
+          years of crash history to identify problematic locations, and by the time patterns emerge, lives have already been lost.
+        </p>
+        <p className="text-gray-700 dark:text-white mb-3">
+          Traffic conflicts, or near-miss events, offer a proactive alternative. These are situations where vehicles come dangerously 
+          close to colliding but avoid impact, think of a vehicle that has to brake hard to avoid a collision, or two vehicles that 
+          narrowly miss each other at an intersection. We can extract these events from traffic trajectory data collected from cameras, 
+          connected vehicles, or other sensors, providing a rich dataset of safety-critical events without anyone getting hurt.
+        </p>
+          <p className="text-gray-700 dark:text-white mb-3">
+          This tutorial introduces Extreme Value Theory (EVT), a statistical framework designed specifically for modeling rare, extreme 
+          events. Since crashes represent the extreme tail of the conflict distribution, EVT provides the mathematical foundation to 
+          extrapolate from frequent near-misses to rare crashes. We demonstrate how Generalized Extreme Value (GEV) and Generalized 
+          Pareto (GPD) distributions can quantify crash risk from conflict data, enabling transportation agencies to identify high-risk 
+          locations, evaluate safety countermeasures, and prioritize interventions before crashes occur.
+        </p>
       </div>
 
       {/* Tutorial Section */}
       {showTutorial && (
-        <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+        <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-gray-700">
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Tutorial: Extreme Value Models</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Tutorial: Extreme Value Models</h3>
             <button
               onClick={() => setShowTutorial(false)}
-              className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
+              className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-white text-sm transition-colors"
             >
               Hide Tutorial
             </button>
           </div>
 
           {/* Tutorial Navigation Links */}
-          <div className="mb-6 p-3 bg-white rounded-lg border border-blue-200">
-            <p className="text-xs font-semibold text-gray-600 mb-2">Quick Navigation:</p>
+          <div className="mb-6 p-3 bg-white dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-xs font-semibold text-gray-600 dark:text-white mb-2">Quick Navigation:</p>
             <div className="flex flex-wrap gap-2 text-xs">
               <a href="#why-negated" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Why Negated Extremes</a>
               <a href="#data-generation" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Data Generation</a>
@@ -314,35 +365,43 @@ export default function ExtremeValueModels() {
             </div>
           </div>
 
-          <div className="space-y-8 text-gray-700">
+          <div className="space-y-8 text-gray-700 dark:text-white">
             
             {/* 1. Why Negated Extremes */}
             <div id="why-negated" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">1. Why Negated Extremes?</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">1. Why Negated Extremes?</h4>
               <p>
                 In traffic safety analysis, we often deal with conflict measures like Time-To-Collision (TTC). Small TTC values represent dangerous situations. 
                 <strong> Importantly, a Time-To-Collision of 0 means a crash has occurred.</strong> Extreme Value Theory typically models maxima (largest values), not minima. To use standard GEV theory, we transform our data:
               </p>
               <p className="mt-2">
-                We model <strong>-TTC</strong> (negated Time-To-Collision) because:
+                We model <strong><InlineMath math="-\text{TTC}" /></strong> (negated Time-To-Collision) because:
               </p>
               <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                 <li>More negative values (large negative numbers) = more severe conflicts</li>
-                <li>Crash occurs when -TTC ≥ 0 (i.e., TTC ≤ 0)</li>
+                <li>Crash occurs when <InlineMath math="-\text{TTC} \geq 0" /> (i.e., <InlineMath math="\text{TTC} \leq 0" />)</li>
                 <li>This allows us to model the &quot;upper tail&quot; of extremes using standard GEV theory</li>
-                <li>Crash risk = P(-TTC ≥ 0) = P(TTC ≤ 0)</li>
+                <li>Crash risk = <InlineMath math="P(-\text{TTC} \geq 0) = P(\text{TTC} \leq 0)" /></li>
               </ul>
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-gray-700">
+                <div className="text-sm text-blue-900 dark:text-white space-y-2">
+                  <BlockMath math="\text{GEV}(\mu, \sigma, \xi) \text{ where:}" />
+                  <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
+                  <BlockMath math="\sigma = \exp(\zeta_0 + \sum(\beta_\zeta \times \text{covariate}))" />
+                  <BlockMath math="\xi = \text{fixed}" />
+                </div>
+              </div>
             </div>
 
             {/* 2. Data Generation */}
             <div id="data-generation" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">2. Data Generation</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">2. Data Generation</h4>
               <p className="mb-3">
                 First, let&apos;s generate conflict data using a Poisson process with a specified conflict density. 
                 This simulates realistic traffic conflict scenarios over time.
               </p>
               
-              <div className="bg-white rounded-lg p-4 mb-4">
+              <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-3">
                   <h5 className="font-semibold">Generate Conflict Data</h5>
                 </div>
@@ -362,7 +421,7 @@ export default function ExtremeValueModels() {
                     <label className="block text-sm text-gray-700 mb-1">Generate Data:</label>
                     <button
                       onClick={() => setDataKey(prev => prev + 1)}
-                      className="w-full px-3 py-1 bg-primary-600 text-white rounded text-sm hover:bg-primary-700 transition-colors"
+                      className="w-full px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
                     >
                       Generate New Data
                     </button>
@@ -370,8 +429,8 @@ export default function ExtremeValueModels() {
                 </div>
                 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">
-                    <strong>Total conflicts generated: {rawProcessData.length}</strong>
+                  <p className="text-sm text-gray-600 dark:text-white mb-2">
+                    <strong>Total conflicts generated: {mounted ? rawProcessData.length : '...'}</strong>
                   </p>
                 </div>
               </div>
@@ -379,7 +438,7 @@ export default function ExtremeValueModels() {
 
             {/* 3. Block Maxima Approach */}
             <div id="block-maxima" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">3. Block Maxima Approach</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">3. Block Maxima Approach</h4>
               <p className="mb-3">
                 We divide our time series data into blocks (e.g., daily, weekly blocks) 
                 and extract the maximum value from each block. These maxima follow a GEV distribution.
@@ -389,7 +448,7 @@ export default function ExtremeValueModels() {
                 these tend not to be extremes unless there is a massive amount of conflict data available.
               </p>
               
-              <div className="bg-white rounded-lg p-4 mb-4">
+              <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-3">
                   <h5 className="font-semibold">Interactive Block Maxima Visualization</h5>
                 </div>
@@ -404,71 +463,80 @@ export default function ExtremeValueModels() {
                     step="10"
                   />
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
-                  <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis 
-                      type="number"
-                      dataKey="time"
-                      domain={[0, 2400]}
-                      label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -5 }}
-                      stroke="#6b7280"
-                    />
-                    <YAxis 
-                      type="number"
-                      dataKey="value"
-                      label={{ value: 'Negated Conflict Extreme (-TTC)', angle: -90, position: 'insideLeft' }}
-                      stroke="#6b7280"
-                    />
-                    <Tooltip 
-                      cursor={{ strokeDasharray: '3 3' }}
-                      formatter={(value: number, name: string) => {
-                        if (name === 'value') return [value.toFixed(3), 'Value'];
-                        return [value, name];
-                      }}
-                    />
-                    <Legend />
-                    {blockMaximaData.blockBoundaries.map((boundary, idx) => (
-                      <ReferenceLine
-                        key={idx}
-                        x={boundary}
-                        stroke="#94a3b8"
-                        strokeWidth={1}
-                        strokeDasharray="2 2"
+                {mounted ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        type="number"
+                        dataKey="time"
+                        domain={[0, 2400]}
+                        label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -5 }}
+                        stroke="#6b7280"
                       />
-                    ))}
-                    <Scatter
-                      name="Conflict Data"
-                      data={blockMaximaData.points.filter(p => !p.isMaxima)}
-                      fill="#3b82f6"
-                    >
-                      {blockMaximaData.points.filter(p => !p.isMaxima).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill="#3b82f6" />
+                      <YAxis 
+                        type="number"
+                        dataKey="value"
+                        label={{ value: 'Negated Conflict Extreme (-TTC)', angle: -90, position: 'insideLeft' }}
+                        stroke="#6b7280"
+                      />
+                      <Tooltip 
+                        cursor={{ strokeDasharray: '3 3' }}
+                        formatter={(value: number, name: string) => {
+                          if (name === 'value') return [value.toFixed(3), 'Value'];
+                          return [value, name];
+                        }}
+                      />
+                      <Legend />
+                      {blockMaximaData.blockBoundaries.map((boundary, idx) => (
+                        <ReferenceLine
+                          key={idx}
+                          x={boundary}
+                          stroke="#94a3b8"
+                          strokeWidth={1}
+                          strokeDasharray="2 2"
+                        />
                       ))}
-                    </Scatter>
-                    <Scatter
-                      name="Block Maxima"
-                      data={blockMaximaData.blockMaxima}
-                      fill="#ef4444"
-                    >
-                      {blockMaximaData.blockMaxima.map((entry, index) => (
-                        <Cell key={`maxima-${index}`} fill="#ef4444" />
-                      ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
-                <p className="text-xs text-gray-600 mt-2">
+                      <Scatter
+                        name="Conflict Data"
+                        data={blockMaximaData.points.filter(p => !p.isMaxima)}
+                        fill="#3b82f6"
+                      >
+                        {blockMaximaData.points.filter(p => !p.isMaxima).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill="#3b82f6" />
+                        ))}
+                      </Scatter>
+                      <Scatter
+                        name="Block Maxima"
+                        data={blockMaximaData.blockMaxima}
+                        fill="#ef4444"
+                      >
+                        {blockMaximaData.blockMaxima.map((entry, index) => (
+                          <Cell key={`maxima-${index}`} fill="#ef4444" />
+                        ))}
+                      </Scatter>
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="w-full h-[300px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
+                    <p className="text-gray-500">Loading chart data...</p>
+                  </div>
+                )}
+                <p className="text-xs text-gray-600 dark:text-white mt-2">
                   Blue points show random conflict data. Red points show block maxima (most extreme values in each block). 
-                  Vertical lines indicate block boundaries. <strong>Number of blocks: {blockMaximaData.blockMaxima.length}</strong>
+                  Vertical lines indicate block boundaries. <strong>Number of blocks: {mounted ? blockMaximaData.blockMaxima.length : '...'}</strong>
                 </p>
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">
+                *Try reducing the block size to less than 60 seconds. Do you notice when &quot;Extremes&quot; stop being extreme?
+              </p>
             </div>
 
             {/* 4. Peak-Over-Threshold (POT) Approach */}
             <div id="pot" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">4. Peak-Over-Threshold (POT) Approach</h4>
-              <p className="mb-3">
-                Instead of blocks, we can consider all events that exceed a certain high threshold $u$. These &quot;exceedances&quot; 
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">4. Peak-Over-Threshold (POT) Approach</h4>
+                <p className="mb-3">
+                Instead of blocks, we can consider all events that exceed a certain high threshold <InlineMath math="u" />. These &quot;exceedances&quot; 
                 are modeled using a Generalized Pareto Distribution (GPD). This often uses data more efficiently than Block Maxima.
               </p>
               <p className="mb-3 text-sm text-gray-600">
@@ -476,12 +544,12 @@ export default function ExtremeValueModels() {
                 help guide this selection.
               </p>
 
-              <div className="bg-white rounded-lg p-4 mb-4">
+              <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4">
                 <h5 className="font-semibold mb-3">Interactive Threshold Selection</h5>
                 
                 <div className="mb-4">
                   <label className="block text-sm text-gray-700 mb-1">
-                    Select Threshold ($u$): {potThreshold.toFixed(2)}
+                    Select Threshold (<InlineMath math="u" />): {potThreshold.toFixed(2)}
                   </label>
                   <input 
                     type="range"
@@ -494,32 +562,38 @@ export default function ExtremeValueModels() {
                   />
                 </div>
 
-                <ResponsiveContainer width="100%" height={300}>
-                  <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis 
-                      type="number"
-                      dataKey="time"
-                      domain={[0, 2400]}
-                      label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -5 }}
-                      stroke="#6b7280"
-                    />
-                    <YAxis 
-                      type="number"
-                      dataKey="value"
-                      label={{ value: 'Negated Conflict Extreme (-TTC)', angle: -90, position: 'insideLeft' }}
-                      stroke="#6b7280"
-                    />
-                    <Tooltip formatter={(value: number) => value.toFixed(3)} />
-                    <Legend />
-                    <ReferenceLine y={potThreshold} stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" label={{ value: `u = ${potThreshold}`, fill: '#ef4444' }} />
-                    <Scatter name="Below Threshold" data={potData.filter(p => !p.isExceedance)} fill="#9ca3af" opacity={0.5} />
-                    <Scatter name="Exceedances (Above u)" data={potData.filter(p => p.isExceedance)} fill="#ef4444" />
-                  </ScatterChart>
-                </ResponsiveContainer>
-                <p className="text-xs text-gray-600 mt-2">
+                {mounted ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        type="number"
+                        dataKey="time"
+                        domain={[0, 2400]}
+                        label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -5 }}
+                        stroke="#6b7280"
+                      />
+                      <YAxis 
+                        type="number"
+                        dataKey="value"
+                        label={{ value: 'Negated Conflict Extreme (-TTC)', angle: -90, position: 'insideLeft' }}
+                        stroke="#6b7280"
+                      />
+                      <Tooltip formatter={(value: number) => value.toFixed(3)} />
+                      <Legend />
+                      <ReferenceLine y={potThreshold} stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" label={{ value: `u = ${potThreshold.toFixed(2)}`, fill: '#ef4444' }} />
+                      <Scatter name="Below Threshold" data={potData.filter(p => !p.isExceedance)} fill="#9ca3af" opacity={0.5} />
+                      <Scatter name="Exceedances (Above u)" data={potData.filter(p => p.isExceedance)} fill="#ef4444" />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="w-full h-[300px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
+                    <p className="text-gray-500">Loading chart data...</p>
+                  </div>
+                )}
+                <p className="text-xs text-gray-600 dark:text-white mt-2">
                   Grey points are below the threshold. Red points are &quot;exceedances&quot; used to fit the GPD model. 
-                  <strong> Number of exceedances: {potData.filter(p => p.isExceedance).length}</strong>
+                  <strong> Number of exceedances: {mounted ? potData.filter(p => p.isExceedance).length : '...'}</strong>
                 </p>
               </div>
 
@@ -545,30 +619,36 @@ export default function ExtremeValueModels() {
                   <p className="text-xs text-gray-500 mb-3">
                     Identify a valid threshold where the graph becomes linear (stable mean excess).
                   </p>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <ComposedChart data={mrlData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        type="number"
-                        dataKey="threshold" 
-                        domain={[-3, 0]}
-                        allowDataOverflow={false}
-                        label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
-                        height={30}
-                      />
-                      <YAxis label={{ value: 'Mean Excess', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip formatter={(val: number) => val.toFixed(3)} />
-                      <Area type="monotone" dataKey="upperCI" stroke="none" fill="#bfdbfe" fillOpacity={0.5} />
-                      <Area type="monotone" dataKey="lowerCI" stroke="none" fill="#fff" fillOpacity={1.0} />
-                      <Line type="monotone" dataKey="meanExcess" stroke="#2563eb" dot={false} strokeWidth={2} />
-                      <ReferenceLine 
-                        x={potThreshold} 
-                        stroke="#ef4444" 
-                        strokeWidth={2} 
-                        strokeDasharray="5 5"
-                      />
-                    </ComposedChart>
-                  </ResponsiveContainer>
+                  {mounted ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <ComposedChart data={mrlData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          type="number"
+                          dataKey="threshold" 
+                          domain={[-3, 0]}
+                          allowDataOverflow={false}
+                          label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
+                          height={30}
+                        />
+                        <YAxis label={{ value: 'Mean Excess', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip formatter={(val: number) => val.toFixed(3)} />
+                        <Area type="monotone" dataKey="upperCI" stroke="none" fill="#bfdbfe" fillOpacity={0.5} />
+                        <Area type="monotone" dataKey="lowerCI" stroke="none" fill="#fff" fillOpacity={1.0} />
+                        <Line type="monotone" dataKey="meanExcess" stroke="#2563eb" dot={false} strokeWidth={2} />
+                        <ReferenceLine 
+                          x={potThreshold} 
+                          stroke="#ef4444" 
+                          strokeWidth={2} 
+                          strokeDasharray="5 5"
+                        />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
+                      <p className="text-gray-500 text-sm">Loading chart data...</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Parameter Stability Plots */}
@@ -577,35 +657,41 @@ export default function ExtremeValueModels() {
                   <p className="text-xs text-gray-500 mb-3">
                     Check if parameters are constant above chosen threshold.
                   </p>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <ComposedChart data={stabilityData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        type="number"
-                        dataKey="threshold" 
-                        domain={[-3, 0]}
-                        allowDataOverflow={false}
-                        label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
-                        height={30}
-                      />
-                      <YAxis domain={['auto', 'auto']} label={{ value: 'Modified Scale', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip formatter={(val: number) => val.toFixed(3)} />
-                      <Line type="monotone" dataKey="modifiedScale" stroke="#059669" dot={false} strokeWidth={2} />
-                      <ReferenceLine 
-                        x={potThreshold} 
-                        stroke="#ef4444" 
-                        strokeWidth={2} 
-                        strokeDasharray="5 5"
-                      />
-                    </ComposedChart>
-                  </ResponsiveContainer>
+                  {mounted ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <ComposedChart data={stabilityData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          type="number"
+                          dataKey="threshold" 
+                          domain={[-3, 0]}
+                          allowDataOverflow={false}
+                          label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
+                          height={30}
+                        />
+                        <YAxis domain={['auto', 'auto']} label={{ value: 'Modified Scale', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip formatter={(val: number) => val.toFixed(3)} />
+                        <Line type="monotone" dataKey="modifiedScale" stroke="#059669" dot={false} strokeWidth={2} />
+                        <ReferenceLine 
+                          x={potThreshold} 
+                          stroke="#ef4444" 
+                          strokeWidth={2} 
+                          strokeDasharray="5 5"
+                        />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
+                      <p className="text-gray-500 text-sm">Loading chart data...</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* 5. Block Maxima vs Peak-Over-Threshold */}
             <div id="comparison" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">5. Block Maxima vs Peak-Over-Threshold</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">5. Block Maxima vs Peak-Over-Threshold</h4>
               
               <div className="mb-4">
                 <p className="mb-3">
@@ -616,27 +702,27 @@ export default function ExtremeValueModels() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                 {/* Block Maxima Column */}
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h5 className="font-semibold text-gray-900 mb-3">Block Maxima Approach</h5>
+                <div className="bg-blue-50 dark:bg-[#171717] rounded-lg p-4 border border-blue-200 dark:border-gray-700">
+                  <h5 className="font-semibold text-gray-900 dark:text-white mb-3">Block Maxima Approach</h5>
                   
-                  <div className="space-y-3 text-sm text-gray-700">
+                  <div className="space-y-3 text-sm text-gray-700 dark:text-white">
                     <div>
-                      <p className="font-semibold mb-1">How it works:</p>
-                      <p>Divide your continuous observation space (traffic conflict time series) into fixed time blocks (e.g., hourly, daily blocks) and take the maximum conflict value from each block.</p>
+                      <p className="font-semibold mb-1 dark:text-white">How it works:</p>
+                      <p className="dark:text-white">Divide your continuous observation space (traffic conflict time series) into fixed time blocks (e.g., hourly, daily blocks) and take the maximum conflict value from each block.</p>
                     </div>
                     
                     <div>
-                      <p className="font-semibold mb-1">Distribution:</p>
-                      <p>Block maxima follow a <strong>Generalized Extreme Value (GEV)</strong> distribution:</p>
-                      <div className="bg-white p-3 rounded mt-2 font-mono text-xs">
-                        <p>F(x) = exp{'{'}-[1 + ξ(x-μ)/σ]<sup>-1/ξ</sup>{'}'}</p>
-                        <p className="text-xs text-gray-600 mt-1">where μ is location, σ is scale, ξ is shape</p>
+                      <p className="font-semibold mb-1 dark:text-white">Distribution:</p>
+                      <p className="dark:text-white">Block maxima follow a <strong>Generalized Extreme Value (GEV)</strong> distribution:</p>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-center mt-2">
+                        <BlockMath math="F(x) = \exp\left\{-\left[1 + \xi\frac{x-\mu}{\sigma}\right]^{-1/\xi}\right\}" />
                       </div>
+                      <p className="text-xs text-gray-600 dark:text-white mt-2">where <InlineMath math="\mu" /> is location, <InlineMath math="\sigma" /> is scale, <InlineMath math="\xi" /> is shape</p>
                     </div>
                     
                     <div>
-                      <p className="font-semibold mb-1">Data usage:</p>
-                      <p>Uses only one value per block (the maximum conflict), which can be inefficient if you have rich conflict data available.</p>
+                      <p className="font-semibold mb-1 dark:text-white">Data usage:</p>
+                      <p className="dark:text-white">Uses only one value per block (the maximum conflict), which can be inefficient if you have rich conflict data available.</p>
                     </div>
                     
                     <div>
@@ -651,36 +737,36 @@ export default function ExtremeValueModels() {
                 </div>
 
                 {/* POT Column */}
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                  <h5 className="font-semibold text-gray-900 mb-3">Peak-Over-Threshold Approach</h5>
+                <div className="bg-green-50 dark:bg-[#171717] rounded-lg p-4 border border-green-200 dark:border-gray-700">
+                  <h5 className="font-semibold text-gray-900 dark:text-white mb-3">Peak-Over-Threshold Approach</h5>
                   
-                  <div className="space-y-3 text-sm text-gray-700">
+                  <div className="space-y-3 text-sm text-gray-700 dark:text-white">
                     <div>
-                      <p className="font-semibold mb-1">How it works:</p>
-                      <p>Select all conflict values that exceed a high threshold u. Model both the occurrence rate of exceedances and their magnitudes.</p>
+                      <p className="font-semibold mb-1 dark:text-white">How it works:</p>
+                      <p className="dark:text-white">Select all conflict values that exceed a high threshold u. Model both the occurrence rate of exceedances and their magnitudes.</p>
                     </div>
                     
                     <div>
-                      <p className="font-semibold mb-1">Distribution:</p>
-                      <p>Exceedances follow a <strong>Generalized Pareto Distribution (GPD)</strong>:</p>
-                      <div className="bg-white p-3 rounded mt-2 font-mono text-xs">
-                        <p>G(y) = 1 - [1 + ξy/σ]<sup>-1/ξ</sup></p>
-                        <p className="text-xs text-gray-600 mt-1">where y = x - u (excess over threshold), σ is scale, ξ is shape</p>
+                      <p className="font-semibold mb-1 dark:text-white">Distribution:</p>
+                      <p className="dark:text-white">Exceedances follow a <strong>Generalized Pareto Distribution (GPD)</strong>:</p>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-center mt-2">
+                        <BlockMath math="G(y) = 1 - \left[1 + \xi\frac{y}{\sigma}\right]^{-1/\xi}" />
                       </div>
-                      <p className="mt-2 text-xs">
+                      <p className="text-xs text-gray-600 dark:text-white mt-2">where <InlineMath math="y = x - u" /> (excess over threshold), <InlineMath math="\sigma" /> is scale, <InlineMath math="\xi" /> is shape</p>
+                      <p className="mt-2 text-xs dark:text-white">
                         <strong>Important:</strong> GPD requires modeling the occurrence process separately using a <strong>Poisson process</strong>, 
                         since POT only models the exceedances (how extreme the conflicts are), not when they occur.
                       </p>
                     </div>
                     
                     <div>
-                      <p className="font-semibold mb-1">Data usage:</p>
-                      <p>Uses all conflict values above the threshold, making better use of available extreme conflict data.</p>
+                      <p className="font-semibold mb-1 dark:text-white">Data usage:</p>
+                      <p className="dark:text-white">Uses all conflict values above the threshold, making better use of available extreme conflict data.</p>
                     </div>
                     
                     <div>
-                      <p className="font-semibold mb-1">Advantages:</p>
-                      <ul className="list-disc list-inside ml-2 space-y-1">
+                      <p className="font-semibold mb-1 dark:text-white">Advantages:</p>
+                      <ul className="list-disc list-inside ml-2 space-y-1 dark:text-white">
                         <li>More data-efficient for traffic conflicts</li>
                         <li>Flexible threshold selection</li>
                         <li>Can capture more extreme conflict events</li>
@@ -716,7 +802,7 @@ export default function ExtremeValueModels() {
                   <p className="text-sm text-gray-700">
                     <strong>Mathematical Relationship:</strong> The GPD and GEV distributions are closely related. In fact, if you 
                     have a high enough threshold in POT, the GPD parameters can be derived from the corresponding GEV parameters. 
-                    The shape parameter ξ is the same in both distributions, which makes them particularly useful for comparative analysis.
+                    The shape parameter <InlineMath math="\xi" /> is the same in both distributions, which makes them particularly useful for comparative analysis.
                   </p>
                 </div>
               </div>
@@ -724,7 +810,7 @@ export default function ExtremeValueModels() {
 
             {/* 6. Interactive GEV Model Explorer */}
             <div id="interactive-model" className="scroll-mt-20">
-              <h4 className="font-semibold text-gray-900 mb-2">6. Interactive GEV Model Explorer</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">6. Interactive GEV Model Explorer</h4>
               <p className="mb-3">
                 Now that you understand how Block Maxima and POT work, explore how GEV parameters affect the distribution and crash risk. 
                 Adjust the parameters below to see how they impact the shape of the distribution and the probability of crashes.
@@ -739,8 +825,8 @@ export default function ExtremeValueModels() {
                     
                     <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                        <span>μ₀ (mu0): {parameters.mu0.toFixed(3)}</span>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                        <span><InlineMath math="\mu_0" /> (mu0): {parameters.mu0.toFixed(3)}</span>
                         <ParameterTooltip content="Location parameter - controls where most conflicts cluster. More negative values indicate less severe typical conflicts. Increasing mu0 shifts the distribution toward zero, increasing crash risk.">
                           <span></span>
                         </ParameterTooltip>
@@ -765,7 +851,7 @@ export default function ExtremeValueModels() {
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                        <span>ζ₀ (zeta0): {parameters.zeta0.toFixed(3)}</span>
+                        <span><InlineMath math="\zeta_0" /> (zeta0): {parameters.zeta0.toFixed(3)}</span>
                         <ParameterTooltip content="Scale parameter (log scale) - controls variability in conflict severity. Higher values mean more unpredictable extremes. The actual scale σ = exp(zeta0). Increasing zeta0 increases the spread of extreme values.">
                           <span></span>
                         </ParameterTooltip>
@@ -790,7 +876,7 @@ export default function ExtremeValueModels() {
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                        <span>ξ (xi, fixed): {parameters.xi.toFixed(3)}</span>
+                        <span><InlineMath math="\xi" /> (xi, fixed): {parameters.xi.toFixed(3)}</span>
                         <ParameterTooltip content="Shape parameter - controls tail behavior. Negative values indicate a bounded upper tail (conflicts can't get infinitely severe). More negative values mean the tail decays faster. This parameter is typically fixed in BHEV models.">
                           <span></span>
                         </ParameterTooltip>
@@ -830,12 +916,12 @@ export default function ExtremeValueModels() {
                     </div>
 
                     {/* Current Parameter Values */}
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                      <h4 className="font-semibold text-gray-900 mb-2">Current GEV Parameters</h4>
-                      <div className="text-sm space-y-1 font-mono">
-                        <p>μ = {mu.toFixed(3)}</p>
-                        <p>σ = {sigma.toFixed(3)}</p>
-                        <p>ξ = {xi.toFixed(3)}</p>
+                    <div className="bg-blue-50 dark:bg-[#171717] rounded-lg p-4 border border-blue-200 dark:border-gray-700">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Current GEV Parameters</h4>
+                      <div className="text-sm space-y-1">
+                        <p><InlineMath math={`\mu = ${mu.toFixed(3)}`} /></p>
+                        <p><InlineMath math={`\sigma = ${sigma.toFixed(3)}`} /></p>
+                        <p><InlineMath math={`\\xi = ${xi.toFixed(3)}`} /></p>
                       </div>
                     </div>
 
@@ -843,11 +929,11 @@ export default function ExtremeValueModels() {
 
                     {/* Hierarchical Model Explanation */}
                     <div className="pt-6 border-t border-gray-300 mt-6">
-                      <div className="mb-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                      <div className="mb-4 p-4 bg-indigo-50 dark:bg-[#171717] rounded-lg border border-indigo-200 dark:border-gray-700">
                       <h4 className="font-semibold text-gray-900 mb-3">Bayesian Hierarchical Model Structure</h4>
                       <div className="text-sm text-gray-700 space-y-2">
                         <p>
-                          While the basic GEV distribution depends on three parameters (μ, σ, ξ), these alone cannot capture 
+                          While the basic GEV distribution depends on three parameters (<InlineMath math="\mu" />, <InlineMath math="\sigma" />, <InlineMath math="\xi" />), these alone cannot capture 
                           the variability in traffic conditions or the relationships between explanatory variables. To address 
                           this, we use a <strong>Bayesian hierarchical model</strong> that incorporates covariates—factors that 
                           influence conflict severity—through linear relationships in the location and scale parameters.
@@ -855,16 +941,22 @@ export default function ExtremeValueModels() {
                         <p>
                           The hierarchical structure allows the GEV parameters to vary based on traffic conditions:
                         </p>
-                        <div className="bg-white rounded-lg p-3 mt-3 font-mono text-xs space-y-1 border border-indigo-300">
-                          <p>μ = μ₀ + Σ(β_μ × covariate)</p>
-                          <p>ζ = ζ₀ + Σ(β_ζ × covariate)</p>
-                          <p>σ = exp(ζ)</p>
+                        <div className="bg-gray-50 border border-indigo-300 rounded-lg p-4 mt-3 space-y-3">
+                          <div className="flex justify-center">
+                            <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
+                          </div>
+                          <div className="flex justify-center">
+                            <BlockMath math="\zeta = \zeta_0 + \sum(\beta_\zeta \times \text{covariate})" />
+                          </div>
+                          <div className="flex justify-center">
+                            <BlockMath math="\sigma = \exp(\zeta)" />
+                          </div>
                         </div>
                         <p className="mt-2 text-xs text-gray-600">
-                          where <strong>ζ</strong> is the log-scale parameter (ensuring σ remains positive), <strong>μ₀</strong> and 
-                          <strong> ζ₀</strong> are baseline parameters, and <strong>β_μ</strong> and <strong>β_ζ</strong> are 
+                          where <InlineMath math="\zeta" /> is the log-scale parameter (ensuring <InlineMath math="\sigma" /> remains positive), <InlineMath math="\mu_0" /> and 
+                          <InlineMath math="\zeta_0" /> are baseline parameters, and <InlineMath math="\beta_\mu" /> and <InlineMath math="\beta_\zeta" /> are 
                           coefficients that quantify how each covariate affects location and scale, respectively. The shape parameter 
-                          ξ is typically held constant across scenarios.
+                          <InlineMath math="\xi" /> is typically held constant across scenarios.
                         </p>
                       </div>
                     </div>
@@ -876,7 +968,7 @@ export default function ExtremeValueModels() {
                       <h3 className="text-lg font-semibold text-gray-900">Covariates</h3>
                       <button
                         onClick={addCovariate}
-                        className="px-3 py-1 bg-primary-600 text-white rounded-md text-sm hover:bg-primary-700 transition-colors"
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
                       >
                         + Add Covariate
                       </button>
@@ -921,7 +1013,7 @@ export default function ExtremeValueModels() {
                             
                             <div>
                               <label className="block text-xs text-gray-600 mb-1 flex items-center">
-                                <span>β_μ (betaMu): {cov.betaMu.toFixed(3)}</span>
+                                <span><InlineMath math="\beta_\mu" /> (betaMu): {cov.betaMu.toFixed(3)}</span>
                                 <ParameterTooltip content="Covariate effect on location parameter - how this factor shifts conflict severity. Positive values increase severity (shift distribution right), negative values decrease severity.">
                                   <span></span>
                                 </ParameterTooltip>
@@ -946,7 +1038,7 @@ export default function ExtremeValueModels() {
                             
                             <div>
                               <label className="block text-xs text-gray-600 mb-1 flex items-center">
-                                <span>β_ζ (betaZeta): {cov.betaZeta.toFixed(3)}</span>
+                                <span><InlineMath math="\beta_\zeta" /> (betaZeta): {cov.betaZeta.toFixed(3)}</span>
                                 <ParameterTooltip content="Covariate effect on scale parameter - how this factor changes variability in conflicts. Positive values increase variability (more unpredictable extremes), negative values decrease variability.">
                                   <span></span>
                                 </ParameterTooltip>
@@ -984,7 +1076,7 @@ export default function ExtremeValueModels() {
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">Crash Risk Measurement</h3>
                         <p className="text-sm text-gray-600 mb-3">
-                          The probability that one block contains a crash: P(X≥0) = P(TTC≤0). Using block size (from above), extrapolated to crashes per year assuming 8 hrs/day (peak conditions), 365 days/year.
+                          The probability that one block contains a crash: <InlineMath math="P(X \geq 0) = P(\text{TTC} \leq 0)" />. Using block size (from above), extrapolated to crashes per year assuming 8 hrs/day (peak conditions), 365 days/year.
                         </p>
                       </div>
                       
@@ -1007,7 +1099,7 @@ export default function ExtremeValueModels() {
                           )}
                         </div>
                         {crashRiskInterpretation && (
-                          <p className="text-xs text-gray-600 mt-2">
+                          <p className="text-xs text-gray-600 dark:text-white mt-2">
                             <span className="font-semibold">Crashes per year:</span> ~{crashRiskInterpretation.crashesPerYear.toFixed(2)}
                             <br />
                             <span className="text-xs text-gray-500 italic">
@@ -1025,7 +1117,7 @@ export default function ExtremeValueModels() {
 
                   <div className="bg-gray-50 rounded-lg p-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      GEV PDF with Crash Risk (P(X{' >'}0) shaded)
+                      GEV PDF with Crash Risk (<InlineMath math="P(X > 0)" /> shaded)
                     </h3>
                   <ResponsiveContainer width="100%" height={350}>
                     <ComposedChart data={gevData}>
@@ -1061,7 +1153,7 @@ export default function ExtremeValueModels() {
                           dataKey="pdf" 
                           stroke="none"
                           fill="url(#crashRiskGradient)"
-                          name="P(X{' >'}0) - Crash Risk"
+                          name="P(X > 0) - Crash Risk"
                           data={crashRiskData}
                           isAnimationActive={false}
                         />
@@ -1098,7 +1190,7 @@ export default function ExtremeValueModels() {
                     </ComposedChart>
                   </ResponsiveContainer>
                     <p className="text-xs text-gray-600 mt-2">
-                      Red shaded area (x{' >'}0) represents crash risk: P(X{' >'}0) = {formatCrashRisk(crashRisk)}
+                      Red shaded area (<InlineMath math="x > 0" />) represents crash risk: <InlineMath math={`P(X > 0) = ${formatCrashRisk(crashRisk)}`} />
                     </p>
                   </div>
 
@@ -1138,7 +1230,7 @@ export default function ExtremeValueModels() {
                           dataKey="pdf" 
                           stroke="none"
                           fill="url(#crashRiskGradient2)"
-                          name="P(X{' >'}0) - Crash Risk"
+                          name="P(X > 0) - Crash Risk"
                           data={crashRiskData}
                           isAnimationActive={false}
                         />
@@ -1242,6 +1334,36 @@ export default function ExtremeValueModels() {
           </div>
         </div>
       )}
+
+      {/* Advanced Extensions Block */}
+      <div className="mt-8 bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+        <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Advanced Extensions in Traffic Conflict Modeling</h4>
+        <p className="text-gray-700 dark:text-white mb-4">
+          This tutorial covered the fundamentals of using Generalized Extreme Value (GEV) and Generalized Pareto (GPD) distributions 
+          for modeling traffic conflicts. In practice, transportation safety researchers have extended these basic models to capture 
+          the complex, multi-dimensional nature of traffic safety. Several important modifications and extensions have been developed:
+        </p>
+        <ul className="list-disc list-inside text-gray-700 dark:text-white space-y-2 ml-4">
+          <li><strong>Site-Specific Parameters:</strong> Hierarchical models that allow location-specific parameters (μ, σ, ξ) to vary across 
+          different sites or intersections, accounting for unobserved heterogeneity between locations while sharing information across sites 
+          through partial pooling.</li>
+          <li><strong>Spatial Parameters:</strong> Models that incorporate spatial correlation between nearby locations, recognizing that crash 
+          risk at one intersection may be related to risk at adjacent intersections due to shared traffic patterns, road geometry, or 
+          environmental factors.</li>
+          <li><strong>Temporal Parameters:</strong> Time-varying models that account for temporal trends, seasonality, and time-of-day effects, 
+          allowing parameters to change over time to capture evolving traffic conditions, infrastructure changes, or policy interventions.</li>
+          <li><strong>Bivariate Models:</strong> Extensions that simultaneously model multiple conflict indicators (e.g., Time-To-Collision 
+          and Post-Encroachment Time) to provide a more comprehensive assessment of crash risk by capturing different aspects of conflict severity.</li>
+          <li><strong>Gaussian Copulas:</strong> Flexible dependency structures that model the relationship between multiple conflict measures 
+          or between conflicts at different locations, allowing for complex correlation patterns beyond simple linear relationships.</li>
+        </ul>
+        <p className="text-gray-700 dark:text-white mt-4">
+          These advanced modeling approaches enable transportation agencies to conduct more sophisticated safety analyses, accounting for 
+          spatial and temporal dependencies, site-specific characteristics, and multivariate relationships in conflict data. They form the 
+          foundation for proactive safety management systems that can identify high-risk locations, evaluate countermeasures, and prioritize 
+          interventions across entire transportation networks.
+        </p>
+      </div>
 
       {!showTutorial && (
         <button

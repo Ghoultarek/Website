@@ -60,15 +60,15 @@ export default function BasicMLTutorial() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Fundamentals: Basic Machine Learning</h1>
-        <p className="text-lg text-gray-700">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">AI Fundamentals: Basic Machine Learning</h1>
+        <p className="text-lg text-gray-700 dark:text-white">
           Learn fundamental ML concepts: decision trees, data splitting, Random Forest, XGBoost, and model evaluation. 
           Start with library usage, then see how they're implemented from scratch.
         </p>
       </div>
 
       {/* Navigation */}
-      <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="mb-8 bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-2">
           {sections.map((section) => (
             <button
@@ -81,7 +81,7 @@ export default function BasicMLTutorial() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeSection === section.id
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-[#0D0D0D] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-[#171717]'
               }`}
             >
               {section.title}
@@ -92,18 +92,18 @@ export default function BasicMLTutorial() {
 
       {/* Introduction Section */}
       <section id="intro" className="mb-12 scroll-mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Introduction to Basic ML</h2>
+        <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Introduction to Basic ML</h2>
           
           <div className="prose max-w-none mb-6">
-            <div className="bg-gray-50 border border-gray-300 rounded-lg p-5 mb-6">
-              <p className="text-gray-800 mb-4 leading-relaxed">
+            <div className="bg-gray-50 dark:bg-[#0D0D0D] border border-gray-300 dark:border-gray-700 rounded-lg p-5 mb-6">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed">
                 This tutorial covers essential machine learning concepts that form the foundation of many modern ML systems. 
                 We'll start with decision trees, then explore how to properly split data, and dive into two powerful 
                 tree-based algorithms: Random Forest and XGBoost.
               </p>
               
-              <p className="text-gray-800 mb-4 leading-relaxed">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed">
                 For each algorithm, we'll first see how to use it with libraries (scikit-learn, xgboost), then dive into 
                 simplified implementations to understand what's happening under the hood. This approach removes the black box 
                 and helps you understand both how to use these tools and why they work.
@@ -113,7 +113,7 @@ export default function BasicMLTutorial() {
                 What You'll Learn:
               </p>
               
-              <ul className="list-disc list-inside text-gray-800 space-y-2 mb-4 ml-4">
+              <ul className="list-disc list-inside text-gray-800 dark:text-white space-y-2 mb-4 ml-4">
                 <li><strong>Decision Trees:</strong> The building blocks of tree-based models</li>
                 <li><strong>Data Splitting:</strong> Why and how to split data into train/test/validation sets</li>
                 <li><strong>Random Forest:</strong> Ensemble of decision trees and how they reduce overfitting</li>
@@ -123,9 +123,9 @@ export default function BasicMLTutorial() {
               </ul>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Why These Algorithms?</h3>
-              <ul className="list-disc list-inside text-blue-800 space-y-1">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">Why These Algorithms?</h3>
+              <ul className="list-disc list-inside text-blue-800 dark:text-blue-200 space-y-1">
                 <li>Tree-based methods are interpretable and handle non-linear relationships well</li>
                 <li>Random Forest reduces overfitting through ensemble averaging</li>
                 <li>XGBoost is one of the most successful ML algorithms in practice</li>
@@ -174,8 +174,8 @@ export default function BasicMLTutorial() {
         {rfPredictions.length > 0 && xgbPredictions.length > 0 ? (
           <ConfusionMatrix rfPredictions={rfPredictions} xgbPredictions={xgbPredictions} />
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <p className="text-gray-600 text-center py-8">
+          <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+            <p className="text-gray-600 dark:text-white text-center py-8">
               Loading predictions from Random Forest and XGBoost...
             </p>
           </div>

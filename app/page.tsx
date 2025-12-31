@@ -2,20 +2,20 @@ import Card from '@/components/ui/Card';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-beige-50">
+    <div className="min-h-screen bg-beige-50 dark:bg-[#0D0D0D]">
       {/* Hero & Content Section */}
       <section className="relative pt-8 pb-6 lg:pt-12 lg:pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-4 flex justify-between items-start">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-3 tracking-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-3 tracking-tight">
               Tarek Ghoul
             </h1>
-            <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex gap-5 items-center">
+            <div className="bg-white dark:bg-[#171717] rounded-3xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm flex gap-5 items-center">
               <a
                 href="https://www.linkedin.com/in/tarek-ghoul/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-70 transition-opacity"
+                className="hover:opacity-70 transition-opacity text-gray-800 dark:text-white"
                 aria-label="LinkedIn"
               >
                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +26,7 @@ export default function Home() {
                 href="https://scholar.google.com/citations?user=-vy503AAAAAJ&hl=en"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-70 transition-opacity"
+                className="hover:opacity-70 transition-opacity text-gray-800 dark:text-white"
                 aria-label="Google Scholar"
               >
                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -38,16 +38,16 @@ export default function Home() {
 
           {/* Main Content */}
           <div className="max-w-none mt-[90px]">
-            <p className="text-xl font-medium text-start mb-2 pl-5">About</p>
+            <p className="text-2xl font-medium text-start mb-2 pl-5 text-gray-800 dark:text-white">About</p>
             <Card className="mb-4 pb-[80px] relative">
-              <p className="text-gray-800 leading-relaxed mb-3 text-base font-normal opacity-70 text-justify">
+              <p className="text-gray-800 dark:text-white leading-relaxed mb-3 text-base font-normal opacity-70 dark:opacity-80 text-justify">
                 Tarek Ghoul is a transportation AI researcher focused on developing trustworthy and safety-aware artificial 
                 intelligence for real-world transportation systems. His work lies at the intersection of intelligent transportation 
                 systems, Bayesian modeling, computer vision, and reinforcement learning, with an emphasis on uncertainty 
                 quantification, causal reasoning, and decision-making under incomplete information.
               </p>
               
-              <p className="text-gray-800 leading-relaxed mb-3 text-base font-normal opacity-70 text-justify">
+              <p className="text-gray-800 dark:text-white leading-relaxed mb-3 text-base font-normal opacity-70 dark:opacity-80 text-justify">
                 He is currently a doctoral researcher at the University of British Columbia, where his research investigates 
                 network-level traffic safety modeling and real-time control using emerging data sources, including connected and 
                 autonomous vehicles, video analytics, and drone data. His work applies extreme value theory, Bayesian hierarchical 
@@ -55,13 +55,13 @@ export default function Home() {
                 explicitly balance safety, mobility, and efficiency.
               </p>
               
-              <p className="text-gray-800 leading-relaxed mb-3 text-base font-normal opacity-70 text-justify">
+              <p className="text-gray-800 dark:text-white leading-relaxed mb-3 text-base font-normal opacity-70 dark:opacity-80 text-justify">
                 Tarek has authored multiple peer-reviewed publications in leading journals such as <em>Accident Analysis&nbsp;&amp;&nbsp;Prevention</em> and <em>Analytic Methods in Accident Research</em>, as well as conference proceedings in transportation engineering and 
                 intelligent systems. His research contributions include real-time crash risk estimation from traffic conflicts, safest-route 
                 identification under uncertainty, and safety-based traffic signal control using continuous and multi-agent reinforcement learning.
               </p>
               
-              <p className="text-gray-800 leading-relaxed text-base font-normal opacity-70 text-justify">
+              <p className="text-gray-800 dark:text-white leading-relaxed text-base font-normal opacity-70 dark:opacity-80 text-justify">
                 His long-term research goal is to design deployable AI architectures that enable resilient, sustainable, and safety-aware 
                 transportation networks. He actively collaborates with academic researchers, public agencies, and industry partners on 
                 projects related to traffic safety, intelligent infrastructure, and trustworthy AI systems.
@@ -69,7 +69,7 @@ export default function Home() {
               <div className="absolute bottom-5 right-5">
                 <a
                   href="/about"
-                  className="flex items-center justify-center text-base font-normal rounded-full bg-gray-800 text-white px-6 py-3 hover:opacity-80 transition-opacity"
+                  className="flex items-center justify-center text-base font-normal rounded-full bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 hover:opacity-80 dark:hover:bg-gray-600 transition-opacity"
                 >
                   More about me
                   <span className="w-2"></span>
@@ -79,6 +79,29 @@ export default function Home() {
                 </a>
               </div>
             </Card>
+
+            {/* Interactive Demos CTA */}
+            <div className="max-w-none mt-6 flex justify-center">
+              <div className="w-full max-w-md">
+                <Card className="relative">
+                  <p className="text-gray-800 dark:text-white text-base font-normal mb-4 text-center opacity-70 dark:opacity-80">
+                    Explore interactive demonstrations of key techniques and methods used in my research.
+                  </p>
+                  <div className="flex justify-center">
+                    <a
+                      href="/tools"
+                      className="inline-flex items-center justify-center text-base font-normal rounded-full bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 hover:opacity-80 dark:hover:bg-gray-600 transition-opacity"
+                    >
+                      See Interactive Demos
+                      <span className="w-2"></span>
+                      <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
+                        <path fillRule="evenodd" d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z" clipRule="evenodd"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>

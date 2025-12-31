@@ -19,9 +19,9 @@ export default function Button({
   const baseClasses = 'px-3 py-2 text-base font-medium transition-colors duration-150 rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500';
   
   const variantClasses = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow focus:ring-primary-500',
-    secondary: 'bg-transparent text-primary-600 border border-gray-200 hover:bg-gray-50 focus:ring-primary-500',
-    subtle: 'bg-transparent text-primary-600 hover:text-primary-700 hover:underline focus:ring-primary-500',
+    primary: 'bg-primary-600 dark:bg-primary-500 text-white dark:text-white hover:bg-primary-700 dark:hover:bg-primary-600 hover:shadow focus:ring-primary-500',
+    secondary: 'bg-transparent dark:bg-transparent text-primary-600 dark:text-primary-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-primary-500',
+    subtle: 'bg-transparent text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline focus:ring-primary-500',
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;
