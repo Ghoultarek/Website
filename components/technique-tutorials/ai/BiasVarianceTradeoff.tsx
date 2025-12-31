@@ -189,19 +189,19 @@ export default function BiasVarianceTradeoff() {
 
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Bias-Variance Tradeoff</h2>
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Bias-Variance Tradeoff</h2>
       
       <div className="prose max-w-none mb-6">
-        <p className="text-gray-700 mb-4">
+        <p className="text-gray-700 dark:text-white mb-4">
           The bias-variance tradeoff is one of the most fundamental concepts in machine learning. It helps us understand 
           why models make mistakes and how to improve them.
         </p>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-blue-900 mb-3">Understanding Bias and Variance</h3>
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+          <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-3">Understanding Bias and Variance</h3>
           
-          <div className="space-y-3 text-sm text-blue-900">
+          <div className="space-y-3 text-sm text-blue-900 dark:text-blue-200">
             <div>
               <p className="font-semibold mb-1">Bias:</p>
               <p className="ml-4">
@@ -231,10 +231,10 @@ export default function BiasVarianceTradeoff() {
 
         {/* Visual Example */}
         <div className="mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Visual Example: Model Complexity</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Visual Example: Model Complexity</h3>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
               Model Complexity (Polynomial Degree): {modelComplexity}
             </label>
             <input
@@ -245,24 +245,26 @@ export default function BiasVarianceTradeoff() {
               onChange={(e) => setModelComplexity(Number(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>Simple (High Bias)</span>
               <span>Complex (High Variance)</span>
             </div>
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+          <div className="bg-gray-50 dark:bg-[#0D0D0D] border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
             <ResponsiveContainer width="100%" height={300}>
               <LineChart>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
                   dataKey="x" 
                   domain={[0, 10]}
                   type="number"
+                  stroke="#6b7280"
                 />
                 <YAxis 
                   domain={['dataMin - 0.5', 'dataMax + 0.5']}
                   type="number"
+                  stroke="#6b7280"
                 />
                 <Tooltip />
                 <Legend />
@@ -287,8 +289,8 @@ export default function BiasVarianceTradeoff() {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm">
-            <p className="text-yellow-900">
+          <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm">
+            <p className="text-yellow-900 dark:text-yellow-200">
               <strong>Observe:</strong> As complexity increases, the model fits training data better but may perform worse 
               on test data. This is the overfitting problem—high variance.
             </p>
@@ -297,17 +299,17 @@ export default function BiasVarianceTradeoff() {
 
         {/* Bias-Variance Decomposition */}
         <div className="mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Bias-Variance Decomposition</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Bias-Variance Decomposition</h3>
           
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+          <div className="bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
             <BlockMath math="\text{Total Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Error}" />
           </div>
 
-          <p className="text-gray-700 mb-4 text-sm">
+          <p className="text-gray-700 dark:text-white mb-4 text-sm">
             The total error of a model can be decomposed into three components:
           </p>
 
-          <ul className="list-disc list-inside text-gray-700 text-sm space-y-2 mb-4 ml-4">
+          <ul className="list-disc list-inside text-gray-700 dark:text-white text-sm space-y-2 mb-4 ml-4">
             <li><strong>Bias²:</strong> How far off the model's average prediction is from the true value</li>
             <li><strong>Variance:</strong> How much the model's predictions vary across different training sets</li>
             <li><strong>Irreducible Error:</strong> Noise inherent in the data that cannot be reduced</li>
@@ -316,12 +318,12 @@ export default function BiasVarianceTradeoff() {
 
         {/* Practical Implications */}
         <div className="mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Practical Implications</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Practical Implications</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <h4 className="font-semibold text-red-900 mb-2">High Bias (Underfitting)</h4>
-              <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <h4 className="font-semibold text-red-900 dark:text-red-200 mb-2">High Bias (Underfitting)</h4>
+              <ul className="text-sm text-red-800 dark:text-red-200 space-y-1 list-disc list-inside">
                 <li>Model is too simple</li>
                 <li>Misses important patterns</li>
                 <li>Poor performance on both training and test data</li>
@@ -329,9 +331,9 @@ export default function BiasVarianceTradeoff() {
               </ul>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 mb-2">High Variance (Overfitting)</h4>
-              <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">High Variance (Overfitting)</h4>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
                 <li>Model is too complex</li>
                 <li>Memorizes training data</li>
                 <li>Good on training, poor on test</li>
@@ -342,9 +344,9 @@ export default function BiasVarianceTradeoff() {
         </div>
 
         {/* Connection to Algorithms */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <h3 className="font-semibold text-green-900 mb-2">Connection to Our Algorithms</h3>
-          <div className="text-sm text-green-900 space-y-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <h3 className="font-semibold text-green-900 dark:text-green-200 mb-2">Connection to Our Algorithms</h3>
+          <div className="text-sm text-green-900 dark:text-green-200 space-y-2">
             <p>
               <strong>Decision Trees:</strong> Can easily overfit (high variance) if grown too deep. 
               We limit depth to control variance.

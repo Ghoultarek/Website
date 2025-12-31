@@ -336,8 +336,8 @@ export default function XGBoostDemo({
         the most successful ML algorithms in practice.
       </p>
 
-      <div className="mb-6 bg-yellow-50 border border-yellow-300 rounded-lg p-4">
-        <p className="text-sm text-yellow-900">
+      <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-800 rounded-lg p-4">
+        <p className="text-sm text-yellow-900 dark:text-yellow-200">
           <strong>Note:</strong> This demo uses synthetic, well-separated data for educational purposes. In real-world applications, 
           data is often noisy, imbalanced, and contains outliers, so achieving 100% accuracy is extremely rare. 
           Typical accuracies range from 70-95% depending on the problem complexity and data quality.
@@ -345,8 +345,8 @@ export default function XGBoostDemo({
       </div>
 
       {/* Library Usage Section */}
-      <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-        <h3 className="font-semibold text-green-900 mb-3">1. Using XGBoost Library</h3>
+      <div className="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <h3 className="font-semibold text-green-900 dark:text-green-200 mb-3">1. Using XGBoost Library</h3>
         <div className="bg-white dark:bg-[#0D0D0D] rounded p-3 font-mono text-sm mb-3">
           <pre className="text-xs">{`import xgboost as xgb
 
@@ -705,9 +705,9 @@ accuracy = model.score(X_test, y_test)`}</pre>
           </p>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={accuracyCurve}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="iteration" label={{ value: 'Iteration (Tree Number)', position: 'insideBottom', offset: -5 }} />
-              <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="iteration" label={{ value: 'Iteration (Tree Number)', position: 'insideBottom', offset: -5 }} stroke="#6b7280" />
+              <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }} stroke="#6b7280" />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="accuracy" stroke="#10b981" strokeWidth={2} name="Test Accuracy" />
@@ -717,7 +717,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
       </div>
 
       {/* Visualization (Secondary) */}
-      <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div className="mb-6 bg-gray-50 dark:bg-[#0D0D0D] border border-gray-200 dark:border-gray-700 rounded-lg p-4">
         <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Visual Representation</h3>
         <p className="text-sm text-gray-700 dark:text-white mb-4">
           Here's a visual view of the classification problem. Blue points are Class 0, red points are Class 1.
@@ -729,20 +729,20 @@ accuracy = model.score(X_test, y_test)`}</pre>
           </h4>
           <ResponsiveContainer width="100%" height={300}>
             <ScatterChart>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" dataKey="x" name="Feature 1" domain={[0, 10]} />
-              <YAxis type="number" dataKey="y" name="Feature 2" domain={[0, 10]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" dataKey="x" name="Feature 1" domain={[0, 10]} stroke="#6b7280" />
+              <YAxis type="number" dataKey="y" name="Feature 2" domain={[0, 10]} stroke="#6b7280" />
               <Tooltip 
                 cursor={{ strokeDasharray: '3 3' }}
                 content={({ active, payload }) => {
                   if (active && payload && payload[0]) {
                     const point = payload[0].payload as DataPoint;
                     return (
-                      <div className="bg-white dark:bg-[#171717] border border-gray-300 dark:border-gray-700 rounded p-2">
+                      <div className="bg-white dark:bg-[#171717] border border-gray-300 dark:border-gray-700 rounded p-2 text-gray-900 dark:text-white">
                         <p>True: Class {point.label}</p>
                         <p>Predicted: Class {point.predicted}</p>
                         <p>Confidence: {((point.probability || 0) * 100).toFixed(1)}%</p>
-                        <p className={point.label === point.predicted ? 'text-green-600' : 'text-red-600'}>
+                        <p className={point.label === point.predicted ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
                           {point.label === point.predicted ? '✓ Correct' : '✗ Wrong'}
                         </p>
                       </div>
@@ -769,7 +769,7 @@ accuracy = model.score(X_test, y_test)`}</pre>
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
-          <p className="text-xs text-gray-600 mt-2">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
             Gray points are misclassified. Watch how accuracy improves as you increase the iteration slider.
           </p>
         </div>

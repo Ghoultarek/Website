@@ -495,9 +495,9 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="flex justify-center mb-6">
         {/* Configuration Panel */}
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 w-full max-w-6xl">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Network Configuration</h4>
             <button
@@ -1027,6 +1027,75 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
             )}
           </div>
 
+          {/* Training Status */}
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h5 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Training Status</h5>
+            
+            {isTraining && (
+              <div className="mb-4">
+                <div className="flex justify-between text-sm text-gray-600 dark:text-white mb-2">
+                  <span>Epoch: {currentEpoch} / {epochs}</span>
+                  <span>
+                    Progress: {((currentEpoch / epochs) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(currentEpoch / epochs) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {lossHistory.length > 0 && (
+              <div className="mb-4">
+                <div className="text-sm text-gray-600 dark:text-white mb-1">
+                  <span className="font-medium">Current Loss: </span>
+                  <span className="font-semibold text-primary-600">
+                    {lossHistory[lossHistory.length - 1].loss.toFixed(6)}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600 dark:text-white">
+                  <span className="font-medium">Initial Loss: </span>
+                  <span className="font-semibold">
+                    {lossHistory[0].loss.toFixed(6)}
+                  </span>
+                </div>
+                {lossHistory.length > 1 && (
+                  <div className="text-sm text-gray-600 dark:text-white mt-1">
+                    <span className="font-medium">Improvement: </span>
+                    <span className="font-semibold text-green-600">
+                      {((1 - lossHistory[lossHistory.length - 1].loss / lossHistory[0].loss) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Loss Chart */}
+            {lossHistory.length > 0 && (
+              <div className="mt-4">
+                <h6 className="text-xs font-semibold text-gray-800 dark:text-white mb-2">Loss Over Time</h6>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={lossHistory}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="epoch" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line 
+                      type="monotone" 
+                      dataKey="loss" 
+                      stroke="#2563eb" 
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+
           <div className="mt-6 flex gap-2">
             <button
               onClick={handleTrain}
@@ -1050,75 +1119,6 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
               {selectedDataset === 'linear' ? 'Reset (New Function)' : 'Reset'}
             </button>
           </div>
-        </div>
-
-        {/* Training Status */}
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Training Status</h4>
-          
-          {isTraining && (
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Epoch: {currentEpoch} / {epochs}</span>
-                <span>
-                  Progress: {((currentEpoch / epochs) * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentEpoch / epochs) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {lossHistory.length > 0 && (
-            <div className="mb-4">
-              <div className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Current Loss: </span>
-                <span className="font-semibold text-primary-600">
-                  {lossHistory[lossHistory.length - 1].loss.toFixed(6)}
-                </span>
-              </div>
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Initial Loss: </span>
-                <span className="font-semibold">
-                  {lossHistory[0].loss.toFixed(6)}
-                </span>
-              </div>
-              {lossHistory.length > 1 && (
-                <div className="text-sm text-gray-600 mt-1">
-                  <span className="font-medium">Improvement: </span>
-                  <span className="font-semibold text-green-600">
-                    {((1 - lossHistory[lossHistory.length - 1].loss / lossHistory[0].loss) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Loss Chart */}
-          {lossHistory.length > 0 && (
-            <div className="mt-4">
-              <h5 className="text-sm font-semibold text-gray-800 mb-2">Loss Over Time</h5>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={lossHistory}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="epoch" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="loss" 
-                    stroke="#2563eb" 
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
         </div>
       </div>
 

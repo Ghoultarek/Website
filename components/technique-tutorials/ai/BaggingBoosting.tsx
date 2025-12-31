@@ -2,19 +2,19 @@
 
 export default function BaggingBoosting() {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Bagging vs Boosting</h2>
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Bagging vs Boosting</h2>
       
-      <p className="text-gray-700 mb-6">
+      <p className="text-gray-700 dark:text-white mb-6">
         Random Forest and XGBoost represent two fundamental approaches to combining multiple decision trees: 
         <strong> bagging</strong> and <strong>boosting</strong>. Understanding the difference helps you choose 
         the right algorithm for your problem.
       </p>
 
       {/* Bagging Visualization */}
-      <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-4 text-lg">Bagging (Bootstrap Aggregating)</h3>
-        <p className="text-sm text-blue-800 mb-4">
+      <div className="mb-8 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-4 text-lg">Bagging (Bootstrap Aggregating)</h3>
+        <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
           Bagging trains multiple models independently in parallel, each on a different bootstrap sample of the data. 
           Predictions are made by averaging (regression) or voting (classification).
         </p>
@@ -73,15 +73,15 @@ export default function BaggingBoosting() {
             <text x="300" y="315" textAnchor="middle" className="text-xs font-semibold fill-white">Average/Vote</text>
             <text x="300" y="330" textAnchor="middle" className="text-xs font-semibold fill-white">Final Prediction</text>
             
-            <text x="100" y="45" textAnchor="middle" className="text-xs fill-gray-600">Step 1: Bootstrap Sampling</text>
-            <text x="300" y="205" textAnchor="middle" className="text-xs fill-gray-600">Step 2: Train Trees in Parallel</text>
-            <text x="300" y="348" textAnchor="middle" className="text-xs fill-gray-600">Step 3: Aggregate Predictions</text>
+            <text x="100" y="45" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 1: Bootstrap Sampling</text>
+            <text x="300" y="205" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 2: Train Trees in Parallel</text>
+            <text x="300" y="348" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 3: Aggregate Predictions</text>
           </svg>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-blue-300 mt-6">
-          <h4 className="font-semibold text-blue-900 mb-2">Key Characteristics:</h4>
-          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+        <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-blue-300 dark:border-blue-800 mt-6">
+          <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">Key Characteristics:</h4>
+          <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
             <li><strong>Parallel:</strong> All trees train simultaneously on different data samples</li>
             <li><strong>Independent:</strong> Each tree doesn't know about others</li>
             <li><strong>Reduces Variance:</strong> Averaging reduces overfitting</li>
@@ -91,9 +91,9 @@ export default function BaggingBoosting() {
       </div>
 
       {/* Boosting Visualization */}
-      <div className="mb-8 bg-green-50 border border-green-200 rounded-lg p-6">
-        <h3 className="font-semibold text-green-900 mb-4 text-lg">Boosting</h3>
-        <p className="text-sm text-green-800 mb-4">
+      <div className="mb-8 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6">
+        <h3 className="font-semibold text-green-900 dark:text-green-200 mb-4 text-lg">Boosting</h3>
+        <p className="text-sm text-green-800 dark:text-green-200 mb-4">
           Boosting trains models sequentially, where each new model focuses on correcting the mistakes of previous models. 
           Predictions are made by weighted combination of all models.
         </p>
@@ -125,7 +125,7 @@ export default function BaggingBoosting() {
             
             {/* Arrow showing sequential */}
             <line x1="200" y1="315" x2="250" y2="315" stroke="#6b7280" strokeWidth="2" markerEnd="url(#arrowhead)" />
-            <text x="225" y="310" textAnchor="middle" className="text-xs fill-gray-600">Sequential</text>
+            <text x="225" y="310" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Sequential</text>
             
             {/* Tree 3 */}
             <rect x="250" y="290" width="100" height="50" fill="#10b981" stroke="#059669" strokeWidth="2" rx="4" />
@@ -155,16 +155,16 @@ export default function BaggingBoosting() {
               </marker>
             </defs>
             
-            <text x="100" y="135" textAnchor="middle" className="text-xs fill-gray-600">Step 1: Train First Tree</text>
-            <text x="100" y="215" textAnchor="middle" className="text-xs fill-gray-600">Step 2: Find Errors</text>
-            <text x="300" y="285" textAnchor="middle" className="text-xs fill-gray-600">Step 3: Train Next Tree on Errors</text>
-            <text x="300" y="365" textAnchor="middle" className="text-xs fill-gray-600">Step 4: Combine All Trees</text>
+            <text x="100" y="135" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 1: Train First Tree</text>
+            <text x="100" y="215" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 2: Find Errors</text>
+            <text x="300" y="285" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 3: Train Next Tree on Errors</text>
+            <text x="300" y="365" textAnchor="middle" className="text-xs fill-gray-600 dark:fill-gray-400">Step 4: Combine All Trees</text>
           </svg>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-green-300 mt-6">
-          <h4 className="font-semibold text-green-900 mb-2">Key Characteristics:</h4>
-          <ul className="text-sm text-green-800 space-y-1 list-disc list-inside">
+        <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-green-300 dark:border-green-800 mt-6">
+          <h4 className="font-semibold text-green-900 dark:text-green-200 mb-2">Key Characteristics:</h4>
+          <ul className="text-sm text-green-800 dark:text-green-200 space-y-1 list-disc list-inside">
             <li><strong>Sequential:</strong> Trees train one after another</li>
             <li><strong>Adaptive:</strong> Each tree learns from previous mistakes</li>
             <li><strong>Reduces Bias:</strong> Focuses on hard-to-predict cases</li>
@@ -174,52 +174,52 @@ export default function BaggingBoosting() {
       </div>
 
       {/* Comparison Table */}
-      <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Side-by-Side Comparison</h3>
+      <div className="mb-6 bg-gray-50 dark:bg-[#0D0D0D] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Side-by-Side Comparison</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse border border-gray-300">
+          <table className="w-full text-sm border-collapse border border-gray-300 dark:border-gray-600">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-3 text-left">Aspect</th>
-                <th className="border border-gray-300 p-3 text-left">Bagging</th>
-                <th className="border border-gray-300 p-3 text-left">Boosting</th>
+              <tr className="bg-gray-100 dark:bg-[#171717]">
+                <th className="border border-gray-300 dark:border-gray-600 p-3 text-left dark:text-white">Aspect</th>
+                <th className="border border-gray-300 dark:border-gray-600 p-3 text-left dark:text-white">Bagging</th>
+                <th className="border border-gray-300 dark:border-gray-600 p-3 text-left dark:text-white">Boosting</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-white">
-                <td className="border border-gray-300 p-3 font-semibold">Training</td>
-                <td className="border border-gray-300 p-3">Parallel (all trees train simultaneously)</td>
-                <td className="border border-gray-300 p-3">Sequential (one tree at a time)</td>
+              <tr className="bg-white dark:bg-[#0D0D0D]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Training</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Parallel (all trees train simultaneously)</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Sequential (one tree at a time)</td>
               </tr>
-              <tr className="bg-gray-50">
-                <td className="border border-gray-300 p-3 font-semibold">Data Sampling</td>
-                <td className="border border-gray-300 p-3">Bootstrap sampling (random with replacement)</td>
-                <td className="border border-gray-300 p-3">Weighted sampling (focuses on misclassified points)</td>
+              <tr className="bg-gray-50 dark:bg-[#171717]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Data Sampling</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Bootstrap sampling (random with replacement)</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Weighted sampling (focuses on misclassified points)</td>
               </tr>
-              <tr className="bg-white">
-                <td className="border border-gray-300 p-3 font-semibold">Tree Independence</td>
-                <td className="border border-gray-300 p-3">Trees are independent</td>
-                <td className="border border-gray-300 p-3">Trees depend on previous trees</td>
+              <tr className="bg-white dark:bg-[#0D0D0D]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Tree Independence</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Trees are independent</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Trees depend on previous trees</td>
               </tr>
-              <tr className="bg-gray-50">
-                <td className="border border-gray-300 p-3 font-semibold">Prediction</td>
-                <td className="border border-gray-300 p-3">Average or majority vote</td>
-                <td className="border border-gray-300 p-3">Weighted sum (learning rate × tree output)</td>
+              <tr className="bg-gray-50 dark:bg-[#171717]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Prediction</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Average or majority vote</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Weighted sum (learning rate × tree output)</td>
               </tr>
-              <tr className="bg-white">
-                <td className="border border-gray-300 p-3 font-semibold">Main Benefit</td>
-                <td className="border border-gray-300 p-3">Reduces variance (overfitting)</td>
-                <td className="border border-gray-300 p-3">Reduces bias (underfitting)</td>
+              <tr className="bg-white dark:bg-[#0D0D0D]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Main Benefit</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Reduces variance (overfitting)</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Reduces bias (underfitting)</td>
               </tr>
-              <tr className="bg-gray-50">
-                <td className="border border-gray-300 p-3 font-semibold">Speed</td>
-                <td className="border border-gray-300 p-3">Faster (parallelizable)</td>
-                <td className="border border-gray-300 p-3">Slower (must train sequentially)</td>
+              <tr className="bg-gray-50 dark:bg-[#171717]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Speed</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Faster (parallelizable)</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Slower (must train sequentially)</td>
               </tr>
-              <tr className="bg-white">
-                <td className="border border-gray-300 p-3 font-semibold">Examples</td>
-                <td className="border border-gray-300 p-3">Random Forest</td>
-                <td className="border border-gray-300 p-3">XGBoost, AdaBoost, Gradient Boosting</td>
+              <tr className="bg-white dark:bg-[#0D0D0D]">
+                <td className="border border-gray-300 dark:border-gray-600 p-3 font-semibold dark:text-white">Examples</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">Random Forest</td>
+                <td className="border border-gray-300 dark:border-gray-600 p-3 dark:text-white">XGBoost, AdaBoost, Gradient Boosting</td>
               </tr>
             </tbody>
           </table>
@@ -227,9 +227,9 @@ export default function BaggingBoosting() {
       </div>
 
       {/* When to Use */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-2">When to Use Each Approach</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
+      <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">When to Use Each Approach</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
           <div>
             <p className="font-semibold mb-1">Use Bagging (Random Forest) when:</p>
             <ul className="list-disc list-inside space-y-1 ml-4">

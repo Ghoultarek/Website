@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, ReactNode } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, ComposedChart, ReferenceLine, ScatterChart, Scatter, Cell } from 'recharts';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -8,7 +9,7 @@ import { GEVParameters, Covariate, VaRLevel, BlockMaximaPoint, BlockMaximaData, 
 import { calculateGEVParams, gevCDF, gevPDF, gevQuantile, gevRandom, calculateCrashRisk, calculateCVaR, calculateMeanExcess, calculateParameterStability, generateBacktestingData, calculateVaR, calculateKupiecTest, calculateChristoffersenTest, calculateDynamicQuantileTest } from './calculations';
 
 export default function ExtremeValueModels() {
-  const [showTutorial, setShowTutorial] = useState(true);
+  const { theme } = useTheme();
   const [varLevel, setVarLevel] = useState<VaRLevel>(95);
   const [blockSize, setBlockSize] = useState(120); // seconds
   const [conflictDensity, setConflictDensity] = useState(5); // conflicts per minute
@@ -384,17 +385,8 @@ export default function ExtremeValueModels() {
       </div>
 
       {/* Tutorial Section */}
-      {showTutorial && (
-        <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-gray-700">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Tutorial: Extreme Value Models</h3>
-            <button
-              onClick={() => setShowTutorial(false)}
-              className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-white text-sm transition-colors"
-            >
-              Hide Tutorial
-            </button>
-          </div>
+      <div className="mb-8 p-6 bg-white dark:bg-[#171717] rounded-lg border border-gray-200 dark:border-gray-700">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Tutorial: Extreme Value Models</h3>
 
           {/* Tutorial Navigation Links */}
           <div className="mb-6 p-3 bg-white dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-blue-800">
@@ -428,7 +420,7 @@ export default function ExtremeValueModels() {
                 <li>This allows us to model the &quot;upper tail&quot; of extremes using standard GEV theory</li>
                 <li>Crash risk = <InlineMath math="P(-\text{TTC} \geq 0) = P(\text{TTC} \leq 0)" /></li>
               </ul>
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-[#171717] rounded-lg border border-blue-200 dark:border-gray-700">
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-black rounded-lg border border-blue-200 dark:border-gray-700">
                 <div className="text-sm text-blue-900 dark:text-white space-y-2">
                   <BlockMath math="\text{GEV}(\mu, \sigma, \xi) \text{ where:}" />
                   <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
@@ -659,15 +651,15 @@ export default function ExtremeValueModels() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 {/* Mean Residual Life Plot */}
-                <div className="bg-white rounded-lg p-4">
-                  <h5 className="font-semibold mb-2 text-sm">Mean Residual Life Plot</h5>
-                  <p className="text-xs text-gray-500 mb-3">
+                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h5 className="font-semibold mb-2 text-sm text-gray-900 dark:text-white">Mean Residual Life Plot</h5>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     Identify a valid threshold where the graph becomes linear (stable mean excess).
                   </p>
                   {mounted ? (
                     <ResponsiveContainer width="100%" height={250}>
                       <ComposedChart data={mrlData}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         <XAxis 
                           type="number"
                           dataKey="threshold" 
@@ -675,11 +667,12 @@ export default function ExtremeValueModels() {
                           allowDataOverflow={false}
                           label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
                           height={30}
+                          stroke="#6b7280"
                         />
-                        <YAxis label={{ value: 'Mean Excess', angle: -90, position: 'insideLeft' }} />
+                        <YAxis label={{ value: 'Mean Excess', angle: -90, position: 'insideLeft' }} stroke="#6b7280" />
                         <Tooltip formatter={(val: number) => val.toFixed(3)} />
                         <Area type="monotone" dataKey="upperCI" stroke="none" fill="#bfdbfe" fillOpacity={0.5} />
-                        <Area type="monotone" dataKey="lowerCI" stroke="none" fill="#fff" fillOpacity={1.0} />
+                        <Area type="monotone" dataKey="lowerCI" stroke="none" fill={theme === 'dark' ? '#0D0D0D' : '#ffffff'} fillOpacity={1.0} />
                         <Line type="monotone" dataKey="meanExcess" stroke="#2563eb" dot={false} strokeWidth={2} />
                         <ReferenceLine 
                           x={potThreshold} 
@@ -690,22 +683,22 @@ export default function ExtremeValueModels() {
                       </ComposedChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
-                      <p className="text-gray-500 text-sm">Loading chart data...</p>
+                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 dark:bg-[#0D0D0D] rounded border border-gray-200 dark:border-gray-700">
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Loading chart data...</p>
                     </div>
                   )}
                 </div>
 
                 {/* Parameter Stability Plots */}
-                <div className="bg-white rounded-lg p-4">
-                  <h5 className="font-semibold mb-2 text-sm">Parameter Stability (Modified Scale)</h5>
-                  <p className="text-xs text-gray-500 mb-3">
+                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h5 className="font-semibold mb-2 text-sm text-gray-900 dark:text-white">Parameter Stability (Modified Scale)</h5>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     Check if parameters are constant above chosen threshold.
                   </p>
                   {mounted ? (
                     <ResponsiveContainer width="100%" height={250}>
                       <ComposedChart data={stabilityData}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         <XAxis 
                           type="number"
                           dataKey="threshold" 
@@ -713,8 +706,9 @@ export default function ExtremeValueModels() {
                           allowDataOverflow={false}
                           label={{ value: 'Threshold (u)', position: 'insideBottom', offset: -5 }} 
                           height={30}
+                          stroke="#6b7280"
                         />
-                        <YAxis domain={['auto', 'auto']} label={{ value: 'Modified Scale', angle: -90, position: 'insideLeft' }} />
+                        <YAxis domain={['auto', 'auto']} label={{ value: 'Modified Scale', angle: -90, position: 'insideLeft' }} stroke="#6b7280" />
                         <Tooltip formatter={(val: number) => val.toFixed(3)} />
                         <Line type="monotone" dataKey="modifiedScale" stroke="#059669" dot={false} strokeWidth={2} />
                         <ReferenceLine 
@@ -726,8 +720,8 @@ export default function ExtremeValueModels() {
                       </ComposedChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 rounded border border-gray-200">
-                      <p className="text-gray-500 text-sm">Loading chart data...</p>
+                    <div className="w-full h-[250px] flex items-center justify-center bg-gray-50 dark:bg-[#0D0D0D] rounded border border-gray-200 dark:border-gray-700">
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Loading chart data...</p>
                     </div>
                   )}
                 </div>
@@ -759,8 +753,8 @@ export default function ExtremeValueModels() {
                     <div>
                       <p className="font-semibold mb-1 dark:text-white">Distribution:</p>
                       <p className="dark:text-white">Block maxima follow a <strong>Generalized Extreme Value (GEV)</strong> distribution:</p>
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-center mt-2">
-                        <BlockMath math="F(x) = \exp\left\{-\left[1 + \xi\frac{x-\mu}{\sigma}\right]^{-1/\xi}\right\}" />
+                      <div className="bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex justify-center mt-2">
+                        <BlockMath math="F(x) = \exp\left\{-\left[1 + \xi\left(\frac{x-\mu}{\sigma}\right)\right]^{-1/\xi}\right\}" />
                       </div>
                       <p className="text-xs text-gray-600 dark:text-white mt-2">where <InlineMath math="\mu" /> is location, <InlineMath math="\sigma" /> is scale, <InlineMath math="\xi" /> is shape</p>
                     </div>
@@ -794,7 +788,7 @@ export default function ExtremeValueModels() {
                     <div>
                       <p className="font-semibold mb-1 dark:text-white">Distribution:</p>
                       <p className="dark:text-white">Exceedances follow a <strong>Generalized Pareto Distribution (GPD)</strong>:</p>
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-center mt-2">
+                      <div className="bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex justify-center mt-2">
                         <BlockMath math="G(y) = 1 - \left[1 + \xi\frac{y}{\sigma}\right]^{-1/\xi}" />
                       </div>
                       <p className="text-xs text-gray-600 dark:text-white mt-2">where <InlineMath math="y = x - u" /> (excess over threshold), <InlineMath math="\sigma" /> is scale, <InlineMath math="\xi" /> is shape</p>
@@ -822,9 +816,9 @@ export default function ExtremeValueModels() {
               </div>
 
               {/* Comparison Summary */}
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4">
-                <h5 className="font-semibold text-gray-900 mb-3">Key Differences</h5>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700 mt-4">
+                <h5 className="font-semibold text-gray-900 dark:text-white mb-3">Key Differences</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-white">
                   <div>
                     <p className="font-semibold mb-2">When to use Block Maxima:</p>
                     <ul className="list-disc list-inside ml-2 space-y-1">
@@ -843,8 +837,8 @@ export default function ExtremeValueModels() {
                   </div>
                 </div>
                 
-                <div className="mt-4 p-3 bg-white rounded border border-gray-300">
-                  <p className="text-sm text-gray-700">
+                <div className="mt-4 p-3 bg-white dark:bg-[#171717] rounded border border-gray-300 dark:border-gray-700">
+                  <p className="text-sm text-gray-700 dark:text-white">
                     <strong>Mathematical Relationship:</strong> The GPD and GEV distributions are closely related. In fact, if you 
                     have a high enough threshold in POT, the GPD parameters can be derived from the corresponding GEV parameters. 
                     The shape parameter <InlineMath math="\xi" /> is the same in both distributions, which makes them particularly useful for comparative analysis.
@@ -865,12 +859,12 @@ export default function ExtremeValueModels() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-4">
                 {/* Parameter Controls - Left Column */}
                 <div className="space-y-6">
-                  <div className="bg-white rounded-lg p-6 border border-gray-200">
-                    <h5 className="font-semibold text-gray-900 mb-4">Model Parameters</h5>
+                  <div className="bg-white dark:bg-[#171717] rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h5 className="font-semibold text-gray-900 dark:text-white mb-4">Model Parameters</h5>
                     
                     <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 flex items-center">
                         <span><InlineMath math="\mu_0" /> (mu0): {parameters.mu0.toFixed(3)}</span>
                         <ParameterTooltip content="Location parameter - controls where most conflicts cluster. More negative values indicate less severe typical conflicts. Increasing mu0 shifts the distribution toward zero, increasing crash risk.">
                           <span></span>
@@ -883,19 +877,19 @@ export default function ExtremeValueModels() {
                         step="0.1"
                         value={parameters.mu0}
                         onChange={(e) => updateParameter('mu0', parseFloat(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                       />
                       <input
                         type="number"
                         value={parameters.mu0.toFixed(3)}
                         onChange={(e) => updateParameter('mu0', parseFloat(e.target.value) || 0)}
-                        className="mt-2 w-full px-3 py-1 border border-gray-300 rounded-md text-sm"
+                        className="mt-2 w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
                         step="0.1"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 flex items-center">
                         <span><InlineMath math="\zeta_0" /> (zeta0): {parameters.zeta0.toFixed(3)}</span>
                         <ParameterTooltip content="Scale parameter (log scale) - controls variability in conflict severity. Higher values mean more unpredictable extremes. The actual scale σ = exp(zeta0). Increasing zeta0 increases the spread of extreme values.">
                           <span></span>
@@ -908,19 +902,19 @@ export default function ExtremeValueModels() {
                         step="0.1"
                         value={parameters.zeta0}
                         onChange={(e) => updateParameter('zeta0', parseFloat(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                       />
                       <input
                         type="number"
                         value={parameters.zeta0.toFixed(3)}
                         onChange={(e) => updateParameter('zeta0', parseFloat(e.target.value) || 0)}
-                        className="mt-2 w-full px-3 py-1 border border-gray-300 rounded-md text-sm"
+                        className="mt-2 w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
                         step="0.1"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 flex items-center">
                         <span><InlineMath math="\xi" /> (xi, fixed): {parameters.xi.toFixed(3)}</span>
                         <ParameterTooltip content="Shape parameter - controls tail behavior. Negative values indicate a bounded upper tail (conflicts can't get infinitely severe). More negative values mean the tail decays faster. This parameter is typically fixed in BHEV models.">
                           <span></span>
@@ -933,26 +927,26 @@ export default function ExtremeValueModels() {
                         step="0.01"
                         value={parameters.xi}
                         onChange={(e) => updateParameter('xi', parseFloat(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                       />
                       <input
                         type="number"
                         value={parameters.xi.toFixed(3)}
                         onChange={(e) => updateParameter('xi', parseFloat(e.target.value) || 0)}
-                        className="mt-2 w-full px-3 py-1 border border-gray-300 rounded-md text-sm"
+                        className="mt-2 w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
                         step="0.01"
                       />
                     </div>
 
                     {/* VaR Level Selection */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2">
                         Value at Risk (VaR) Level
                       </label>
                       <select
                         value={varLevel}
                         onChange={(e) => setVarLevel(parseInt(e.target.value) as VaRLevel)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
                       >
                         <option value={90}>90th Percentile (Highest 10%)</option>
                         <option value={95}>95th Percentile (Highest 5%)</option>
@@ -975,8 +969,8 @@ export default function ExtremeValueModels() {
                     {/* Hierarchical Model Explanation */}
                     <div className="pt-6 border-t border-gray-300 mt-6">
                       <div className="mb-4 p-4 bg-indigo-50 dark:bg-[#171717] rounded-lg border border-indigo-200 dark:border-gray-700">
-                      <h4 className="font-semibold text-gray-900 mb-3">Bayesian Hierarchical Model Structure</h4>
-                      <div className="text-sm text-gray-700 space-y-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Bayesian Hierarchical Model Structure</h4>
+                      <div className="text-sm text-gray-700 dark:text-white space-y-2">
                         <p>
                           While the basic GEV distribution depends on three parameters (<InlineMath math="\mu" />, <InlineMath math="\sigma" />, <InlineMath math="\xi" />), these alone cannot capture 
                           the variability in traffic conditions or the relationships between explanatory variables. To address 
@@ -986,7 +980,7 @@ export default function ExtremeValueModels() {
                         <p>
                           The hierarchical structure allows the GEV parameters to vary based on traffic conditions:
                         </p>
-                        <div className="bg-gray-50 border border-indigo-300 rounded-lg p-4 mt-3 space-y-3">
+                        <div className="bg-gray-50 dark:bg-black border border-indigo-300 dark:border-gray-700 rounded-lg p-4 mt-3 space-y-3">
                           <div className="flex justify-center">
                             <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
                           </div>
@@ -997,20 +991,19 @@ export default function ExtremeValueModels() {
                             <BlockMath math="\sigma = \exp(\zeta)" />
                           </div>
                         </div>
-                        <p className="mt-2 text-xs text-gray-600">
+                        <p className="mt-2 text-xs text-gray-600 dark:text-white">
                           where <InlineMath math="\zeta" /> is the log-scale parameter (ensuring <InlineMath math="\sigma" /> remains positive), <InlineMath math="\mu_0" /> and 
                           <InlineMath math="\zeta_0" /> are baseline parameters, and <InlineMath math="\beta_\mu" /> and <InlineMath math="\beta_\zeta" /> are 
-                          coefficients that quantify how each covariate affects location and scale, respectively. The shape parameter 
-                          <InlineMath math="\xi" /> is typically held constant across scenarios.
+                          coefficients that quantify how each covariate affects location and scale, respectively. The shape parameter <InlineMath math="\xi" /> is typically held constant across scenarios.
                         </p>
                       </div>
                     </div>
                     </div>
 
                     {/* Covariates Section */}
-                    <div className="pt-6 border-t border-gray-300 mt-6">
+                    <div className="pt-6 border-t border-gray-300 dark:border-gray-700 mt-6">
                       <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Covariates</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Covariates</h3>
                       <button
                         onClick={addCovariate}
                         className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
@@ -1021,13 +1014,13 @@ export default function ExtremeValueModels() {
                       
                       <div className="space-y-4">
                       {parameters.covariates.map((cov) => (
-                        <div key={cov.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div key={cov.id} className="p-4 bg-gray-50 dark:bg-[#0D0D0D] rounded-lg border border-gray-200 dark:border-gray-700">
                           <div className="flex justify-between items-center mb-3">
                             <input
                               type="text"
                               value={cov.name}
                               onChange={(e) => updateCovariate(cov.id, 'name', e.target.value)}
-                              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-semibold"
+                              className="flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm font-semibold bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                               placeholder="Covariate name"
                             />
                             {parameters.covariates.length > 1 && (
@@ -1042,7 +1035,7 @@ export default function ExtremeValueModels() {
                           
                           <div className="space-y-2">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">
+                              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
                                 Covariate Value: {cov.value.toFixed(2)}
                               </label>
                               <input
@@ -1052,12 +1045,12 @@ export default function ExtremeValueModels() {
                                 step="0.1"
                                 value={cov.value}
                                 onChange={(e) => updateCovariate(cov.id, 'value', parseFloat(e.target.value))}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                               />
                             </div>
                             
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1 flex items-center">
+                              <label className="block text-xs text-gray-600 dark:text-white mb-1 flex items-center">
                                 <span><InlineMath math="\beta_\mu" /> (betaMu): {cov.betaMu.toFixed(3)}</span>
                                 <ParameterTooltip content="Covariate effect on location parameter - how this factor shifts conflict severity. Positive values increase severity (shift distribution right), negative values decrease severity.">
                                   <span></span>
@@ -1070,19 +1063,19 @@ export default function ExtremeValueModels() {
                                 step="0.01"
                                 value={cov.betaMu}
                                 onChange={(e) => updateCovariate(cov.id, 'betaMu', parseFloat(e.target.value))}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                               />
                               <input
                                 type="number"
                                 value={cov.betaMu.toFixed(3)}
                                 onChange={(e) => updateCovariate(cov.id, 'betaMu', parseFloat(e.target.value) || 0)}
-                                className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                                className="mt-1 w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                                 step="0.01"
                               />
                             </div>
                             
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1 flex items-center">
+                              <label className="block text-xs text-gray-600 dark:text-white mb-1 flex items-center">
                                 <span><InlineMath math="\beta_\zeta" /> (betaZeta): {cov.betaZeta.toFixed(3)}</span>
                                 <ParameterTooltip content="Covariate effect on scale parameter - how this factor changes variability in conflicts. Positive values increase variability (more unpredictable extremes), negative values decrease variability.">
                                   <span></span>
@@ -1095,13 +1088,13 @@ export default function ExtremeValueModels() {
                                 step="0.01"
                                 value={cov.betaZeta}
                                 onChange={(e) => updateCovariate(cov.id, 'betaZeta', parseFloat(e.target.value))}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all duration-200"
+                                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition-all duration-200"
                               />
                               <input
                                 type="number"
                                 value={cov.betaZeta.toFixed(3)}
                                 onChange={(e) => updateCovariate(cov.id, 'betaZeta', parseFloat(e.target.value) || 0)}
-                                className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                                className="mt-1 w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                                 step="0.01"
                               />
                             </div>
@@ -1160,8 +1153,8 @@ export default function ExtremeValueModels() {
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       GEV PDF with Crash Risk (<InlineMath math="P(X > 0)" /> shaded)
                     </h3>
                   <ResponsiveContainer width="100%" height={350}>
@@ -1234,13 +1227,13 @@ export default function ExtremeValueModels() {
                       />
                     </ComposedChart>
                   </ResponsiveContainer>
-                    <p className="text-xs text-gray-600 mt-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                       Red shaded area (<InlineMath math="x > 0" />) represents crash risk: <InlineMath math={`P(X > 0) = ${formatCrashRisk(crashRisk)}`} />
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">GEV PDF with VaR Levels</h3>
+                  <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">GEV PDF with VaR Levels</h3>
                   <ResponsiveContainer width="100%" height={350}>
                     <ComposedChart data={gevData}>
                       <defs>
@@ -1369,7 +1362,7 @@ export default function ExtremeValueModels() {
                       })()}
                     </ComposedChart>
                   </ResponsiveContainer>
-                    <p className="text-xs text-gray-600 mt-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                       Same GEV PDF plot with VaR levels marked. Vertical lines show the 90th, 95th, and 99th percentile thresholds.
                     </p>
                   </div>
@@ -1404,7 +1397,7 @@ export default function ExtremeValueModels() {
                   </p>
                   <div className="mb-2">
                     <BlockMath math="\text{WAIC} = -2 \left( \sum_{i=1}^{n} \log \text{Pr}(y_i | \theta) - \sum_{i=1}^{n} \text{Var}_{\text{post}}(\log \text{Pr}(y_i | \theta)) \right)" />
-                  </div>
+          </div>
                   <p className="text-sm mb-2">
                     where the first term is the log pointwise predictive density and the second term penalizes for model complexity 
                     (effective number of parameters). <strong>Lower WAIC values indicate better predictive performance.</strong>
@@ -1413,7 +1406,7 @@ export default function ExtremeValueModels() {
                     WAIC is particularly useful for comparing models with different numbers of parameters or different structures, 
                     as it automatically accounts for parameter uncertainty through the posterior distribution.
                   </p>
-                </div>
+        </div>
 
                 <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
                   <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Deviance Information Criterion (DIC)</h6>
@@ -1446,7 +1439,6 @@ export default function ExtremeValueModels() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Backtesting EVT Models Block */}
       <div className="mt-8 bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
@@ -1454,413 +1446,262 @@ export default function ExtremeValueModels() {
         
         <p className="mb-4 text-gray-700 dark:text-white">
           Backtesting evaluates whether a model&apos;s risk predictions (e.g., VaR estimates) are accurate in practice. 
-          For EVT models, we test whether the observed violation rate matches the expected rate and whether violations occur 
-          independently over time. Three key tests are commonly used:
+          <strong> Important: Backtesting should always be performed on test data, not training data.</strong> Using training 
+          data would give overly optimistic results since the model was fit to that data. Test data provides an unbiased 
+          assessment of model performance.
+        </p>
+        <p className="mb-4 text-gray-700 dark:text-white">
+          The fundamental concept is simple: <strong>if we set VaR at the Xth percentile, we expect (100-X)% of observations 
+          to be violations</strong> (i.e., to exceed the VaR threshold).
+        </p>
+
+        <div className="bg-blue-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-blue-200 dark:border-gray-700">
+          <h5 className="font-semibold text-gray-900 dark:text-white mb-3">Understanding VaR and Violation Rates</h5>
+          <p className="text-sm text-gray-700 dark:text-white mb-3">
+            The relationship between VaR percentiles and expected violation rates is straightforward:
+          </p>
+          <ul className="list-disc list-inside ml-4 space-y-2 text-sm text-gray-700 dark:text-white">
+            <li><strong>95th percentile VaR</strong> → We expect <strong>5% violations</strong> (5 out of 100 observations should exceed VaR)</li>
+            <li><strong>90th percentile VaR</strong> → We expect <strong>10% violations</strong> (10 out of 100 observations should exceed VaR)</li>
+            <li><strong>99th percentile VaR</strong> → We expect <strong>1% violations</strong> (1 out of 100 observations should exceed VaR)</li>
+          </ul>
+          <p className="text-sm text-gray-700 dark:text-white mt-3">
+            Backtesting checks whether the observed violation rate matches this expectation. For example, if we set VaR at the 95th 
+            percentile and observe 8 violations out of 100 observations (8% instead of 5%), the model may be underestimating risk. 
+            Conversely, if we observe only 2 violations (2% instead of 5%), the model may be overestimating risk.
+          </p>
+        </div>
+
+        <p className="mb-4 text-gray-700 dark:text-white">
+          Beyond checking violation rates, we also need to ensure violations occur independently over time. Clustered violations 
+          (multiple violations occurring consecutively) suggest the model fails to capture temporal dependencies in risk. Three key 
+          tests are commonly used to validate EVT models:
         </p>
 
                 {/* Kupiec Test */}
-                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
-                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Kupiec Test (Unconditional Coverage)</h6>
-                  <p className="text-sm mb-3">
+                <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Kupiec Test (Unconditional Coverage)</h6>
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The Kupiec test (also known as the proportion of failures test) checks whether the actual violation rate matches 
                     the expected rate. For a VaR model at confidence level <InlineMath math="\alpha" />, we expect violations 
                     (observations exceeding VaR) to occur with probability <InlineMath math="1-\alpha" />.
                   </p>
-                  <p className="text-sm mb-3">
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The test uses a likelihood ratio statistic that compares the null hypothesis (violation rate equals expected rate) 
                     against the alternative (violation rate differs from expected rate). Under the null, the test statistic follows a 
                     chi-square distribution with 1 degree of freedom.
                   </p>
                   
-                  {backtestingResults && (
-                    <div className="mt-4">
-                      <div className="mb-3">
-                        <label className="block text-sm text-gray-700 dark:text-white mb-1">VaR Confidence Level:</label>
-                        <select
-                          value={varLevelForBacktesting}
-                          onChange={(e) => setVarLevelForBacktesting(parseInt(e.target.value) as VaRLevel)}
-                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
-                        >
-                          <option value={90}>90%</option>
-                          <option value={95}>95%</option>
-                          <option value={99}>99%</option>
-                        </select>
-                        <button
-                          onClick={() => setBacktestingDataKey(prev => prev + 1)}
-                          className="ml-3 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
-                        >
-                          Regenerate Data
-                        </button>
-                      </div>
+                  <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-gray-200 dark:border-gray-700 mt-4">
+                    <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Example</h6>
+                    <p className="text-sm mb-3 text-gray-700 dark:text-white">
+                      Suppose we set VaR at the 95th percentile. This means we expect 5% of observations to be violations. 
+                      If we observe 100 conflict events:
+                    </p>
+                    <ul className="list-disc list-inside ml-4 space-y-1 text-sm text-gray-700 dark:text-white mb-3">
+                      <li><strong>Expected violations:</strong> 5 out of 100 (5%)</li>
+                      <li><strong>If we observe 8 violations:</strong> The model may be underestimating risk (too many violations)</li>
+                      <li><strong>If we observe 2 violations:</strong> The model may be overestimating risk (too few violations)</li>
+                    </ul>
+                    <p className="text-sm text-gray-700 dark:text-white mb-4">
+                      The Kupiec test statistically evaluates whether the difference between observed and expected violation rates is 
+                      significant. A p-value less than 0.05 indicates the model&apos;s violation rate significantly differs from 
+                      expectations, suggesting the model needs adjustment.
+                    </p>
 
-                      {/* Violation Timeline Chart */}
-                      {mounted && (
-                        <div className="mb-4">
-                          <ResponsiveContainer width="100%" height={300}>
-                            <ComposedChart data={backtestingData.map((val, idx) => ({
-                              time: idx,
-                              value: val,
-                              violationValue: val >= backtestingResults.varThreshold ? val : null,
-                            }))}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                              <XAxis 
-                                dataKey="time"
-                                label={{ value: 'Observation', position: 'insideBottom', offset: -5 }}
-                                stroke="#6b7280"
-                              />
-                              <YAxis 
-                                label={{ value: 'Conflict Value (-TTC)', angle: -90, position: 'insideLeft' }}
-                                stroke="#6b7280"
-                              />
-                              <Tooltip />
-                              <Legend />
-                              <ReferenceLine 
-                                y={backtestingResults.varThreshold} 
-                                stroke="#ef4444" 
-                                strokeWidth={2}
-                                strokeDasharray="5 5"
-                                label={{ value: `VaR ${varLevelForBacktesting}%`, position: 'right' }}
-                              />
-                              <Line 
-                                type="monotone" 
-                                dataKey="value" 
-                                stroke="#3b82f6" 
-                                strokeWidth={1}
-                                dot={false}
-                                name="Conflict Values"
-                              />
-                              <Scatter
-                                dataKey="violationValue"
-                                fill="#ef4444"
-                                name="Violations"
-                              />
-                            </ComposedChart>
-                          </ResponsiveContainer>
-                          <p className="text-xs text-gray-600 dark:text-white mt-2">
-                            Blue line shows conflict values over time. Red dashed line is VaR threshold. Red dots indicate violations 
-                            (observations exceeding VaR).
-                          </p>
+                    {/* Interactive Violation Rate Visualization */}
+                    {backtestingResults && (
+                      <div className="mt-4">
+                        <div className="mb-3">
+                          <label className="block text-sm text-gray-700 dark:text-white mb-2">VaR Confidence Level:</label>
+                          <select
+                            value={varLevelForBacktesting}
+                            onChange={(e) => setVarLevelForBacktesting(parseInt(e.target.value) as VaRLevel)}
+                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
+                          >
+                            <option value={90}>90%</option>
+                            <option value={95}>95%</option>
+                            <option value={99}>99%</option>
+                          </select>
+        <button
+                            onClick={() => setBacktestingDataKey(prev => prev + 1)}
+                            className="ml-3 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+        >
+                            Regenerate Data
+        </button>
                         </div>
-                      )}
 
-                      {/* Test Results */}
-                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                        <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Test Results</h6>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-600 dark:text-gray-400">Expected Violation Rate:</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {(backtestingResults.kupiecResult.expectedRate * 100).toFixed(2)}%
+                        {mounted && (
+                          <div className="mb-4">
+                            <ResponsiveContainer width="100%" height={250}>
+                              <ComposedChart data={backtestingData.map((val, idx) => ({
+                                time: idx,
+                                value: val,
+                                violationValue: val >= backtestingResults.varThreshold ? val : null,
+                              }))}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                <XAxis 
+                                  dataKey="time"
+                                  label={{ value: 'Observation', position: 'insideBottom', offset: -5 }}
+                                  stroke="#6b7280"
+                                />
+                                <YAxis 
+                                  label={{ value: 'Conflict Value (-TTC)', angle: -90, position: 'insideLeft' }}
+                                  stroke="#6b7280"
+                                />
+                                <Tooltip />
+                                <Legend />
+                                <ReferenceLine 
+                                  y={backtestingResults.varThreshold} 
+                                  stroke="#ef4444" 
+                                  strokeWidth={2}
+                                  strokeDasharray="5 5"
+                                  label={{ value: `VaR ${varLevelForBacktesting}%`, position: 'right' }}
+                                />
+                                <Line 
+                                  type="monotone" 
+                                  dataKey="value" 
+                                  stroke="#3b82f6" 
+                                  strokeWidth={1}
+                                  dot={false}
+                                  name="Conflict Values"
+                                />
+                                <Scatter
+                                  dataKey="violationValue"
+                                  fill="#ef4444"
+                                  name="Violations"
+                                />
+                              </ComposedChart>
+                            </ResponsiveContainer>
+                            <p className="text-xs text-gray-600 dark:text-white mt-2">
+                              Blue line shows conflict values. Red dashed line is VaR threshold. Red dots indicate violations 
+                              (observations exceeding VaR). Adjust the VaR level to see how violation rates change.
                             </p>
                           </div>
-                          <div>
-                            <p className="text-gray-600 dark:text-gray-400">Observed Violation Rate:</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {(backtestingResults.kupiecResult.observedRate * 100).toFixed(2)}%
-                            </p>
+                        )}
+
+                        {/* Violation Rate Summary */}
+                        <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                          <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Violation Rate Summary</h6>
+                          <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                            <div>
+                              <p className="text-gray-600 dark:text-gray-400">Expected Violation Rate:</p>
+                              <p className="font-semibold text-gray-900 dark:text-white text-lg">
+                                {(backtestingResults.kupiecResult.expectedRate * 100).toFixed(1)}%
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                ({Math.round(backtestingResults.kupiecResult.expectedRate * backtestingData.length)} out of {backtestingData.length})
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-600 dark:text-gray-400">Observed Violation Rate:</p>
+                              <p className={`font-semibold text-lg ${
+                                Math.abs(backtestingResults.kupiecResult.observedRate - backtestingResults.kupiecResult.expectedRate) > 0.02
+                                  ? 'text-red-600 dark:text-red-400'
+                                  : 'text-green-600 dark:text-green-400'
+                              }`}>
+                                {(backtestingResults.kupiecResult.observedRate * 100).toFixed(1)}%
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                ({backtestingResults.violations.filter(v => v).length} out of {backtestingData.length})
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {backtestingResults.kupiecResult.testStatistic.toFixed(4)}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-gray-600 dark:text-gray-400">P-value:</p>
-                            <p className={`font-semibold ${
-                              backtestingResults.kupiecResult.pValue < 0.05 
-                                ? 'text-red-600 dark:text-red-400' 
-                                : 'text-green-600 dark:text-green-400'
-                            }`}>
-                              {backtestingResults.kupiecResult.pValue.toFixed(4)}
-                              {backtestingResults.kupiecResult.pValue < 0.05 ? ' (Reject)' : ' (Fail to Reject)'}
+                          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                              <strong>Interpretation:</strong> The observed rate should be close to the expected rate. 
+                              A large difference suggests the model may need adjustment. The Kupiec test provides a statistical 
+                              assessment of whether this difference is significant.
                             </p>
                           </div>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
-                          The test fails to reject the null hypothesis (model is adequate) if p-value &gt; 0.05. A low p-value 
-                          indicates that the observed violation rate significantly differs from the expected rate.
-                        </p>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
 
                 {/* Christoffersen Test */}
-                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
-                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Christoffersen Test (Conditional Coverage)</h6>
-                  <p className="text-sm mb-3">
+                <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Christoffersen Test (Conditional Coverage)</h6>
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The Christoffersen test extends the Kupiec test by also testing whether violations are independent over time. 
-                    A good risk model should have violations that occur independently—clustering of violations suggests the model 
+                    A good risk model should have violations that occur independently. Clustering of violations suggests the model 
                     fails to capture temporal dependencies in risk.
                   </p>
-                  <p className="text-sm mb-3">
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The test consists of three components:
                   </p>
-                  <ul className="list-disc list-inside ml-4 mb-3 text-sm space-y-1">
+                  <ul className="list-disc list-inside ml-4 mb-3 text-sm space-y-1 text-gray-700 dark:text-white">
                     <li><strong>Unconditional Coverage:</strong> Tests whether violation rate matches expected rate (same as Kupiec test)</li>
                     <li><strong>Independence:</strong> Tests whether violations are independent (no clustering)</li>
                     <li><strong>Conditional Coverage:</strong> Joint test of both unconditional coverage and independence</li>
                   </ul>
 
-                  {backtestingResults && (
-                    <div className="mt-4">
-                      {/* Violation Sequence Visualization */}
-                      {mounted && (
-                        <div className="mb-4">
-                          <ResponsiveContainer width="100%" height={200}>
-                            <LineChart data={backtestingResults.violations.map((v, idx) => ({
-                              time: idx,
-                              violation: v ? 1 : 0,
-                            }))}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                              <XAxis 
-                                dataKey="time"
-                                label={{ value: 'Observation', position: 'insideBottom', offset: -5 }}
-                                stroke="#6b7280"
-                              />
-                              <YAxis 
-                                domain={[0, 1]}
-                                tickFormatter={(val) => val === 1 ? 'Violation' : 'No Violation'}
-                                stroke="#6b7280"
-                              />
-                              <Tooltip 
-                                formatter={(value: number) => value === 1 ? 'Violation' : 'No Violation'}
-                              />
-                              <Line 
-                                type="stepAfter" 
-                                dataKey="violation" 
-                                stroke="#ef4444" 
-                                strokeWidth={2}
-                                dot={false}
-                                name="Violation Indicator"
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
-                          <p className="text-xs text-gray-600 dark:text-white mt-2">
-                            Violation sequence over time. Clustered violations (multiple consecutive violations) indicate 
-                            potential model inadequacy.
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Test Results */}
-                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                        <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Test Results</h6>
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Unconditional Coverage:</p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.christoffersenResult.unconditionalCoverage.testStatistic.toFixed(4)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
-                                <p className={`font-semibold ${
-                                  backtestingResults.christoffersenResult.unconditionalCoverage.pValue < 0.05 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-green-600 dark:text-green-400'
-                                }`}>
-                                  {backtestingResults.christoffersenResult.unconditionalCoverage.pValue.toFixed(4)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Independence:</p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.christoffersenResult.independence.testStatistic.toFixed(4)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
-                                <p className={`font-semibold ${
-                                  backtestingResults.christoffersenResult.independence.pValue < 0.05 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-green-600 dark:text-green-400'
-                                }`}>
-                                  {backtestingResults.christoffersenResult.independence.pValue.toFixed(4)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Conditional Coverage:</p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.christoffersenResult.conditionalCoverage.testStatistic.toFixed(4)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
-                                <p className={`font-semibold ${
-                                  backtestingResults.christoffersenResult.conditionalCoverage.pValue < 0.05 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-green-600 dark:text-green-400'
-                                }`}>
-                                  {backtestingResults.christoffersenResult.conditionalCoverage.pValue.toFixed(4)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
-                          The conditional coverage test is the most comprehensive—it tests both that violations occur at the 
-                          correct rate and that they are independent. A model passes if all three tests have p-values &gt; 0.05.
-                        </p>
-                      </div>
+                  <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-gray-200 dark:border-gray-700 mt-4">
+                    <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Understanding Independence</h6>
+                    <p className="text-sm mb-3 text-gray-700 dark:text-white">
+                      Violations should occur randomly and independently over time. The independence test examines transition patterns 
+                      between violations and non-violations:
+                    </p>
+                    <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded p-3 mb-3 text-sm">
+                      <p className="text-gray-700 dark:text-white mb-2"><strong>Transition Counts:</strong></p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-gray-700 dark:text-white">
+                        <li><strong>No violation → No violation:</strong> Normal state transitions</li>
+                        <li><strong>No violation → Violation:</strong> Violation occurs</li>
+                        <li><strong>Violation → No violation:</strong> Recovery from violation</li>
+                        <li><strong>Violation → Violation:</strong> Clustered violations (problematic)</li>
+                      </ul>
                     </div>
-                  )}
+                    <p className="text-sm text-gray-700 dark:text-white mb-3">
+                      If violations cluster together (many &quot;Violation → Violation&quot; transitions), this indicates the model 
+                      fails to capture temporal dependencies. For example, if violations occur during rush hour but the model doesn&apos;t 
+                      account for time-of-day effects, violations will cluster during those periods.
+                    </p>
+                    <p className="text-sm text-gray-700 dark:text-white">
+                      The conditional coverage test is the most comprehensive—it tests both that violations occur at the correct rate 
+                      and that they are independent. A model passes if all three tests have p-values greater than 0.05.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Dynamic Quantile Test */}
-                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
-                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Dynamic Quantile Test</h6>
-                  <p className="text-sm mb-3">
+                <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Dynamic Quantile Test</h6>
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The dynamic quantile test (also known as the Engle-Manganelli test) uses regression analysis to test whether 
                     violations are independent of past information. It regresses violation indicators on lagged values and tests 
                     whether the regression coefficients are significantly different from zero.
                   </p>
-                  <p className="text-sm mb-3">
+                  <p className="text-sm mb-3 text-gray-700 dark:text-white">
                     The test is based on the regression: <InlineMath math="I_t = \alpha + \beta X_{t-1} + \epsilon_t" /> where 
                     <InlineMath math="I_t" /> is the violation indicator at time <InlineMath math="t" /> and 
-                    <InlineMath math="X_{t-1}" /> represents lagged information. Under the null hypothesis of correct model 
-                    specification, both <InlineMath math="\alpha" /> and <InlineMath math="\beta" /> should be zero.
+                    <InlineMath math="X_{t-1}" /> represents lagged information (e.g., previous conflict values). Under the null 
+                    hypothesis of correct model specification, both <InlineMath math="\alpha" /> and <InlineMath math="\beta" /> 
+                    should be zero, meaning violations are independent of past information.
                   </p>
 
-                  {backtestingResults && (
-                    <div className="mt-4">
-                      {/* Regression Visualization */}
-                      {mounted && backtestingData.length > 1 && (() => {
-                        const scatterData = backtestingData.slice(0, -1).map((lagVal, idx) => ({
-                          laggedValue: lagVal,
-                          violation: backtestingResults.violations[idx + 1] ? 1 : 0,
-                          predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
-                                    backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * lagVal,
-                        }));
-                        const minLag = Math.min(...scatterData.map(d => d.laggedValue));
-                        const maxLag = Math.max(...scatterData.map(d => d.laggedValue));
-                        const regressionLineData = [
-                          { laggedValue: minLag, predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
-                            backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * minLag },
-                          { laggedValue: maxLag, predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
-                            backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * maxLag },
-                        ];
-                        
-                        return (
-                          <div className="mb-4">
-                            <ResponsiveContainer width="100%" height={300}>
-                              <ComposedChart data={scatterData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                <XAxis 
-                                  dataKey="laggedValue"
-                                  label={{ value: 'Lagged Conflict Value', position: 'insideBottom', offset: -5 }}
-                                  stroke="#6b7280"
-                                />
-                                <YAxis 
-                                  domain={[0, 1]}
-                                  tickFormatter={(val) => val === 1 ? 'Violation' : 'No Violation'}
-                                  label={{ value: 'Violation Indicator', angle: -90, position: 'insideLeft' }}
-                                  stroke="#6b7280"
-                                />
-                                <Tooltip />
-                                <Legend />
-                                <Scatter
-                                  name="Violations"
-                                  data={scatterData.filter(d => d.violation === 1)}
-                                  fill="#ef4444"
-                                />
-                                <Scatter
-                                  name="No Violations"
-                                  data={scatterData.filter(d => d.violation === 0)}
-                                  fill="#3b82f6"
-                                />
-                                <Line
-                                  type="linear"
-                                  data={regressionLineData}
-                                  dataKey="predicted"
-                                  stroke="#10b981"
-                                  strokeWidth={2}
-                                  strokeDasharray="5 5"
-                                  dot={false}
-                                  name="Regression Line"
-                                />
-                              </ComposedChart>
-                            </ResponsiveContainer>
-                            <p className="text-xs text-gray-600 dark:text-white mt-2">
-                              Scatter plot showing relationship between lagged conflict values and violation indicators. 
-                              Green dashed line shows the regression fit. If violations are independent, the regression line should be flat.
-                            </p>
-                          </div>
-                        );
-                      })()}
-
-                      {/* Test Results */}
-                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                        <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Test Results</h6>
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Regression Coefficients:</p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">Intercept (α):</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept.toFixed(4)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">Slope (β):</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.dynamicQuantileResult.regressionCoefficients.slope.toFixed(4)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Test Statistics:</p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">F-statistic:</p>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                  {backtestingResults.dynamicQuantileResult.testStatistic.toFixed(4)}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
-                                <p className={`font-semibold ${
-                                  backtestingResults.dynamicQuantileResult.pValue < 0.05 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-green-600 dark:text-green-400'
-                                }`}>
-                                  {backtestingResults.dynamicQuantileResult.pValue.toFixed(4)}
-                                  {backtestingResults.dynamicQuantileResult.pValue < 0.05 ? ' (Reject)' : ' (Fail to Reject)'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">R²:</p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {backtestingResults.dynamicQuantileResult.rSquared.toFixed(4)}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
-                          A significant test (p-value &lt; 0.05) indicates that violations are not independent of past information, 
-                          suggesting the model fails to capture temporal dependencies in risk. A good model should have coefficients 
-                          close to zero and a non-significant test result.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <div className="bg-white dark:bg-[#171717] rounded-lg p-4 border border-gray-200 dark:border-gray-700 mt-4">
+                    <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Interpreting the Regression</h6>
+                    <p className="text-sm mb-3 text-gray-700 dark:text-white">
+                      The regression tests whether past conflict values can predict future violations. If violations are truly 
+                      independent:
+                    </p>
+                    <ul className="list-disc list-inside ml-4 space-y-1 text-sm text-gray-700 dark:text-white mb-3">
+                      <li>The intercept <InlineMath math="\alpha" /> should be close to the expected violation rate</li>
+                      <li>The slope <InlineMath math="\beta" /> should be close to zero (no relationship with past values)</li>
+                      <li>The regression should have low R² (little explanatory power)</li>
+                    </ul>
+                    <p className="text-sm text-gray-700 dark:text-white mb-3">
+                      If the slope is significantly different from zero, it means violations are predictable from past information. 
+                      For example, if high conflict values tend to be followed by violations, the model may not be capturing 
+                      temporal dependencies in risk.
+                    </p>
+                    <p className="text-sm text-gray-700 dark:text-white">
+                      A significant test (p-value &lt; 0.05) indicates that violations are not independent of past information, 
+                      suggesting the model fails to capture temporal dependencies in risk. A good model should have coefficients 
+                      close to zero and a non-significant test result.
+                    </p>
+                  </div>
                 </div>
       </div>
 
@@ -1893,15 +1734,6 @@ export default function ExtremeValueModels() {
           interventions across entire transportation networks.
         </p>
       </div>
-
-      {!showTutorial && (
-        <button
-          onClick={() => setShowTutorial(true)}
-          className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
-        >
-          Show Tutorial
-        </button>
-      )}
     </div>
   );
 }

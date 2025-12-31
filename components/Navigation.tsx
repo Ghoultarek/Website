@@ -17,9 +17,9 @@ export default function Navigation() {
   return (
     <nav className="bg-gray-800 dark:bg-gray-800 sticky top-0 z-50 py-4">
       <div className="max-w-3xl mx-auto px-4 sm:px-10">
-        <div className="flex flex-row items-center justify-center bg-white dark:bg-[#171717] border border-neutral-400/20 dark:border-neutral-600/10 rounded-3xl p-1.5 text-sm text-neutral-500">
+        <div className="flex flex-row items-center justify-between bg-white dark:bg-[#171717] border border-neutral-400/20 dark:border-neutral-600/10 rounded-3xl p-1.5 text-sm text-neutral-500">
           {/* Desktop Navigation */}
-          <div className="hidden sm:flex flex-wrap items-center justify-center gap-2">
+          <div className="hidden sm:flex flex-wrap items-center justify-center gap-2 flex-1">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <div className="py-[8px] px-6 dark:hover:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:text-white hover:text-black rounded-full text-base font-normal text-start text-black dark:text-white">
@@ -30,7 +30,7 @@ export default function Navigation() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="relative flex sm:hidden">
+          <div className="relative flex sm:hidden items-center">
             <button
               className="py-1.5 px-4 dark:hover:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:text-white hover:text-black rounded-full"
               onClick={() => setIsOpen(!isOpen)}

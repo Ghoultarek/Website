@@ -182,16 +182,16 @@ export default function RandomForestDemo({
   }, [forest, testData, nEstimators]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Random Forest</h2>
+    <div className="bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Random Forest</h2>
       
-      <p className="text-gray-700 mb-6">
+      <p className="text-gray-700 dark:text-white mb-6">
         Random Forest is an ensemble method that combines multiple decision trees. Each tree is trained on a bootstrap 
         sample of the data, and predictions are made by majority voting. This reduces overfitting compared to a single tree.
       </p>
 
-      <div className="mb-6 bg-yellow-50 border border-yellow-300 rounded-lg p-4">
-        <p className="text-sm text-yellow-900">
+      <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-800 rounded-lg p-4">
+        <p className="text-sm text-yellow-900 dark:text-yellow-200">
           <strong>Note:</strong> This demo uses synthetic, well-separated data for educational purposes. In real-world applications, 
           data is often noisy, imbalanced, and contains outliers, so achieving 100% accuracy is extremely rare. 
           Typical accuracies range from 70-95% depending on the problem complexity and data quality.
@@ -199,10 +199,10 @@ export default function RandomForestDemo({
       </div>
 
       {/* Library Usage Section */}
-      <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-        <h3 className="font-semibold text-green-900 mb-3">1. Using scikit-learn</h3>
-        <div className="bg-white rounded p-3 font-mono text-sm mb-3">
-          <pre className="text-xs">{`from sklearn.ensemble import RandomForestClassifier
+      <div className="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
+        <h3 className="font-semibold text-green-900 dark:text-green-200 mb-3">1. Using scikit-learn</h3>
+        <div className="bg-white dark:bg-[#0D0D0D] rounded p-3 font-mono text-sm mb-3">
+          <pre className="text-xs text-gray-900 dark:text-white">{`from sklearn.ensemble import RandomForestClassifier
 
 # Create and train
 rf = RandomForestClassifier(
@@ -216,29 +216,29 @@ rf.fit(X_train, y_train)
 predictions = rf.predict(X_test)
 accuracy = rf.score(X_test, y_test)`}</pre>
         </div>
-        <p className="text-sm text-green-800">
+        <p className="text-sm text-green-800 dark:text-green-200">
           This is how you'd use Random Forest in practice. Now let's see how it works internally.
         </p>
       </div>
 
       {/* Explanation - Always Visible */}
-      <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h4 className="font-semibold text-yellow-900 mb-4 text-lg">How Random Forest Works</h4>
+      <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+        <h4 className="font-semibold text-yellow-900 dark:text-yellow-200 mb-4 text-lg">How Random Forest Works</h4>
         
-        <div className="space-y-4 text-sm text-yellow-900">
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+        <div className="space-y-4 text-sm text-yellow-900 dark:text-yellow-200">
+          <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 1: Create Many Different Trees</h5>
             <p className="mb-2">
               Imagine you're trying to predict whether someone will like a movie. Instead of asking one person, 
               you ask many people and take a vote. Random Forest does the same thing, but with decision trees.
             </p>
-            <p className="text-xs text-gray-700 italic">
+            <p className="text-xs text-gray-700 dark:text-gray-300 italic">
               Each tree is trained on a random sample of the data (bootstrap sampling). This is like each person 
               seeing a different subset of movies before making their decision.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 2: How Each Tree Makes Decisions</h5>
             <p className="mb-2">
               Each tree asks a series of yes/no questions to classify a point. For example:
@@ -248,17 +248,17 @@ accuracy = rf.score(X_test, y_test)`}</pre>
               <li>"Is Feature 2 less than 3?" → Continue splitting</li>
               <li>Eventually reach a leaf node that says "This is Class 0" or "This is Class 1"</li>
             </ul>
-            <p className="text-xs text-gray-700 italic mt-2">
+            <p className="text-xs text-gray-700 dark:text-gray-300 italic mt-2">
               The tree keeps splitting until it reaches a certain depth or has too few points to split further.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Step 3: Voting</h5>
             <p className="mb-2">
               When we need to classify a new point, each tree makes its prediction. Then we count the votes:
             </p>
-            <div className="bg-gray-50 rounded p-3 my-2 font-mono text-xs">
+            <div className="bg-gray-50 dark:bg-[#171717] rounded p-3 my-2 font-mono text-xs text-gray-900 dark:text-white">
               Tree 1 says: Class 0<br />
               Tree 2 says: Class 1<br />
               Tree 3 says: Class 0<br />
@@ -267,12 +267,12 @@ accuracy = rf.score(X_test, y_test)`}</pre>
               <br />
               Result: Class 0 wins (3 votes vs 2 votes)
             </div>
-            <p className="text-xs text-gray-700 italic">
+            <p className="text-xs text-gray-700 dark:text-gray-300 italic">
               This is called <strong>majority voting</strong> or <strong>ensemble prediction</strong>.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-4 border border-yellow-200">
+          <div className="bg-white dark:bg-[#0D0D0D] rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
             <h5 className="font-semibold mb-2">Why This Works Better Than One Tree</h5>
             <p className="mb-2">
               Think of it like this: One person might have strong opinions based on limited experience. 
@@ -485,9 +485,9 @@ accuracy = rf.score(X_test, y_test)`}</pre>
           </p>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={trainingCurve}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="trees" label={{ value: 'Number of Trees', position: 'insideBottom', offset: -5 }} />
-              <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="trees" label={{ value: 'Number of Trees', position: 'insideBottom', offset: -5 }} stroke="#6b7280" />
+              <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }} stroke="#6b7280" />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="accuracy" stroke="#3b82f6" strokeWidth={2} name="Test Accuracy" />
@@ -497,19 +497,19 @@ accuracy = rf.score(X_test, y_test)`}</pre>
       </div>
 
       {/* Visualization (Secondary) */}
-      <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Visual Representation</h3>
-        <p className="text-sm text-gray-700 mb-4">
+      <div className="mb-6 bg-gray-50 dark:bg-[#0D0D0D] border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Visual Representation</h3>
+        <p className="text-sm text-gray-700 dark:text-white mb-4">
           Here's a visual view of the classification problem. Blue points are Class 0, red points are Class 1.
         </p>
         
         <div className="mb-4">
-          <h4 className="text-sm font-semibold text-gray-900 mb-2">Test Data Predictions</h4>
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Test Data Predictions</h4>
           <ResponsiveContainer width="100%" height={300}>
             <ScatterChart>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" dataKey="x" name="Feature 1" domain={[0, 10]} />
-              <YAxis type="number" dataKey="y" name="Feature 2" domain={[0, 10]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" dataKey="x" name="Feature 1" domain={[0, 10]} stroke="#6b7280" />
+              <YAxis type="number" dataKey="y" name="Feature 2" domain={[0, 10]} stroke="#6b7280" />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} />
               <Legend />
               <Scatter name="Class 0 (Correct)" data={testDataWithPredictions.filter(p => p.label === 0 && p.predicted === 0)} fill="#3b82f6">
@@ -529,7 +529,7 @@ accuracy = rf.score(X_test, y_test)`}</pre>
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
-          <p className="text-xs text-gray-600 mt-2">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
             Gray points are misclassified. Hover over points to see predictions.
           </p>
         </div>

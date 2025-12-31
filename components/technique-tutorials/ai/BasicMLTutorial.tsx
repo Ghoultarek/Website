@@ -109,7 +109,7 @@ export default function BasicMLTutorial() {
                 and helps you understand both how to use these tools and why they work.
               </p>
               
-              <p className="text-gray-800 mb-4 leading-relaxed font-semibold">
+              <p className="text-gray-800 dark:text-white mb-4 leading-relaxed font-semibold">
                 What You'll Learn:
               </p>
               
