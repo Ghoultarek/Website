@@ -85,7 +85,7 @@ export default function TrainingPathologies() {
   // Dead ReLUs: Generate activation histogram data
   const deadReluData = useMemo(() => {
     const iterations = [0, 10, 20, 30, 40, 50];
-    const data = [];
+    const data: Array<{ iteration: number; activationValue: number; count: number }> = [];
     
     iterations.forEach((iter, idx) => {
       // As iterations increase, more activations collapse to zero

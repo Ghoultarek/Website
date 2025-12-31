@@ -61,6 +61,15 @@ export default function QKVVisualization() {
       <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200 p-6">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Q, K, V: How They Work Together</h3>
         
+        {/* Note about embeddings */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+          <p className="text-sm text-yellow-900">
+            <strong>Note:</strong> The embeddings shown here are example vectors randomly generated for demonstration purposes. 
+            They illustrate how Q, K, V work together, but in real transformers, embeddings are learned from training data 
+            and capture semantic relationships between words.
+          </p>
+        </div>
+        
         {/* Token Selector */}
         <div className="mb-6">
           <p className="text-sm font-medium text-gray-700 mb-3">
@@ -279,7 +288,8 @@ export default function QKVVisualization() {
               <div className="space-y-3">
                 {tokens.map((token, idx) => {
                   const weight = attentionData.attentionWeights[idx];
-                  const percentage = (weight * 100).toFixed(1);
+                  const percentageValue = weight * 100;
+                  const percentage = percentageValue.toFixed(1);
                   return (
                     <div key={idx} className="bg-white rounded p-3 border border-purple-200">
                       <div className="flex items-center justify-between mb-2">
@@ -291,7 +301,7 @@ export default function QKVVisualization() {
                           className={`h-4 rounded-full ${
                             idx === selectedToken ? 'bg-purple-600' : 'bg-purple-400'
                           }`}
-                          style={{ width: `${Math.max(percentage, 5)}%` }}
+                          style={{ width: `${Math.max(percentageValue, 5)}%` }}
                         />
                       </div>
                     </div>

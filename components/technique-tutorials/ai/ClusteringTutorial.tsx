@@ -13,6 +13,7 @@ import ClusteringComparison from './ClusteringComparison';
 interface Point {
   x: number;
   y: number;
+  label?: number;
 }
 
 export default function ClusteringTutorial() {
@@ -48,6 +49,7 @@ export default function ClusteringTutorial() {
       data.push({
         x: 3 + radius * Math.cos(angle) + (Math.random() - 0.5) * 1.5,
         y: 4 + radius * Math.sin(angle) + (Math.random() - 0.5) * 1.5,
+        label: 0,
       });
     }
     // Class 1: more spread out, centered around (7, 6)
@@ -57,6 +59,7 @@ export default function ClusteringTutorial() {
       data.push({
         x: 7 + radius * Math.cos(angle) + (Math.random() - 0.5) * 1.5,
         y: 6 + radius * Math.sin(angle) + (Math.random() - 0.5) * 1.5,
+        label: 1,
       });
     }
     // Add some overlapping points in the middle
@@ -64,6 +67,7 @@ export default function ClusteringTutorial() {
       data.push({
         x: Math.random() * 3 + 4,
         y: Math.random() * 3 + 4,
+        label: Math.random() > 0.5 ? 1 : 0,
       });
     }
     return data;
@@ -192,7 +196,7 @@ export default function ClusteringTutorial() {
 
       {/* KNN Section */}
       <section id="knn" className="mb-12 scroll-mt-8">
-        <KNNDemo data={knnData} />
+        <KNNDemo data={knnData as Array<{ x: number; y: number; label: number }>} />
       </section>
 
       {/* K-Means Section */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Neuron {
   id: string;
@@ -30,7 +30,18 @@ interface BackpropVisualizationProps {
   width?: number;
   height?: number;
   weightSnapshots?: WeightSnapshot[];
+  disabled?: boolean;
 }
+
+// Default connections (used when no weight snapshots available)
+const defaultConnections: Connection[] = [
+  { from: 'i0', to: 'h0', weight: 0.5 },
+  { from: 'i0', to: 'h1', weight: -0.3 },
+  { from: 'i1', to: 'h0', weight: 0.4 },
+  { from: 'i1', to: 'h1', weight: 0.6 },
+  { from: 'h0', to: 'o0', weight: 0.7 },
+  { from: 'h1', to: 'o0', weight: -0.5 },
+];
 
 export default function BackpropVisualization({ 
   width = 800, 
@@ -52,29 +63,20 @@ export default function BackpropVisualization({
     [{ id: 'o0', x: 600, y: 200 }],
   ];
 
-  // Default connections (used when no weight snapshots available)
-  const defaultConnections: Connection[] = [
-    { from: 'i0', to: 'h0', weight: 0.5 },
-    { from: 'i0', to: 'h1', weight: -0.3 },
-    { from: 'i1', to: 'h0', weight: 0.4 },
-    { from: 'i1', to: 'h1', weight: 0.6 },
-    { from: 'h0', to: 'o0', weight: 0.7 },
-    { from: 'h1', to: 'o0', weight: -0.5 },
-  ];
-
   // Get current connections from weight snapshots or use defaults
-  const getCurrentConnections = (): Connection[] => {
+  const getCurrentConnections = useCallback((index?: number): Connection[] => {
     if (weightSnapshots.length === 0) {
       return defaultConnections;
     }
     
-    const snapshot = weightSnapshots[Math.min(weightSnapshotIndex, weightSnapshots.length - 1)];
+    const snapshotIndex = index !== undefined ? index : weightSnapshotIndex;
+    const snapshot = weightSnapshots[Math.min(snapshotIndex, weightSnapshots.length - 1)];
     return snapshot.connections.map(conn => ({
       from: conn.from,
       to: conn.to,
       weight: conn.weight,
     }));
-  };
+  }, [weightSnapshots, weightSnapshotIndex]);
 
   const [conns, setConns] = useState<Connection[]>(() => {
     if (weightSnapshots.length > 0) {
@@ -97,7 +99,7 @@ export default function BackpropVisualization({
   });
 
   // Simulate forward pass using actual weights from current snapshot
-  const simulateForward = () => {
+  const simulateForward = useCallback(() => {
     setNeurons(prev => {
       const updated = [...prev];
       // Use XOR input: (1, 0) -> should output 1
@@ -135,10 +137,10 @@ export default function BackpropVisualization({
       
       return updated;
     });
-  };
+  }, [getCurrentConnections, weightSnapshotIndex]);
 
   // Simulate backward pass using actual weights from current snapshot
-  const simulateBackward = () => {
+  const simulateBackward = useCallback(() => {
     // Compute gradients first
     const currentNeurons = [...neurons];
     const o0 = currentNeurons.find(n => n.id === 'o0')!;
@@ -176,7 +178,7 @@ export default function BackpropVisualization({
       updated.find(c => c.from === 'i1' && c.to === 'h1')!.gradient = h1.gradient! * i1.activation;
       return updated;
     });
-  };
+  }, [neurons, getCurrentConnections, weightSnapshotIndex]);
 
   // Simulate weight update
   const simulateUpdate = () => {
@@ -205,7 +207,7 @@ export default function BackpropVisualization({
   useEffect(() => {
     const current = getCurrentConnections(weightSnapshotIndex);
     setConns(current);
-  }, [weightSnapshotIndex, weightSnapshots]);
+  }, [weightSnapshotIndex, weightSnapshots, getCurrentConnections]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -263,7 +265,7 @@ export default function BackpropVisualization({
 
       return () => clearTimeout(timer);
     }
-  }, [isPlaying, step, speed, weightSnapshots, weightSnapshotIndex]);
+  }, [isPlaying, step, speed, weightSnapshots, weightSnapshotIndex, getCurrentConnections, simulateForward, simulateBackward]);
 
   const handleReset = () => {
     setIsPlaying(false);

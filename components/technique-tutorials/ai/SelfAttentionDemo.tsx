@@ -139,7 +139,9 @@ export default function SelfAttentionDemo() {
               <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                 <h4 className="font-semibold text-blue-900 mb-3">Step 1: Word Embeddings</h4>
                 <p className="text-sm text-blue-800 mb-3">
-                  Each word is converted to a 4-dimensional vector:
+                  Each word is converted to a 4-dimensional vector. 
+                  <strong> Note:</strong> These are example embeddings generated deterministically for demonstration. 
+                  In real transformers, embeddings are learned from training data and capture semantic relationships.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                   {tokens.map((token, idx) => (
@@ -229,7 +231,8 @@ export default function SelfAttentionDemo() {
                   <div className="space-y-2">
                     {tokens.map((token, idx) => {
                       const weight = attentionData.attentionWeights[idx];
-                      const percentage = (weight * 100).toFixed(1);
+                      const percentageValue = weight * 100;
+                      const percentage = percentageValue.toFixed(1);
                       return (
                         <div key={idx} className="flex items-center gap-3">
                           <span className="w-20 font-semibold text-sm">{token}:</span>
@@ -238,7 +241,7 @@ export default function SelfAttentionDemo() {
                               className={`h-6 rounded-full transition-all ${
                                 idx === selectedToken ? 'bg-purple-600' : 'bg-purple-400'
                               }`}
-                              style={{ width: `${Math.max(percentage, 5)}%` }}
+                              style={{ width: `${Math.max(percentageValue, 5)}%` }}
                             />
                             <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
                               {percentage}%

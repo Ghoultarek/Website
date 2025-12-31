@@ -99,7 +99,9 @@ export default function AttentionExample() {
         <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
           <h4 className="font-semibold text-blue-900 mb-3">Step 1: Word Embeddings</h4>
           <p className="text-sm text-blue-800 mb-3">
-            Each word is represented as a vector. For simplicity, we use 3D embeddings:
+            Each word is represented as a vector. For simplicity, we use 3D embeddings. 
+            <strong> Note:</strong> These are example embeddings randomly generated for demonstration. 
+            In real transformers, embeddings are learned from training data and typically have 128-768+ dimensions.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
             {sentence.map((word, idx) => (

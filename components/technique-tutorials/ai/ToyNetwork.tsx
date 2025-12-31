@@ -180,7 +180,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
   const [isTraining, setIsTraining] = useState(false);
   const [lossHistory, setLossHistory] = useState<Array<{ epoch: number; loss: number }>>([]);
   const [currentEpoch, setCurrentEpoch] = useState(0);
-  const [predictions, setPredictions] = useState<Array<{ input: number[]; target: number; prediction: number }>>([]);
+  const [predictions, setPredictions] = useState<Array<{ input: number[]; target: number; prediction: number; isTest?: boolean }>>([]);
   const [weightSnapshots, setWeightSnapshots] = useState<WeightSnapshot[]>([]);
   const networkRef = useRef<NeuralNetwork | null>(null);
   const shouldStopRef = useRef(false);
