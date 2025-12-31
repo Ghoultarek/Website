@@ -1,4 +1,5 @@
 import Card from '@/components/ui/Card';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -67,7 +68,7 @@ export default function Home() {
                 projects related to traffic safety, intelligent infrastructure, and trustworthy AI systems.
               </p>
               <div className="absolute bottom-5 right-5">
-                <a
+                <Link
                   href="/about"
                   className="flex items-center justify-center text-base font-normal rounded-full bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 hover:opacity-80 dark:hover:bg-gray-600 transition-opacity"
                 >
@@ -76,7 +77,7 @@ export default function Home() {
                   <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
                     <path fillRule="evenodd" d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z" clipRule="evenodd"></path>
                   </svg>
-                </a>
+                </Link>
               </div>
             </Card>
 
@@ -88,7 +89,7 @@ export default function Home() {
                     Explore interactive demonstrations of key techniques and methods used in my research.
                   </p>
                   <div className="flex justify-center">
-                    <a
+                    <Link
                       href="/tools"
                       className="inline-flex items-center justify-center text-base font-normal rounded-full bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 hover:opacity-80 dark:hover:bg-gray-600 transition-opacity"
                     >
@@ -97,7 +98,7 @@ export default function Home() {
                       <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
                         <path fillRule="evenodd" d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z" clipRule="evenodd"></path>
                       </svg>
-                    </a>
+                    </Link>
                   </div>
                 </Card>
               </div>
