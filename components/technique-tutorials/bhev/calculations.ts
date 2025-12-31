@@ -602,3 +602,226 @@ export function calculateRandomSlopeModel(
     siteSlopes,
   };
 }
+
+/**
+ * Generate backtesting data based on GEV parameters
+ */
+export function generateBacktestingData(mu: number, sigma: number, xi: number, numObservations: number): number[] {
+  const data: number[] = [];
+  for (let i = 0; i < numObservations; i++) {
+    data.push(gevRandom(mu, sigma, xi));
+  }
+  return data;
+}
+
+/**
+ * Calculate VaR (Value at Risk) at specified confidence level
+ */
+export function calculateVaR(confidenceLevel: number, mu: number, sigma: number, xi: number): number {
+  const p = confidenceLevel / 100;
+  return gevQuantile(p, mu, sigma, xi);
+}
+
+/**
+ * Kupiec Test (Unconditional Coverage Test)
+ * Tests whether the actual violation rate matches the expected rate
+ */
+export function calculateKupiecTest(
+  observedViolations: number,
+  totalObservations: number,
+  expectedViolationRate: number
+): { testStatistic: number; pValue: number; observedRate: number; expectedRate: number } {
+  const observedRate = observedViolations / totalObservations;
+  const expectedRate = expectedViolationRate;
+  
+  // Likelihood ratio test statistic
+  // LR = -2 * ln(L_null / L_alt)
+  // L_null: likelihood under null hypothesis (p = expectedRate)
+  // L_alt: likelihood under alternative (p = observedRate)
+  
+  const n = totalObservations;
+  const x = observedViolations;
+  const p0 = expectedRate;
+  const p1 = observedRate;
+  
+  // Avoid log(0) issues
+  const logL0 = x * Math.log(p0 + 1e-10) + (n - x) * Math.log(1 - p0 + 1e-10);
+  const logL1 = x * Math.log(p1 + 1e-10) + (n - x) * Math.log(1 - p1 + 1e-10);
+  
+  const testStatistic = -2 * (logL0 - logL1);
+  
+  // Chi-square distribution with 1 degree of freedom
+  // Approximate p-value using chi-square CDF
+  const pValue = 1 - chiSquareCDF(testStatistic, 1);
+  
+  return {
+    testStatistic,
+    pValue,
+    observedRate,
+    expectedRate,
+  };
+}
+
+/**
+ * Christoffersen Test (Conditional Coverage Test)
+ * Tests both unconditional coverage and independence of violations
+ */
+export function calculateChristoffersenTest(
+  violations: boolean[]
+): {
+  unconditionalCoverage: { testStatistic: number; pValue: number };
+  independence: { testStatistic: number; pValue: number };
+  conditionalCoverage: { testStatistic: number; pValue: number };
+} {
+  const n = violations.length;
+  const n1 = violations.filter(v => v).length;
+  const p = n1 / n;
+  
+  // Transition counts
+  let n00 = 0, n01 = 0, n10 = 0, n11 = 0;
+  
+  for (let i = 1; i < n; i++) {
+    const prev = violations[i - 1];
+    const curr = violations[i];
+    
+    if (!prev && !curr) n00++;
+    else if (!prev && curr) n01++;
+    else if (prev && !curr) n10++;
+    else if (prev && curr) n11++;
+  }
+  
+  const n0 = n00 + n01;
+  const n1_trans = n10 + n11;
+  
+  // Unconditional coverage test (same as Kupiec)
+  const ucTestStat = -2 * (
+    n1 * Math.log(p + 1e-10) + (n - n1) * Math.log(1 - p + 1e-10) -
+    n1 * Math.log(n1 / n + 1e-10) - (n - n1) * Math.log((n - n1) / n + 1e-10)
+  );
+  const ucPValue = 1 - chiSquareCDF(ucTestStat, 1);
+  
+  // Independence test
+  const pi01 = n01 / (n00 + n01 + 1e-10);
+  const pi11 = n11 / (n10 + n11 + 1e-10);
+  const pi = (n01 + n11) / (n0 + n1_trans + 1e-10);
+  
+  const indTestStat = -2 * (
+    n00 * Math.log(1 - pi + 1e-10) + n01 * Math.log(pi + 1e-10) +
+    n10 * Math.log(1 - pi + 1e-10) + n11 * Math.log(pi + 1e-10) -
+    n00 * Math.log(1 - pi01 + 1e-10) - n01 * Math.log(pi01 + 1e-10) -
+    n10 * Math.log(1 - pi11 + 1e-10) - n11 * Math.log(pi11 + 1e-10)
+  );
+  const indPValue = 1 - chiSquareCDF(indTestStat, 1);
+  
+  // Conditional coverage test (unconditional + independence)
+  const ccTestStat = ucTestStat + indTestStat;
+  const ccPValue = 1 - chiSquareCDF(ccTestStat, 2);
+  
+  return {
+    unconditionalCoverage: { testStatistic: ucTestStat, pValue: ucPValue },
+    independence: { testStatistic: indTestStat, pValue: indPValue },
+    conditionalCoverage: { testStatistic: ccTestStat, pValue: ccPValue },
+  };
+}
+
+/**
+ * Dynamic Quantile Test
+ * Regression-based test for independence of violations
+ */
+export function calculateDynamicQuantileTest(
+  violations: boolean[],
+  laggedValues: number[]
+): {
+  testStatistic: number;
+  pValue: number;
+  regressionCoefficients: { intercept: number; slope: number };
+  rSquared: number;
+} {
+  // Convert violations to 0/1
+  const y = violations.map(v => v ? 1 : 0);
+  
+  // Simple linear regression: violation_t = alpha + beta * laggedValue_t + error
+  const n = y.length;
+  
+  let sumY = 0, sumX = 0, sumXY = 0, sumX2 = 0;
+  
+  for (let i = 0; i < n; i++) {
+    sumY += y[i];
+    sumX += laggedValues[i];
+    sumXY += y[i] * laggedValues[i];
+    sumX2 += laggedValues[i] * laggedValues[i];
+  }
+  
+  const meanY = sumY / n;
+  const meanX = sumX / n;
+  
+  const slope = (sumXY - n * meanX * meanY) / (sumX2 - n * meanX * meanX + 1e-10);
+  const intercept = meanY - slope * meanX;
+  
+  // Calculate R-squared
+  let ssRes = 0, ssTot = 0;
+  for (let i = 0; i < n; i++) {
+    const predicted = intercept + slope * laggedValues[i];
+    ssRes += Math.pow(y[i] - predicted, 2);
+    ssTot += Math.pow(y[i] - meanY, 2);
+  }
+  const rSquared = 1 - (ssRes / (ssTot + 1e-10));
+  
+  // F-test statistic for significance of slope
+  const mse = ssRes / (n - 2);
+  const seSlope = Math.sqrt(mse / (sumX2 - n * meanX * meanX + 1e-10));
+  const tStat = slope / (seSlope + 1e-10);
+  const testStatistic = tStat * tStat; // F-statistic (t^2 for simple regression)
+  
+  // P-value from F-distribution (1, n-2 degrees of freedom)
+  const pValue = 1 - fDistributionCDF(testStatistic, 1, n - 2);
+  
+  return {
+    testStatistic,
+    pValue,
+    regressionCoefficients: { intercept, slope },
+    rSquared,
+  };
+}
+
+/**
+ * Approximate chi-square CDF
+ */
+function chiSquareCDF(x: number, df: number): number {
+  // Simple approximation using gamma function
+  // For df=1, use normal approximation: sqrt(chi2) ~ N(0,1)
+  if (df === 1) {
+    const z = Math.sqrt(x);
+    return 2 * normalCDF(z) - 1;
+  }
+  // For other df, use approximation
+  // This is a simplified version - in practice, use proper statistical library
+  return 1 - Math.exp(-x / 2);
+}
+
+/**
+ * Approximate normal CDF
+ */
+function normalCDF(z: number): number {
+  // Abramowitz and Stegun approximation
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+
+/**
+ * Approximate F-distribution CDF
+ */
+function fDistributionCDF(f: number, df1: number, df2: number): number {
+  // Simplified approximation
+  // In practice, use proper statistical library
+  if (f < 0) return 0;
+  if (df1 === 1 && df2 > 30) {
+    // F(1, df2) approximates t^2 distribution
+    const t = Math.sqrt(f);
+    return 2 * normalCDF(t) - 1;
+  }
+  // Very rough approximation
+  return 1 - Math.exp(-f / 2);
+}

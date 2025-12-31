@@ -15,7 +15,7 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="bg-lighter dark:bg-[#0D0D0D] sticky top-0 z-50 py-4">
+    <nav className="bg-gray-800 dark:bg-gray-800 sticky top-0 z-50 py-4">
       <div className="max-w-3xl mx-auto px-4 sm:px-10">
         <div className="flex flex-row items-center justify-center bg-white dark:bg-[#171717] border border-neutral-400/20 dark:border-neutral-600/10 rounded-3xl p-1.5 text-sm text-neutral-500">
           {/* Desktop Navigation */}

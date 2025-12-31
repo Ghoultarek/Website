@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { GEVParameters, Covariate, VaRLevel, BlockMaximaPoint, BlockMaximaData, GEVDataPoint, POTDataPoint } from './types';
-import { calculateGEVParams, gevCDF, gevPDF, gevQuantile, gevRandom, calculateCrashRisk, calculateCVaR, calculateMeanExcess, calculateParameterStability } from './calculations';
+import { calculateGEVParams, gevCDF, gevPDF, gevQuantile, gevRandom, calculateCrashRisk, calculateCVaR, calculateMeanExcess, calculateParameterStability, generateBacktestingData, calculateVaR, calculateKupiecTest, calculateChristoffersenTest, calculateDynamicQuantileTest } from './calculations';
 
 export default function ExtremeValueModels() {
   const [showTutorial, setShowTutorial] = useState(true);
@@ -15,6 +15,11 @@ export default function ExtremeValueModels() {
   const [potThreshold, setPotThreshold] = useState(-1.5); // Threshold for POT
   const [dataKey, setDataKey] = useState(0); // Key to force regeneration
   const [mounted, setMounted] = useState(false);
+  
+  // Backtesting state
+  const [varLevelForBacktesting, setVarLevelForBacktesting] = useState<VaRLevel>(95);
+  const [backtestingData, setBacktestingData] = useState<number[]>([]);
+  const [backtestingDataKey, setBacktestingDataKey] = useState(0);
   const [parameters, setParameters] = useState<GEVParameters>({
     mu0: -3.3,
     zeta0: 0.2,
@@ -45,6 +50,45 @@ export default function ExtremeValueModels() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Generate backtesting data when parameters change or data key changes
+  useEffect(() => {
+    if (mounted) {
+      const data = generateBacktestingData(mu, sigma, xi, 500);
+      setBacktestingData(data);
+    }
+  }, [mu, sigma, xi, backtestingDataKey, mounted]);
+
+  // Calculate backtesting test results
+  const backtestingResults = useMemo(() => {
+    if (backtestingData.length === 0) return null;
+    
+    const varThreshold = calculateVaR(varLevelForBacktesting, mu, sigma, xi);
+    const violations = backtestingData.map(val => val >= varThreshold);
+    const observedViolations = violations.filter(v => v).length;
+    const expectedViolationRate = 1 - varLevelForBacktesting / 100;
+    
+    const kupiecResult = calculateKupiecTest(
+      observedViolations,
+      backtestingData.length,
+      expectedViolationRate
+    );
+    
+    const christoffersenResult = calculateChristoffersenTest(violations);
+    
+    // For dynamic quantile test, use lagged conflict values
+    const laggedValues = backtestingData.slice(0, -1);
+    const violationsForDQ = violations.slice(1);
+    const dynamicQuantileResult = calculateDynamicQuantileTest(violationsForDQ, laggedValues);
+    
+    return {
+      varThreshold,
+      violations,
+      kupiecResult,
+      christoffersenResult,
+      dynamicQuantileResult,
+    };
+  }, [backtestingData, varLevelForBacktesting, mu, sigma, xi]);
 
   useEffect(() => {
     if (previousCrashRiskRef.current !== null) {
@@ -362,6 +406,7 @@ export default function ExtremeValueModels() {
               <a href="#pot" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Peak-Over-Threshold</a>
               <a href="#comparison" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Comparison</a>
               <a href="#interactive-model" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Interactive Model</a>
+              <a href="#validating-evt" className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">Validating EVT</a>
             </div>
           </div>
 
@@ -1331,9 +1376,493 @@ export default function ExtremeValueModels() {
                 </div>
               </div>
             </div>
+
+            {/* 7. Validating EVT Models */}
+            <div id="validating-evt" className="scroll-mt-20">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">7. Validating EVT Models</h4>
+              
+              <p className="mb-4">
+                After fitting an EVT model, it&apos;s crucial to validate its performance. Model validation involves two main aspects: 
+                comparing different model specifications and backtesting the model&apos;s ability to accurately predict extreme events. 
+                This section covers information criteria for model comparison and statistical tests for backtesting.
+              </p>
+
+              {/* Model Comparison Subsection */}
+              <div className="mb-6">
+                <h5 className="font-semibold text-gray-900 dark:text-white mb-3">Model Comparison: WAIC and DIC</h5>
+                
+                <p className="mb-3">
+                  When comparing different EVT model specifications (e.g., models with different covariates, block sizes, or threshold 
+                  values), information criteria provide a principled way to balance model fit and complexity. Two commonly used criteria 
+                  in Bayesian EVT modeling are:
+                </p>
+
+                <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Widely Applicable Information Criterion (WAIC)</h6>
+                  <p className="text-sm mb-2">
+                    WAIC is a fully Bayesian information criterion that estimates out-of-sample predictive accuracy. It is computed as:
+                  </p>
+                  <div className="mb-2">
+                    <BlockMath math="\text{WAIC} = -2 \left( \sum_{i=1}^{n} \log \text{Pr}(y_i | \theta) - \sum_{i=1}^{n} \text{Var}_{\text{post}}(\log \text{Pr}(y_i | \theta)) \right)" />
+                  </div>
+                  <p className="text-sm mb-2">
+                    where the first term is the log pointwise predictive density and the second term penalizes for model complexity 
+                    (effective number of parameters). <strong>Lower WAIC values indicate better predictive performance.</strong>
+                  </p>
+                  <p className="text-sm">
+                    WAIC is particularly useful for comparing models with different numbers of parameters or different structures, 
+                    as it automatically accounts for parameter uncertainty through the posterior distribution.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Deviance Information Criterion (DIC)</h6>
+                  <p className="text-sm mb-2">
+                    DIC is a Bayesian generalization of AIC that uses the posterior mean deviance and an estimate of the effective 
+                    number of parameters:
+                  </p>
+                  <div className="mb-2">
+                    <BlockMath math="\text{DIC} = D(\bar{\theta}) + 2p_D" />
+                  </div>
+                  <p className="text-sm mb-2">
+                    where <InlineMath math="D(\bar{\theta})" /> is the deviance evaluated at the posterior mean of parameters 
+                    <InlineMath math="\bar{\theta}" />, and <InlineMath math="p_D" /> is the effective number of parameters, 
+                    estimated as <InlineMath math="p_D = \bar{D} - D(\bar{\theta})" /> where <InlineMath math="\bar{D}" /> is 
+                    the mean deviance over the posterior distribution.
+                  </p>
+                  <p className="text-sm">
+                    <strong>Lower DIC values indicate better models.</strong> DIC is computationally simpler than WAIC but can be 
+                    less reliable when the posterior distribution is non-normal or when comparing models with different likelihood 
+                    structures. In practice, WAIC is generally preferred for model comparison in Bayesian EVT applications.
+                  </p>
+                </div>
+
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  When comparing GEV models, these criteria help select between models with different covariate specifications, 
+                  different block sizes (for Block Maxima), or different threshold values (for Peak-Over-Threshold). A model with 
+                  significantly lower WAIC or DIC (typically a difference of 5-10 points) is considered substantially better.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Backtesting EVT Models Block */}
+      <div className="mt-8 bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+        <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Backtesting EVT Models</h4>
+        
+        <p className="mb-4 text-gray-700 dark:text-white">
+          Backtesting evaluates whether a model&apos;s risk predictions (e.g., VaR estimates) are accurate in practice. 
+          For EVT models, we test whether the observed violation rate matches the expected rate and whether violations occur 
+          independently over time. Three key tests are commonly used:
+        </p>
+
+                {/* Kupiec Test */}
+                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Kupiec Test (Unconditional Coverage)</h6>
+                  <p className="text-sm mb-3">
+                    The Kupiec test (also known as the proportion of failures test) checks whether the actual violation rate matches 
+                    the expected rate. For a VaR model at confidence level <InlineMath math="\alpha" />, we expect violations 
+                    (observations exceeding VaR) to occur with probability <InlineMath math="1-\alpha" />.
+                  </p>
+                  <p className="text-sm mb-3">
+                    The test uses a likelihood ratio statistic that compares the null hypothesis (violation rate equals expected rate) 
+                    against the alternative (violation rate differs from expected rate). Under the null, the test statistic follows a 
+                    chi-square distribution with 1 degree of freedom.
+                  </p>
+                  
+                  {backtestingResults && (
+                    <div className="mt-4">
+                      <div className="mb-3">
+                        <label className="block text-sm text-gray-700 dark:text-white mb-1">VaR Confidence Level:</label>
+                        <select
+                          value={varLevelForBacktesting}
+                          onChange={(e) => setVarLevelForBacktesting(parseInt(e.target.value) as VaRLevel)}
+                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-[#0D0D0D] text-gray-900 dark:text-white"
+                        >
+                          <option value={90}>90%</option>
+                          <option value={95}>95%</option>
+                          <option value={99}>99%</option>
+                        </select>
+                        <button
+                          onClick={() => setBacktestingDataKey(prev => prev + 1)}
+                          className="ml-3 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                        >
+                          Regenerate Data
+                        </button>
+                      </div>
+
+                      {/* Violation Timeline Chart */}
+                      {mounted && (
+                        <div className="mb-4">
+                          <ResponsiveContainer width="100%" height={300}>
+                            <ComposedChart data={backtestingData.map((val, idx) => ({
+                              time: idx,
+                              value: val,
+                              violationValue: val >= backtestingResults.varThreshold ? val : null,
+                            }))}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                              <XAxis 
+                                dataKey="time"
+                                label={{ value: 'Observation', position: 'insideBottom', offset: -5 }}
+                                stroke="#6b7280"
+                              />
+                              <YAxis 
+                                label={{ value: 'Conflict Value (-TTC)', angle: -90, position: 'insideLeft' }}
+                                stroke="#6b7280"
+                              />
+                              <Tooltip />
+                              <Legend />
+                              <ReferenceLine 
+                                y={backtestingResults.varThreshold} 
+                                stroke="#ef4444" 
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                label={{ value: `VaR ${varLevelForBacktesting}%`, position: 'right' }}
+                              />
+                              <Line 
+                                type="monotone" 
+                                dataKey="value" 
+                                stroke="#3b82f6" 
+                                strokeWidth={1}
+                                dot={false}
+                                name="Conflict Values"
+                              />
+                              <Scatter
+                                dataKey="violationValue"
+                                fill="#ef4444"
+                                name="Violations"
+                              />
+                            </ComposedChart>
+                          </ResponsiveContainer>
+                          <p className="text-xs text-gray-600 dark:text-white mt-2">
+                            Blue line shows conflict values over time. Red dashed line is VaR threshold. Red dots indicate violations 
+                            (observations exceeding VaR).
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Test Results */}
+                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Test Results</h6>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">Expected Violation Rate:</p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {(backtestingResults.kupiecResult.expectedRate * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">Observed Violation Rate:</p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {(backtestingResults.kupiecResult.observedRate * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {backtestingResults.kupiecResult.testStatistic.toFixed(4)}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">P-value:</p>
+                            <p className={`font-semibold ${
+                              backtestingResults.kupiecResult.pValue < 0.05 
+                                ? 'text-red-600 dark:text-red-400' 
+                                : 'text-green-600 dark:text-green-400'
+                            }`}>
+                              {backtestingResults.kupiecResult.pValue.toFixed(4)}
+                              {backtestingResults.kupiecResult.pValue < 0.05 ? ' (Reject)' : ' (Fail to Reject)'}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
+                          The test fails to reject the null hypothesis (model is adequate) if p-value &gt; 0.05. A low p-value 
+                          indicates that the observed violation rate significantly differs from the expected rate.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Christoffersen Test */}
+                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Christoffersen Test (Conditional Coverage)</h6>
+                  <p className="text-sm mb-3">
+                    The Christoffersen test extends the Kupiec test by also testing whether violations are independent over time. 
+                    A good risk model should have violations that occur independently—clustering of violations suggests the model 
+                    fails to capture temporal dependencies in risk.
+                  </p>
+                  <p className="text-sm mb-3">
+                    The test consists of three components:
+                  </p>
+                  <ul className="list-disc list-inside ml-4 mb-3 text-sm space-y-1">
+                    <li><strong>Unconditional Coverage:</strong> Tests whether violation rate matches expected rate (same as Kupiec test)</li>
+                    <li><strong>Independence:</strong> Tests whether violations are independent (no clustering)</li>
+                    <li><strong>Conditional Coverage:</strong> Joint test of both unconditional coverage and independence</li>
+                  </ul>
+
+                  {backtestingResults && (
+                    <div className="mt-4">
+                      {/* Violation Sequence Visualization */}
+                      {mounted && (
+                        <div className="mb-4">
+                          <ResponsiveContainer width="100%" height={200}>
+                            <LineChart data={backtestingResults.violations.map((v, idx) => ({
+                              time: idx,
+                              violation: v ? 1 : 0,
+                            }))}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                              <XAxis 
+                                dataKey="time"
+                                label={{ value: 'Observation', position: 'insideBottom', offset: -5 }}
+                                stroke="#6b7280"
+                              />
+                              <YAxis 
+                                domain={[0, 1]}
+                                tickFormatter={(val) => val === 1 ? 'Violation' : 'No Violation'}
+                                stroke="#6b7280"
+                              />
+                              <Tooltip 
+                                formatter={(value: number) => value === 1 ? 'Violation' : 'No Violation'}
+                              />
+                              <Line 
+                                type="stepAfter" 
+                                dataKey="violation" 
+                                stroke="#ef4444" 
+                                strokeWidth={2}
+                                dot={false}
+                                name="Violation Indicator"
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                          <p className="text-xs text-gray-600 dark:text-white mt-2">
+                            Violation sequence over time. Clustered violations (multiple consecutive violations) indicate 
+                            potential model inadequacy.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Test Results */}
+                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Test Results</h6>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Unconditional Coverage:</p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.christoffersenResult.unconditionalCoverage.testStatistic.toFixed(4)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
+                                <p className={`font-semibold ${
+                                  backtestingResults.christoffersenResult.unconditionalCoverage.pValue < 0.05 
+                                    ? 'text-red-600 dark:text-red-400' 
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {backtestingResults.christoffersenResult.unconditionalCoverage.pValue.toFixed(4)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Independence:</p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.christoffersenResult.independence.testStatistic.toFixed(4)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
+                                <p className={`font-semibold ${
+                                  backtestingResults.christoffersenResult.independence.pValue < 0.05 
+                                    ? 'text-red-600 dark:text-red-400' 
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {backtestingResults.christoffersenResult.independence.pValue.toFixed(4)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Conditional Coverage:</p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">Test Statistic:</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.christoffersenResult.conditionalCoverage.testStatistic.toFixed(4)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
+                                <p className={`font-semibold ${
+                                  backtestingResults.christoffersenResult.conditionalCoverage.pValue < 0.05 
+                                    ? 'text-red-600 dark:text-red-400' 
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {backtestingResults.christoffersenResult.conditionalCoverage.pValue.toFixed(4)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
+                          The conditional coverage test is the most comprehensive—it tests both that violations occur at the 
+                          correct rate and that they are independent. A model passes if all three tests have p-values &gt; 0.05.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Dynamic Quantile Test */}
+                <div className="bg-white dark:bg-[#171717] rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                  <h6 className="font-semibold text-gray-900 dark:text-white mb-2">Dynamic Quantile Test</h6>
+                  <p className="text-sm mb-3">
+                    The dynamic quantile test (also known as the Engle-Manganelli test) uses regression analysis to test whether 
+                    violations are independent of past information. It regresses violation indicators on lagged values and tests 
+                    whether the regression coefficients are significantly different from zero.
+                  </p>
+                  <p className="text-sm mb-3">
+                    The test is based on the regression: <InlineMath math="I_t = \alpha + \beta X_{t-1} + \epsilon_t" /> where 
+                    <InlineMath math="I_t" /> is the violation indicator at time <InlineMath math="t" /> and 
+                    <InlineMath math="X_{t-1}" /> represents lagged information. Under the null hypothesis of correct model 
+                    specification, both <InlineMath math="\alpha" /> and <InlineMath math="\beta" /> should be zero.
+                  </p>
+
+                  {backtestingResults && (
+                    <div className="mt-4">
+                      {/* Regression Visualization */}
+                      {mounted && backtestingData.length > 1 && (() => {
+                        const scatterData = backtestingData.slice(0, -1).map((lagVal, idx) => ({
+                          laggedValue: lagVal,
+                          violation: backtestingResults.violations[idx + 1] ? 1 : 0,
+                          predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
+                                    backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * lagVal,
+                        }));
+                        const minLag = Math.min(...scatterData.map(d => d.laggedValue));
+                        const maxLag = Math.max(...scatterData.map(d => d.laggedValue));
+                        const regressionLineData = [
+                          { laggedValue: minLag, predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
+                            backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * minLag },
+                          { laggedValue: maxLag, predicted: backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept + 
+                            backtestingResults.dynamicQuantileResult.regressionCoefficients.slope * maxLag },
+                        ];
+                        
+                        return (
+                          <div className="mb-4">
+                            <ResponsiveContainer width="100%" height={300}>
+                              <ComposedChart data={scatterData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                <XAxis 
+                                  dataKey="laggedValue"
+                                  label={{ value: 'Lagged Conflict Value', position: 'insideBottom', offset: -5 }}
+                                  stroke="#6b7280"
+                                />
+                                <YAxis 
+                                  domain={[0, 1]}
+                                  tickFormatter={(val) => val === 1 ? 'Violation' : 'No Violation'}
+                                  label={{ value: 'Violation Indicator', angle: -90, position: 'insideLeft' }}
+                                  stroke="#6b7280"
+                                />
+                                <Tooltip />
+                                <Legend />
+                                <Scatter
+                                  name="Violations"
+                                  data={scatterData.filter(d => d.violation === 1)}
+                                  fill="#ef4444"
+                                />
+                                <Scatter
+                                  name="No Violations"
+                                  data={scatterData.filter(d => d.violation === 0)}
+                                  fill="#3b82f6"
+                                />
+                                <Line
+                                  type="linear"
+                                  data={regressionLineData}
+                                  dataKey="predicted"
+                                  stroke="#10b981"
+                                  strokeWidth={2}
+                                  strokeDasharray="5 5"
+                                  dot={false}
+                                  name="Regression Line"
+                                />
+                              </ComposedChart>
+                            </ResponsiveContainer>
+                            <p className="text-xs text-gray-600 dark:text-white mt-2">
+                              Scatter plot showing relationship between lagged conflict values and violation indicators. 
+                              Green dashed line shows the regression fit. If violations are independent, the regression line should be flat.
+                            </p>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Test Results */}
+                      <div className="bg-gray-50 dark:bg-[#0D0D0D] rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <h6 className="font-semibold text-gray-900 dark:text-white mb-3">Test Results</h6>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Regression Coefficients:</p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">Intercept (α):</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.dynamicQuantileResult.regressionCoefficients.intercept.toFixed(4)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">Slope (β):</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.dynamicQuantileResult.regressionCoefficients.slope.toFixed(4)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Test Statistics:</p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">F-statistic:</p>
+                                <p className="font-semibold text-gray-900 dark:text-white">
+                                  {backtestingResults.dynamicQuantileResult.testStatistic.toFixed(4)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-400">P-value:</p>
+                                <p className={`font-semibold ${
+                                  backtestingResults.dynamicQuantileResult.pValue < 0.05 
+                                    ? 'text-red-600 dark:text-red-400' 
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {backtestingResults.dynamicQuantileResult.pValue.toFixed(4)}
+                                  {backtestingResults.dynamicQuantileResult.pValue < 0.05 ? ' (Reject)' : ' (Fail to Reject)'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">R²:</p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {backtestingResults.dynamicQuantileResult.rSquared.toFixed(4)}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
+                          A significant test (p-value &lt; 0.05) indicates that violations are not independent of past information, 
+                          suggesting the model fails to capture temporal dependencies in risk. A good model should have coefficients 
+                          close to zero and a non-significant test result.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+      </div>
 
       {/* Advanced Extensions Block */}
       <div className="mt-8 bg-white dark:bg-[#171717] rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">

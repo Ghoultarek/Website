@@ -102,6 +102,62 @@ export default function Home() {
                 </Card>
               </div>
             </div>
+
+            {/* News Section */}
+            <div className="max-w-none mt-8">
+              <p className="text-2xl font-medium text-start mb-2 pl-5 text-gray-800 dark:text-white">News</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="relative">
+                  <div className="mb-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Popular Science</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">July 27, 2023</p>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    A new mapping algorithm aims to steer drivers towards the safest route
+                  </h3>
+                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4">
+                    Research on safest-route navigation algorithms featured in Popular Science, highlighting how real-time crash risk data 
+                    can provide safer driving directions through cities.
+                  </p>
+                  <a
+                    href="https://www.popsci.com/technology/map-safest-route-algorithm/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                  >
+                    Read Article
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-4 h-4 ml-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </Card>
+
+                <Card className="relative">
+                  <div className="mb-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">UBC Civil Engineering</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">April 4, 2024</p>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    From Reaction to Prevention: Reimagining Road Safety Through Data
+                  </h3>
+                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4">
+                    Winner of the 2024 Three Minute Thesis (3MT®) competition, discussing the shift from reactive to proactive 
+                    approaches in traffic safety research.
+                  </p>
+                  <a
+                    href="https://civil.ubc.ca/from-reaction-to-prevention-reimagining-road-safety-through-data/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                  >
+                    Read Article
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-4 h-4 ml-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
