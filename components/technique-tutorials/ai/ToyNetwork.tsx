@@ -2,101 +2,162 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { NeuralNetwork, generateXORDataset, generateLinearDataset, generateCircleDataset } from './NeuralNetwork';
+import { NeuralNetwork, generateLinearDataset, generateCircleDataset } from './NeuralNetwork';
 import { NetworkConfig, Dataset } from './types';
 import CodeSnippets from './CodeSnippets';
 
-const implementationCode = `// Neural Network Implementation from Scratch
+const implementationCode = `# Neural Network Implementation from Scratch
 
-class NeuralNetwork {
-  constructor(config) {
-    this.config = config;
-    this.layers = this.initializeLayers();
-  }
+import math
+import random
 
-  forward(input) {
-    let currentInput = input;
-    for (let layer of this.layers) {
-      const outputs = [];
-      for (let j = 0; j < layer.weights.length; j++) {
-        let sum = layer.biases[j];
-        for (let k = 0; k < currentInput.length; k++) {
-          sum += layer.weights[j][k] * currentInput[k];
-        }
-        outputs[j] = this.activate(sum);
-      }
-      layer.activations = outputs;
-      currentInput = outputs;
-    }
-    return currentInput;
-  }
-
-  backward(input, target, output) {
-    // Calculate output error
-    let error = output.map((o, i) => o - target[i]);
+class NeuralNetwork:
+    def __init__(self, config):
+        self.config = config
+        self.layers = self.initialize_layers()
     
-    // Backpropagate through layers
-    for (let i = this.layers.length - 1; i >= 0; i--) {
-      const layer = this.layers[i];
-      const prevActivations = i > 0 
-        ? this.layers[i - 1].activations 
-        : input;
-      
-      const deltas = [];
-      for (let j = 0; j < layer.weights.length; j++) {
-        const derivative = this.activateDerivative(layer.activations[j]);
-        deltas[j] = error[j] * derivative;
+    def forward(self, input_data):
+        """Forward propagation through the network."""
+        current_input = input_data
+        for i, layer in enumerate(self.layers):
+            outputs = []
+            is_output_layer = (i == len(self.layers) - 1)
+            
+            for j in range(len(layer['weights'])):
+                # Compute weighted sum: sum(weights * inputs) + bias
+                weighted_sum = layer['biases'][j]
+                for k in range(len(current_input)):
+                    weighted_sum += layer['weights'][j][k] * current_input[k]
+                
+                # Apply activation function
+                # For regression (MSE), output layer uses linear activation
+                # For classification (crossentropy), output layer uses sigmoid
+                if is_output_layer and self.config['loss_function'] == 'mse':
+                    outputs.append(weighted_sum)  # Linear activation
+                elif is_output_layer and self.config['loss_function'] == 'crossentropy':
+                    outputs.append(1.0 / (1.0 + math.exp(-weighted_sum)))  # Sigmoid
+                else:
+                    outputs.append(self.activate(weighted_sum))  # Hidden layers
+            
+            layer['activations'] = outputs
+            current_input = outputs
+        return current_input
+    
+    def backward(self, input_data, target, output):
+        """Backward propagation (backpropagation) to compute gradients."""
+        # Calculate output error (derivative of loss w.r.t. output)
+        # For both MSE and cross-entropy, this is output - target
+        error = [output[i] - target[i] for i in range(len(output))]
         
-        // Update gradients
-        layer.gradients.biases[j] += deltas[j];
-        for (let k = 0; k < layer.weights[j].length; k++) {
-          layer.gradients.weights[j][k] += deltas[j] * prevActivations[k];
-        }
-      }
-      
-      // Calculate error for previous layer
-      if (i > 0) {
-        error = new Array(this.layers[i - 1].weights.length).fill(0);
-        for (let j = 0; j < this.layers[i - 1].weights.length; j++) {
-          for (let k = 0; k < layer.weights.length; k++) {
-            error[j] += layer.weights[k][j] * deltas[k];
-          }
-        }
-      }
-    }
-  }
-
-  updateWeights(batchSize) {
-    const lr = this.config.learningRate / batchSize;
-    for (let layer of this.layers) {
-      for (let i = 0; i < layer.weights.length; i++) {
-        for (let j = 0; j < layer.weights[i].length; j++) {
-          layer.weights[i][j] -= lr * layer.gradients.weights[i][j];
-          layer.gradients.weights[i][j] = 0;
-        }
-      }
-      for (let i = 0; i < layer.biases.length; i++) {
-        layer.biases[i] -= lr * layer.gradients.biases[i];
-        layer.gradients.biases[i] = 0;
-      }
-    }
-  }
-
-  train(dataset, epochs, onEpochComplete) {
-    for (let epoch = 0; epoch < epochs; epoch++) {
-      let totalLoss = 0;
-      for (let i = 0; i < dataset.inputs.length; i++) {
-        const output = this.forward(dataset.inputs[i]);
-        const loss = this.calculateLoss(output, dataset.targets[i]);
-        totalLoss += loss;
-        this.backward(dataset.inputs[i], dataset.targets[i], output);
-        this.updateWeights(1);
-      }
-      const avgLoss = totalLoss / dataset.inputs.length;
-      if (onEpochComplete) onEpochComplete(epoch, avgLoss);
-    }
-  }
-}`;
+        # Backpropagate through layers (from output to input)
+        for i in range(len(self.layers) - 1, -1, -1):
+            layer = self.layers[i]
+            prev_activations = (self.layers[i - 1]['activations'] 
+                              if i > 0 else input_data)
+            
+            deltas = []
+            is_output_layer = (i == len(self.layers) - 1)
+            
+            for j in range(len(layer['weights'])):
+                # Compute derivative of activation function
+                if is_output_layer and self.config['loss_function'] == 'mse':
+                    # Linear activation derivative = 1
+                    derivative = 1.0
+                elif is_output_layer and self.config['loss_function'] == 'crossentropy':
+                    # For cross-entropy with sigmoid, the gradient w.r.t. logit is already
+                    # output - target. The sigmoid derivative is already incorporated.
+                    derivative = 1.0
+                else:
+                    # Use configured activation derivative for hidden layers
+                    activation = layer['activations'][j]
+                    derivative = self.activate_derivative(activation)
+                
+                # Delta = error * derivative (chain rule)
+                delta = error[j] * derivative
+                deltas.append(delta)
+                
+                # Update gradients
+                layer['gradients']['biases'][j] += delta
+                for k in range(len(layer['weights'][j])):
+                    layer['gradients']['weights'][j][k] += (
+                        delta * prev_activations[k]
+                    )
+            
+            # Calculate error for previous layer
+            if i > 0:
+                error = [0.0] * len(self.layers[i - 1]['weights'])
+                for j in range(len(self.layers[i - 1]['weights'])):
+                    for k in range(len(layer['weights'])):
+                        error[j] += layer['weights'][k][j] * deltas[k]
+    
+    def update_weights(self, batch_size):
+        """Update weights using gradient descent."""
+        learning_rate = self.config['learning_rate'] / batch_size
+        for layer in self.layers:
+            # Update weights
+            for i in range(len(layer['weights'])):
+                for j in range(len(layer['weights'][i])):
+                    layer['weights'][i][j] -= (
+                        learning_rate * layer['gradients']['weights'][i][j]
+                    )
+                    layer['gradients']['weights'][i][j] = 0.0
+            # Update biases
+            for i in range(len(layer['biases'])):
+                layer['biases'][i] -= (
+                    learning_rate * layer['gradients']['biases'][i]
+                )
+                layer['gradients']['biases'][i] = 0.0
+    
+    def train(self, dataset, epochs, on_epoch_complete=None):
+        """Train the network on a dataset."""
+        for epoch in range(epochs):
+            total_loss = 0.0
+            for i in range(len(dataset['inputs'])):
+                output = self.forward(dataset['inputs'][i])
+                loss = self.calculate_loss(output, dataset['targets'][i])
+                total_loss += loss
+                self.backward(dataset['inputs'][i], 
+                             dataset['targets'][i], output)
+                self.update_weights(1)
+            avg_loss = total_loss / len(dataset['inputs'])
+            if on_epoch_complete:
+                on_epoch_complete(epoch, avg_loss)
+    
+    def activate(self, x):
+        """Apply activation function (ReLU, Sigmoid, or Tanh)."""
+        activation = self.config['activation']
+        if activation == 'relu':
+            return max(0.0, x)
+        elif activation == 'sigmoid':
+            return 1.0 / (1.0 + math.exp(-x))
+        elif activation == 'tanh':
+            return math.tanh(x)
+        return x
+    
+    def activate_derivative(self, x):
+        """Compute derivative of activation function."""
+        activation = self.config['activation']
+        if activation == 'relu':
+            return 1.0 if x > 0 else 0.0
+        elif activation == 'sigmoid':
+            return x * (1.0 - x)  # x is already sigmoid output
+        elif activation == 'tanh':
+            return 1.0 - x * x  # x is already tanh output
+        return 1.0
+    
+    def calculate_loss(self, output, target):
+        """Calculate loss (MSE or Cross-Entropy)."""
+        if self.config['loss_function'] == 'crossentropy':
+            loss = 0.0
+            for i in range(len(output)):
+                o = max(1e-15, min(1.0 - 1e-15, output[i]))
+                loss -= (target[i] * math.log(o) + 
+                        (1.0 - target[i]) * math.log(1.0 - o))
+            return loss / len(output)
+        else:  # MSE
+            loss = sum((output[i] - target[i]) ** 2 
+                      for i in range(len(output)))
+            return loss / len(output)`;
 
 export interface WeightSnapshot {
   epoch: number;
@@ -113,38 +174,84 @@ interface ToyNetworkProps {
 
 export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps) {
   const [hiddenSize, setHiddenSize] = useState(4);
-  const [learningRate, setLearningRate] = useState(0.1);
-  const [epochs, setEpochs] = useState(1000);
-  const [selectedDataset, setSelectedDataset] = useState<string>('xor');
+  const [learningRate, setLearningRate] = useState(0.5);
+  const [epochs, setEpochs] = useState(500);
+  const [selectedDataset, setSelectedDataset] = useState<string>('linear');
   const [isTraining, setIsTraining] = useState(false);
   const [lossHistory, setLossHistory] = useState<Array<{ epoch: number; loss: number }>>([]);
   const [currentEpoch, setCurrentEpoch] = useState(0);
   const [predictions, setPredictions] = useState<Array<{ input: number[]; target: number; prediction: number }>>([]);
   const [weightSnapshots, setWeightSnapshots] = useState<WeightSnapshot[]>([]);
   const networkRef = useRef<NeuralNetwork | null>(null);
-
-  const datasets: Record<string, Dataset> = {
-    xor: generateXORDataset(),
+  const shouldStopRef = useRef(false);
+  
+  // Memoize datasets, but regenerate linear regression on reset to get new random equation
+  const [datasets, setDatasets] = useState<Record<string, Dataset>>(() => ({
     linear: generateLinearDataset(),
     circle: generateCircleDataset(),
-  };
+  }));
 
   const currentDataset = datasets[selectedDataset];
+  
+  // Regenerate linear dataset when selected to get new random equation
+  useEffect(() => {
+    if (selectedDataset === 'linear') {
+      setDatasets(prev => ({
+        ...prev,
+        linear: generateLinearDataset(),
+      }));
+    }
+  }, [selectedDataset]);
+  
+  // Also regenerate when reset is clicked (handled in handleReset)
 
   const initializeNetwork = () => {
+    // Use slightly worse initialization to show progress, but ensure convergence
+    // Linear regression needs better initialization since output is linear
+    const initializationScale = selectedDataset === 'linear' ? 1.2 : selectedDataset === 'circle' ? 1.5 : 1.0;
+    
+    // Use appropriate activation functions for each task
+    // Linear regression: tanh in hidden layer, linear output (handled in forward pass)
+    // Circle: ReLU is fine for classification
+    const activation = selectedDataset === 'linear' ? 'tanh' : 'relu';
+    
     const config: NetworkConfig = {
       inputSize: currentDataset.inputs[0].length,
       hiddenSizes: [hiddenSize],
       outputSize: currentDataset.targets[0].length,
       learningRate,
-      activation: 'relu',
-      lossFunction: selectedDataset === 'xor' || selectedDataset === 'circle' ? 'crossentropy' : 'mse',
+      activation,
+      lossFunction: selectedDataset === 'circle' ? 'crossentropy' : 'mse',
+      initializationScale,
     };
     networkRef.current = new NeuralNetwork(config);
   };
 
+  // Set default hyperparameters when dataset changes
+  useEffect(() => {
+    if (selectedDataset === 'linear') {
+      setLearningRate(0.1);
+      setEpochs(300);
+    } else if (selectedDataset === 'circle') {
+      setLearningRate(0.15);
+      setEpochs(150);
+    }
+  }, [selectedDataset]);
+
   useEffect(() => {
     initializeNetwork();
+    // Show initial (bad) predictions for circle classification and linear regression
+    if ((selectedDataset === 'circle' || selectedDataset === 'linear') && networkRef.current) {
+      const dataset = datasets[selectedDataset];
+      const initialPreds = dataset.inputs.map((input, idx) => ({
+        input,
+        target: dataset.targets[idx][0],
+        prediction: networkRef.current!.predict(input)[0],
+      }));
+      setPredictions(initialPreds);
+    } else {
+      setPredictions([]);
+    }
   }, [hiddenSize, learningRate, selectedDataset]);
 
   const extractWeights = (network: NeuralNetwork): WeightSnapshot['connections'] => {
@@ -186,6 +293,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
     if (!networkRef.current) initializeNetwork();
     
     setIsTraining(true);
+    shouldStopRef.current = false;
     setLossHistory([]);
     setCurrentEpoch(0);
     setPredictions([]);
@@ -204,15 +312,64 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
     // Train in batches to allow UI updates
     let epoch = 0;
     const trainBatch = () => {
+      // Check if training should stop
+      if (shouldStopRef.current) {
+        setIsTraining(false);
+        // Show current predictions
+        // For circle classification, show both train and test predictions
+        if (selectedDataset === 'circle' && dataset.testInputs && dataset.testTargets) {
+          const trainPredictions = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          const testPredictions = dataset.testInputs.map((input, idx) => ({
+            input,
+            target: dataset.testTargets![idx][0],
+            prediction: network.predict(input)[0],
+            isTest: true,
+          }));
+          setPredictions([...trainPredictions, ...testPredictions]);
+        } else {
+          const currentPredictions = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          setPredictions(currentPredictions);
+        }
+        return;
+      }
+
       if (epoch >= epochs) {
         setIsTraining(false);
         // Show final predictions
-        const finalPredictions = dataset.inputs.map((input, idx) => ({
-          input,
-          target: dataset.targets[idx][0],
-          prediction: network.predict(input)[0],
-        }));
-        setPredictions(finalPredictions);
+        // For circle classification, show both train and test predictions
+        if (selectedDataset === 'circle' && dataset.testInputs && dataset.testTargets) {
+          const trainPredictions = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          const testPredictions = dataset.testInputs.map((input, idx) => ({
+            input,
+            target: dataset.testTargets![idx][0],
+            prediction: network.predict(input)[0],
+            isTest: true,
+          }));
+          setPredictions([...trainPredictions, ...testPredictions]);
+        } else {
+          const finalPredictions = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          setPredictions(finalPredictions);
+        }
         // Save final weights
         setWeightSnapshots(prev => {
           const updated = [...prev, { epoch, connections: extractWeights(network) }];
@@ -251,6 +408,34 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
         });
       }
       
+      // Update predictions periodically during training (for circle classification and linear regression)
+      if ((selectedDataset === 'circle' || selectedDataset === 'linear') && (epoch % 50 === 0 || epoch < 10)) {
+        // For circle classification, show both train and test predictions
+        if (selectedDataset === 'circle' && dataset.testInputs && dataset.testTargets) {
+          const trainPreds = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          const testPreds = dataset.testInputs.map((input, idx) => ({
+            input,
+            target: dataset.testTargets![idx][0],
+            prediction: network.predict(input)[0],
+            isTest: true,
+          }));
+          setPredictions([...trainPreds, ...testPreds]);
+        } else {
+          const currentPreds = dataset.inputs.map((input, idx) => ({
+            input,
+            target: dataset.targets[idx][0],
+            prediction: network.predict(input)[0],
+            isTest: false,
+          }));
+          setPredictions(currentPreds);
+        }
+      }
+      
       epoch++;
 
       // Use requestAnimationFrame for smooth updates
@@ -263,15 +448,24 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
   };
 
   const handleStop = () => {
+    shouldStopRef.current = true;
     setIsTraining(false);
   };
 
   const handleReset = () => {
+    shouldStopRef.current = true;
     setIsTraining(false);
     setLossHistory([]);
     setCurrentEpoch(0);
     setPredictions([]);
     setWeightSnapshots([]);
+    // Regenerate linear dataset to get new random equation
+    if (selectedDataset === 'linear') {
+      setDatasets(prev => ({
+        ...prev,
+        linear: generateLinearDataset(),
+      }));
+    }
     initializeNetwork();
   };
 
@@ -295,16 +489,37 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
       <div className="mb-6">
         <CodeSnippets
           code={implementationCode}
-          language="javascript"
+          language="python"
           title="Complete Implementation"
-          explanation="This is the full neural network implementation in TypeScript/JavaScript. All computation happens in your browser - no server calls!"
+          explanation="This is the full neural network implementation in Python. The interactive demo below runs JavaScript in your browser, but this Python code shows the same algorithm that most ML practitioners use!"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Configuration Panel */}
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Network Configuration</h4>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold text-gray-900">Network Configuration</h4>
+            <button
+              onClick={() => {
+                // Suggested hyperparameters for each dataset - optimized for convergence
+                if (selectedDataset === 'linear') {
+                  setHiddenSize(8);
+                  setLearningRate(0.1);
+                  setEpochs(300);
+                } else if (selectedDataset === 'circle') {
+                  setHiddenSize(8);
+                  setLearningRate(0.15);
+                  setEpochs(150);
+                }
+                handleReset();
+              }}
+              disabled={isTraining}
+              className="px-3 py-1 text-xs bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Suggested Hyperparameters
+            </button>
+          </div>
           
           <div className="space-y-4">
             <div>
@@ -323,6 +538,9 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Larger: More capacity, but slower & risk of overfitting. Smaller: Faster, but may underfit.
+              </p>
             </div>
 
             <div>
@@ -342,6 +560,9 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Larger: Faster convergence, but may overshoot. Smaller: More stable, but slower training.
+              </p>
             </div>
 
             <div>
@@ -358,6 +579,9 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Larger: Better learning, but slower & risk of overfitting. Smaller: Faster, but may underfit.
+              </p>
             </div>
 
             <div>
@@ -373,7 +597,6 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
                 disabled={isTraining}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="xor">XOR (2 inputs, 1 output)</option>
                 <option value="linear">Linear Regression (1 input, 1 output)</option>
                 <option value="circle">Circle Classification (2 inputs, 1 output)</option>
               </select>
@@ -382,94 +605,423 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
               </p>
             </div>
 
-            {/* XOR Explanation */}
-            {selectedDataset === 'xor' && (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
-                <h5 className="font-semibold text-purple-900 mb-2">What is XOR?</h5>
-                <p className="text-sm text-purple-800 mb-3">
-                  XOR (Exclusive OR) is a logical operation that returns <strong>1</strong> when the inputs are different, 
-                  and <strong>0</strong> when they are the same.
-                </p>
-                <div className="bg-white rounded p-3 mb-3 border border-purple-200">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-purple-200">
-                        <th className="text-left py-1 px-2">Input 1</th>
-                        <th className="text-left py-1 px-2">Input 2</th>
-                        <th className="text-left py-1 px-2">XOR Output</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="py-1 px-2">0</td>
-                        <td className="py-1 px-2">0</td>
-                        <td className="py-1 px-2 font-semibold">0</td>
-                      </tr>
-                      <tr>
-                        <td className="py-1 px-2">0</td>
-                        <td className="py-1 px-2">1</td>
-                        <td className="py-1 px-2 font-semibold">1</td>
-                      </tr>
-                      <tr>
-                        <td className="py-1 px-2">1</td>
-                        <td className="py-1 px-2">0</td>
-                        <td className="py-1 px-2 font-semibold">1</td>
-                      </tr>
-                      <tr>
-                        <td className="py-1 px-2">1</td>
-                        <td className="py-1 px-2">1</td>
-                        <td className="py-1 px-2 font-semibold">0</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                
-                <div className="bg-white rounded p-3 mb-3 border border-purple-200">
-                  <h6 className="text-xs font-semibold text-purple-900 mb-3">Linear Separability</h6>
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* Linearly Separable Example (AND) */}
-                    <div>
-                      <p className="text-xs text-gray-700 mb-2 font-medium">Linearly Separable:</p>
-                      <svg width="150" height="150" className="border border-gray-300 rounded bg-gray-50">
-                        <line x1="15" y1="135" x2="135" y2="135" stroke="#666" strokeWidth="1" />
-                        <line x1="15" y1="135" x2="15" y2="15" stroke="#666" strokeWidth="1" />
-                        <circle cx="30" cy="120" r="6" fill="#ef4444" stroke="#991b1b" strokeWidth="1.5" />
-                        <circle cx="30" cy="30" r="6" fill="#ef4444" stroke="#991b1b" strokeWidth="1.5" />
-                        <circle cx="120" cy="120" r="6" fill="#ef4444" stroke="#991b1b" strokeWidth="1.5" />
-                        <circle cx="120" cy="30" r="6" fill="#22c55e" stroke="#15803d" strokeWidth="1.5" />
-                        <line x1="20" y1="25" x2="130" y2="125" stroke="#3b82f6" strokeWidth="2" strokeDasharray="3,3" />
-                      </svg>
-                    </div>
-                    
-                    {/* Non-linearly Separable Example (XOR) */}
-                    <div>
-                      <p className="text-xs text-gray-700 mb-2 font-medium">XOR (Not Separable):</p>
-                      <svg width="150" height="150" className="border border-gray-300 rounded bg-gray-50">
-                        <line x1="15" y1="135" x2="135" y2="135" stroke="#666" strokeWidth="1" />
-                        <line x1="15" y1="135" x2="15" y2="15" stroke="#666" strokeWidth="1" />
-                        <circle cx="30" cy="120" r="6" fill="#ef4444" stroke="#991b1b" strokeWidth="1.5" />
-                        <circle cx="30" cy="30" r="6" fill="#22c55e" stroke="#15803d" strokeWidth="1.5" />
-                        <circle cx="120" cy="120" r="6" fill="#22c55e" stroke="#15803d" strokeWidth="1.5" />
-                        <circle cx="120" cy="30" r="6" fill="#ef4444" stroke="#991b1b" strokeWidth="1.5" />
-                        <line x1="15" y1="75" x2="135" y2="75" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.4" />
-                        <line x1="75" y1="15" x2="75" y2="135" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.4" />
-                        <line x1="20" y1="25" x2="130" y2="125" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.4" />
-                      </svg>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-600 mt-2">
-                    <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                    Output = 0 &nbsp;&nbsp;
-                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-2"></span>
-                    Output = 1
+            {/* Linear Regression Explanation */}
+            {selectedDataset === 'linear' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                <h5 className="font-semibold text-blue-900 mb-2">What is Linear Regression?</h5>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                  <p className="text-xs text-yellow-800 font-semibold mb-1">⚠️ Demo Only</p>
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> For real linear regression problems, simple linear regression (y = mx + b) is faster and more appropriate. 
+                    This neural network demo is for educational purposes to show how networks can learn linear patterns. 
+                    In practice, use traditional linear regression for this type of problem.
                   </p>
                 </div>
+                <p className="text-sm text-blue-800 mb-3">
+                  Here, we train on clean points along a random line <strong>y = {currentDataset.metadata?.slope?.toFixed(2) || 'mx'}x {currentDataset.metadata?.intercept && currentDataset.metadata.intercept >= 0 ? '+' : ''} {currentDataset.metadata?.intercept?.toFixed(2) || '+ b'}</strong> and test the model's ability to <strong>interpolate</strong> 
+                  (predict values between training points). The network should learn the linear relationship and generalize 
+                  to new x values it hasn't seen during training.
+                </p>
                 
-                <p className="text-sm text-purple-800">
-                  <strong>Why is XOR important?</strong> XOR is a classic problem in machine learning because it's 
-                  <strong> non-linearly separable</strong> - you cannot draw a single straight line to separate the classes. 
-                  This makes it impossible for a single-layer perceptron to learn, but a neural network with at least one 
-                  hidden layer can learn this pattern. This demonstrates the power of multi-layer networks!
+                <div className="bg-white rounded p-3 mb-3 border border-blue-200">
+                  <h6 className="text-xs font-semibold text-blue-900 mb-3">Training Data vs Model Predictions</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Training Data */}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">Training Data (Ground Truth)</p>
+                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                        {/* Axes */}
+                        <line x1="20" y1="170" x2="180" y2="170" stroke="#666" strokeWidth="1" />
+                        <line x1="20" y1="170" x2="20" y2="30" stroke="#666" strokeWidth="1" />
+                        
+                        {/* True line: y = mx + b */}
+                        {(() => {
+                          const slope = currentDataset.metadata?.slope || 0.5;
+                          const intercept = currentDataset.metadata?.intercept || 0.2;
+                          const x1 = -1;
+                          const y1 = slope * x1 + intercept;
+                          const px1 = 20 + ((x1 + 1) / 2) * 160;
+                          // Map y to SVG coordinates: y ranges from slope*(-1)+intercept to slope*(1)+intercept
+                          const yMin = slope * (-1) + intercept;
+                          const yMax = slope * 1 + intercept;
+                          const yRange = yMax - yMin || 1;
+                          const py1 = 170 - ((y1 - yMin) / yRange) * 140;
+                          
+                          const x2 = 1;
+                          const y2 = slope * x2 + intercept;
+                          const px2 = 20 + ((x2 + 1) / 2) * 160;
+                          const py2 = 170 - ((y2 - yMin) / yRange) * 140;
+                          
+                          return (
+                            <line 
+                              x1={px1} 
+                              y1={py1} 
+                              x2={px2} 
+                              y2={py2}
+                              stroke="#3b82f6" 
+                              strokeWidth="2" 
+                              strokeDasharray="3,3"
+                            />
+                          );
+                        })()}
+                        
+                        {/* Actual data points */}
+                        {currentDataset.inputs.map((input, idx) => {
+                          const x = input[0];
+                          const y = currentDataset.targets[idx][0];
+                          const px = 20 + ((x + 1) / 2) * 160;
+                          // Map y to SVG coordinates using actual y range
+                          const slope = currentDataset.metadata?.slope || 0.5;
+                          const intercept = currentDataset.metadata?.intercept || 0.2;
+                          const yMin = slope * (-1) + intercept;
+                          const yMax = slope * 1 + intercept;
+                          const yRange = yMax - yMin || 1;
+                          const py = 170 - ((y - yMin) / yRange) * 140;
+                          
+                          return (
+                            <circle 
+                              key={`data-${idx}`} 
+                              cx={px} 
+                              cy={py} 
+                              r="3" 
+                              fill="#60a5fa" 
+                              stroke="#2563eb" 
+                              strokeWidth="1" 
+                            />
+                          );
+                        })}
+                      </svg>
+                      <p className="text-xs text-gray-600 mt-2 text-center">
+                        Training points on line: <strong>y = {currentDataset.metadata?.slope?.toFixed(2) || 'mx'}x {currentDataset.metadata?.intercept && currentDataset.metadata.intercept >= 0 ? '+' : ''} {currentDataset.metadata?.intercept?.toFixed(2) || '+ b'}</strong>
+                      </p>
+                    </div>
+                    
+                    {/* Model Predictions */}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">
+                        Model Predictions {predictions.length > 0 && isTraining && `(Epoch ${currentEpoch})`}
+                      </p>
+                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                        {/* Axes */}
+                        <line x1="20" y1="170" x2="180" y2="170" stroke="#666" strokeWidth="1" />
+                        <line x1="20" y1="170" x2="20" y2="30" stroke="#666" strokeWidth="1" />
+                        
+                        {/* Predicted line - connect prediction points */}
+                        {predictions.length > 0 && (() => {
+                          const slope = currentDataset.metadata?.slope || 0.5;
+                          const intercept = currentDataset.metadata?.intercept || 0.2;
+                          const yMin = slope * (-1) + intercept;
+                          const yMax = slope * 1 + intercept;
+                          const yRange = yMax - yMin || 1;
+                          
+                          // Sort predictions by x value
+                          const sorted = [...predictions].sort((a, b) => a.input[0] - b.input[0]);
+                          
+                          // Draw line segments between consecutive predictions
+                          const path = sorted.map((pred, idx) => {
+                            const x = pred.input[0];
+                            const y = pred.prediction;
+                            const px = 20 + ((x + 1) / 2) * 160;
+                            const py = 170 - ((y - yMin) / yRange) * 140;
+                            return `${idx === 0 ? 'M' : 'L'} ${px} ${py}`;
+                          }).join(' ');
+                          
+                          return (
+                            <path
+                              d={path}
+                              fill="none"
+                              stroke="#22c55e"
+                              strokeWidth="2"
+                              strokeDasharray="2,2"
+                            />
+                          );
+                        })()}
+                        
+                        {/* True line for reference */}
+                        {(() => {
+                          const slope = currentDataset.metadata?.slope || 0.5;
+                          const intercept = currentDataset.metadata?.intercept || 0.2;
+                          const x1 = -1;
+                          const y1 = slope * x1 + intercept;
+                          const px1 = 20 + ((x1 + 1) / 2) * 160;
+                          const yMin = slope * (-1) + intercept;
+                          const yMax = slope * 1 + intercept;
+                          const yRange = yMax - yMin || 1;
+                          const py1 = 170 - ((y1 - yMin) / yRange) * 140;
+                          
+                          const x2 = 1;
+                          const y2 = slope * x2 + intercept;
+                          const px2 = 20 + ((x2 + 1) / 2) * 160;
+                          const py2 = 170 - ((y2 - yMin) / yRange) * 140;
+                          
+                          return (
+                            <line 
+                              x1={px1} 
+                              y1={py1} 
+                              x2={px2} 
+                              y2={py2}
+                              stroke="#3b82f6" 
+                              strokeWidth="1.5" 
+                              strokeDasharray="3,3"
+                              opacity="0.6"
+                            />
+                          );
+                        })()}
+                        
+                        {/* Predicted points */}
+                        {predictions.length > 0 ? (() => {
+                          const slope = currentDataset.metadata?.slope || 0.5;
+                          const intercept = currentDataset.metadata?.intercept || 0.2;
+                          const yMin = slope * (-1) + intercept;
+                          const yMax = slope * 1 + intercept;
+                          const yRange = yMax - yMin || 1;
+                          
+                          return predictions.map((pred, idx) => {
+                            const x = pred.input[0];
+                            const y = pred.prediction;
+                            const px = 20 + ((x + 1) / 2) * 160;
+                            const py = 170 - ((y - yMin) / yRange) * 140;
+                            
+                            const error = Math.abs(pred.prediction - pred.target);
+                            const isGood = error < 0.05; // Tighter threshold for clean data
+                            
+                            return (
+                              <circle 
+                                key={`pred-${idx}`} 
+                                cx={px} 
+                                cy={py} 
+                                r="3" 
+                                fill="#22c55e" 
+                                stroke={isGood ? "#15803d" : "#991b1b"} 
+                                strokeWidth={isGood ? 1.5 : 2}
+                                opacity={isGood ? 1 : 0.7}
+                              />
+                            );
+                          });
+                        })() : (
+                          <text x="100" y="100" textAnchor="middle" className="text-sm fill-gray-400">
+                            Train to see predictions
+                          </text>
+                        )}
+                      </svg>
+                      <p className="text-xs text-gray-600 mt-2 text-center">
+                        {predictions.length > 0 ? (
+                          <>
+                            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                            Predicted points &nbsp;&nbsp;
+                            <span className="inline-block w-2 h-2 border-2 border-blue-500 rounded-full bg-transparent mr-1 ml-2"></span>
+                            True line (reference)
+                            <br />
+                            <span className="text-xs text-green-600">Green border = Good fit</span>
+                            <br />
+                            <span className="text-xs text-red-600">Red border = Poor fit</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                            Predicted line &nbsp;&nbsp;
+                            <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-1 ml-2"></span>
+                            True line
+                          </>
+                        )}
+                      </p>
+                      {predictions.length > 0 && !isTraining && (
+                        <p className="text-xs text-center mt-1 font-semibold text-blue-700">
+                          Mean Error: {(predictions.reduce((sum, p) => sum + Math.abs(p.prediction - p.target), 0) / predictions.length).toFixed(4)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-blue-800">
+                  <strong>Why use neural networks for regression?</strong> While simple linear regression can solve this, 
+                  neural networks can learn more complex, non-linear relationships. This example demonstrates how a network 
+                  can learn even simple linear patterns, and the same architecture can be extended to learn non-linear functions!
+                </p>
+              </div>
+            )}
+
+            {/* Circle Classification Explanation */}
+            {selectedDataset === 'circle' && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                <h5 className="font-semibold text-green-900 mb-2">What is Circle Classification?</h5>
+                <p className="text-sm text-green-800 mb-3">
+                  Circle classification is a 2D binary classification problem where points are classified as being 
+                  <strong> inside</strong> or <strong>outside</strong> a circle. This is a non-linearly separable problem 
+                  that requires a neural network with hidden layers.
+                </p>
+                
+                <div className="bg-white rounded p-3 mb-3 border border-green-200">
+                  <h6 className="text-xs font-semibold text-green-900 mb-3">Training Data vs Model Predictions (Train & Test Sets)</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Training Data */}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">Training Data (Ground Truth)</p>
+                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                        {/* Axes */}
+                        <line x1="20" y1="100" x2="180" y2="100" stroke="#666" strokeWidth="1" />
+                        <line x1="100" y1="20" x2="100" y2="180" stroke="#666" strokeWidth="1" />
+                        
+                        {/* Circle boundary (radius ~0.5, centered at origin) */}
+                        <circle cx="100" cy="100" r="40" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="3,3" />
+                        
+                        {/* Training points */}
+                        {currentDataset.inputs.map((input, idx) => {
+                          const [x, y] = input;
+                          const target = currentDataset.targets[idx][0];
+                          const px = 100 + x * 80;
+                          const py = 100 - y * 80;
+                          const fillColor = target === 0 ? '#ef4444' : '#22c55e';
+                          const strokeColor = target === 0 ? '#991b1b' : '#15803d';
+                          
+                          return (
+                            <circle 
+                              key={`train-data-${idx}`} 
+                              cx={px} 
+                              cy={py} 
+                              r="3" 
+                              fill={fillColor} 
+                              stroke={strokeColor} 
+                              strokeWidth="1" 
+                            />
+                          );
+                        })}
+                        {/* Test points (if available) */}
+                        {currentDataset.testInputs && currentDataset.testInputs.map((input, idx) => {
+                          const [x, y] = input;
+                          const target = currentDataset.testTargets![idx][0];
+                          const px = 100 + x * 80;
+                          const py = 100 - y * 80;
+                          const fillColor = target === 0 ? '#ef4444' : '#22c55e';
+                          const strokeColor = target === 0 ? '#991b1b' : '#15803d';
+                          
+                          return (
+                            <circle 
+                              key={`test-data-${idx}`} 
+                              cx={px} 
+                              cy={py} 
+                              r="3" 
+                              fill={fillColor} 
+                              stroke={strokeColor} 
+                              strokeWidth="1.5"
+                              opacity="0.6"
+                            />
+                          );
+                        })}
+                      </svg>
+                      <p className="text-xs text-gray-600 mt-2 text-center">
+                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                        Inside (Class 0) &nbsp;&nbsp;
+                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-2"></span>
+                        Outside (Class 1)
+                        {currentDataset.testInputs && (
+                          <>
+                            <br />
+                            <span className="text-xs text-gray-500">Solid = Train, Faded = Test</span>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    
+                    {/* Model Predictions */}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700 mb-2 text-center">
+                        Model Predictions {predictions.length > 0 && isTraining && `(Epoch ${currentEpoch})`}
+                      </p>
+                      <svg width="200" height="200" className="border border-gray-300 rounded bg-gray-50 mx-auto">
+                        {/* Axes */}
+                        <line x1="20" y1="100" x2="180" y2="100" stroke="#666" strokeWidth="1" />
+                        <line x1="100" y1="20" x2="100" y2="180" stroke="#666" strokeWidth="1" />
+                        
+                        {/* Circle boundary (radius ~0.5, centered at origin) */}
+                        <circle cx="100" cy="100" r="40" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="3,3" />
+                        
+                        {/* Show predictions if available */}
+                        {predictions.length > 0 ? (
+                          predictions.map((pred, idx) => {
+                            const [x, y] = pred.input;
+                            const px = 100 + x * 80;
+                            const py = 100 - y * 80;
+                            
+                            const predictedClass = pred.prediction > 0.5 ? 1 : 0;
+                            const isCorrect = (pred.prediction > 0.5) === (pred.target > 0.5);
+                            const fillColor = predictedClass === 0 ? '#ef4444' : '#22c55e';
+                            const strokeColor = isCorrect ? '#15803d' : '#991b1b';
+                            const strokeWidth = isCorrect ? 1.5 : 2;
+                            const isTest = pred.isTest || false;
+                            
+                            return (
+                              <circle 
+                                key={`pred-${idx}`} 
+                                cx={px} 
+                                cy={py} 
+                                r={isTest ? "4" : "3"}
+                                fill={fillColor} 
+                                stroke={strokeColor} 
+                                strokeWidth={strokeWidth}
+                                opacity={isCorrect ? (isTest ? 0.8 : 1) : 0.7}
+                              />
+                            );
+                          })
+                        ) : (
+                          <text x="100" y="100" textAnchor="middle" className="text-sm fill-gray-400">
+                            Train to see predictions
+                          </text>
+                        )}
+                      </svg>
+                      <p className="text-xs text-gray-600 mt-2 text-center">
+                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                        Predicted Inside &nbsp;&nbsp;
+                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-2"></span>
+                        Predicted Outside
+                        <br />
+                        <span className="text-xs text-green-600">Green border = Correct</span>
+                        <br />
+                        <span className="text-xs text-red-600">Red border = Wrong</span>
+                        {predictions.length > 0 && predictions.some(p => p.isTest) && (
+                          <>
+                            <br />
+                            <span className="text-xs text-gray-500">Smaller = Train, Larger = Test</span>
+                          </>
+                        )}
+                      </p>
+                      {predictions.length > 0 && !isTraining && (
+                        <div className="text-xs text-center mt-2 space-y-1">
+                          {(() => {
+                            const trainPreds = predictions.filter(p => !p.isTest);
+                            const testPreds = predictions.filter(p => p.isTest);
+                            const trainCorrect = trainPreds.filter(p => (p.prediction > 0.5) === (p.target > 0.5)).length;
+                            const testCorrect = testPreds.filter(p => (p.prediction > 0.5) === (p.target > 0.5)).length;
+                            return (
+                              <>
+                                <p className="font-semibold text-green-700">
+                                  Train Accuracy: {trainPreds.length > 0 ? ((trainCorrect / trainPreds.length) * 100).toFixed(1) : '0'}%
+                                </p>
+                                {testPreds.length > 0 && (
+                                  <p className="font-semibold text-blue-700">
+                                    Test Accuracy: {((testCorrect / testPreds.length) * 100).toFixed(1)}%
+                                  </p>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
+                      {predictions.length > 0 && !isTraining && (
+                        <p className="text-xs text-center mt-1 font-semibold text-green-700">
+                          Accuracy: {((predictions.filter(p => (p.prediction > 0.5) === (p.target > 0.5)).length / predictions.length) * 100).toFixed(1)}%
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-green-800">
+                  <strong>Why is this challenging?</strong> Circle classification has continuous 2D inputs. The decision boundary 
+                  is a circle, which cannot be represented by a single linear separator. A neural network with hidden layers can 
+                  learn this circular decision boundary, demonstrating its ability to learn complex, non-linear patterns in 
+                  continuous data!
                 </p>
               </div>
             )}
@@ -493,19 +1045,11 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
             <button
               onClick={handleReset}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              title={selectedDataset === 'linear' ? 'Reset network and generate new random function' : 'Reset network'}
             >
-              Reset
+              {selectedDataset === 'linear' ? 'Reset (New Function)' : 'Reset'}
             </button>
           </div>
-
-          {!isTraining && lossHistory.length > 0 && (
-            <button
-              onClick={handleTest}
-              className="mt-2 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Test Predictions
-            </button>
-          )}
         </div>
 
         {/* Training Status */}
@@ -578,60 +1122,7 @@ export default function ToyNetwork({ onWeightSnapshotsChange }: ToyNetworkProps)
         </div>
       </div>
 
-      {/* Predictions Table */}
-      {predictions.length > 0 && (
-        <div className="mt-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Predictions</h4>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Input
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Target
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Prediction
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Error
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {predictions.map((pred, idx) => {
-                  const error = Math.abs(pred.prediction - pred.target);
-                  const isCorrect = selectedDataset === 'xor' || selectedDataset === 'circle'
-                    ? (pred.prediction > 0.5) === (pred.target > 0.5)
-                    : error < 0.1;
-                  
-                  return (
-                    <tr key={idx} className={isCorrect ? 'bg-green-50' : ''}>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        [{pred.input.map(v => v.toFixed(2)).join(', ')}]
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {pred.target.toFixed(4)}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium">
-                        {pred.prediction.toFixed(4)}
-                      </td>
-                      <td className={`px-4 py-3 text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                        {error.toFixed(4)}
-                        {isCorrect && (
-                          <span className="ml-2 text-green-600">✓</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

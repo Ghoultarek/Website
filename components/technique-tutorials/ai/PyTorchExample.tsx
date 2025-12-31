@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import CodeSnippets from './CodeSnippets';
+import BackpropVisualization from './BackpropVisualization';
 
 const pytorchCode = `import torch
 import torch.nn as nn
@@ -62,6 +63,19 @@ interface WeightSnapshot {
   };
 }
 
+interface BackpropWeightSnapshot {
+  epoch: number;
+  connections: Array<{
+    from: string;
+    to: string;
+    weight: number;
+  }>;
+  biases: Array<{
+    id: string;
+    bias: number;
+  }>;
+}
+
 export default function PyTorchExample() {
   const [isTraining, setIsTraining] = useState(false);
   const [epoch, setEpoch] = useState(0);
@@ -76,7 +90,52 @@ export default function PyTorchExample() {
     ],
     hiddenToOutput: [[0.7], [-0.5], [0.3], [-0.2]]
   });
+  const [backpropSnapshots, setBackpropSnapshots] = useState<BackpropWeightSnapshot[]>([]);
   const animationRef = useRef<number>();
+
+  // Convert PyTorch weights to BackpropVisualization format
+  const convertWeightsToBackpropFormat = (currentWeights: WeightSnapshot['weights'], currentEpoch: number): BackpropWeightSnapshot => {
+    const connections: BackpropWeightSnapshot['connections'] = [];
+    const biases: BackpropWeightSnapshot['biases'] = [];
+
+    // Input to hidden connections (2 inputs -> 4 hidden)
+    // Map to 2 inputs -> 2 hidden for visualization (use first 2 hidden neurons)
+    for (let i = 0; i < 2; i++) { // hidden neurons (h0, h1)
+      for (let j = 0; j < 2; j++) { // input neurons (i0, i1)
+        connections.push({
+          from: `i${j}`,
+          to: `h${i}`,
+          weight: currentWeights.inputToHidden[i][j]
+        });
+      }
+      // Add bias for hidden neuron (simulated as 0 for now)
+      biases.push({
+        id: `h${i}`,
+        bias: 0.1 * (i + 1) // Simulated bias
+      });
+    }
+
+    // Hidden to output connections (2 hidden -> 1 output)
+    for (let i = 0; i < 2; i++) {
+      connections.push({
+        from: `h${i}`,
+        to: `o0`,
+        weight: currentWeights.hiddenToOutput[i][0]
+      });
+    }
+
+    // Output bias
+    biases.push({
+      id: 'o0',
+      bias: 0.1 // Simulated bias
+    });
+
+    return {
+      epoch: currentEpoch,
+      connections,
+      biases
+    };
+  };
 
   // Simulate training
   useEffect(() => {
@@ -124,15 +183,31 @@ export default function PyTorchExample() {
               })
             );
             
-            return {
+            const updatedWeights = {
               inputToHidden: newInputToHidden,
               hiddenToOutput: newHiddenToOutput
             };
+
+            // Save snapshot for backprop visualization
+            setBackpropSnapshots(prev => {
+              const snapshot = convertWeightsToBackpropFormat(updatedWeights, newEpoch);
+              return [...prev, snapshot];
+            });
+            
+            return updatedWeights;
           });
         }
         
         if (newEpoch >= 1000) {
           setIsTraining(false);
+          // Save final snapshot after training completes
+          setTimeout(() => {
+            setWeights(currentWeights => {
+              const finalSnapshot = convertWeightsToBackpropFormat(currentWeights, newEpoch);
+              setBackpropSnapshots(prev => [...prev, finalSnapshot]);
+              return currentWeights;
+            });
+          }, 100);
           return prev;
         }
         
@@ -149,6 +224,10 @@ export default function PyTorchExample() {
     setEpoch(0);
     setLossHistory([]);
     setCurrentLoss(null);
+    setBackpropSnapshots([]); // Reset snapshots
+    // Save initial snapshot
+    const initialSnapshot = convertWeightsToBackpropFormat(weights, 0);
+    setBackpropSnapshots([initialSnapshot]);
   };
 
   const handleStopTraining = () => {
@@ -530,6 +609,16 @@ export default function PyTorchExample() {
           <li><strong>Weight Update:</strong> Adjust weights using optimizer (SGD) to minimize loss</li>
         </ul>
       </div>
+
+      {/* Backpropagation Visualization */}
+      {backpropSnapshots.length > 0 && (
+        <div className="mt-6">
+          <BackpropVisualization 
+            weightSnapshots={backpropSnapshots} 
+            disabled={isTraining}
+          />
+        </div>
+      )}
     </div>
   );
 }

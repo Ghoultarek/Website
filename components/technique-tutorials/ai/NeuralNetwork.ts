@@ -18,8 +18,11 @@ export class NeuralNetwork {
       const outputSize = sizes[i + 1];
 
       // Initialize weights with Xavier/Glorot initialization
+      // Use initializationScale to make weights worse (larger random values) if specified
       const weights: number[][] = [];
-      const limit = Math.sqrt(6.0 / (inputSize + outputSize));
+      const baseLimit = Math.sqrt(6.0 / (inputSize + outputSize));
+      const scale = this.config.initializationScale || 1.0;
+      const limit = baseLimit * scale;
       
       for (let j = 0; j < outputSize; j++) {
         weights[j] = [];
@@ -80,13 +83,23 @@ export class NeuralNetwork {
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
       const outputs: number[] = [];
+      const isOutputLayer = i === this.layers.length - 1;
 
       for (let j = 0; j < layer.weights.length; j++) {
         let sum = layer.biases[j];
         for (let k = 0; k < currentInput.length; k++) {
           sum += layer.weights[j][k] * currentInput[k];
         }
-        outputs[j] = this.activate(sum);
+        // For regression (MSE loss), output layer should be linear (no activation)
+        // For classification (crossentropy), use sigmoid activation
+        if (isOutputLayer && this.config.lossFunction === 'mse') {
+          outputs[j] = sum; // Linear activation for regression output
+        } else if (isOutputLayer && this.config.lossFunction === 'crossentropy') {
+          // Use sigmoid for binary classification output
+          outputs[j] = 1 / (1 + Math.exp(-sum));
+        } else {
+          outputs[j] = this.activate(sum);
+        }
       }
 
       layer.activations = outputs;
@@ -116,10 +129,23 @@ export class NeuralNetwork {
 
       // Calculate gradients for this layer
       const deltas: number[] = [];
+      const isOutputLayer = i === this.layers.length - 1;
       
       for (let j = 0; j < layer.weights.length; j++) {
-        const activation = layer.activations[j];
-        const derivative = this.activateDerivative(activation);
+        // For output layer with MSE loss, derivative is 1 (linear activation)
+        // For output layer with crossentropy, derivative is 1 (sigmoid derivative already incorporated)
+        // For hidden layers, use configured activation derivative
+        let derivative: number;
+        if (isOutputLayer && this.config.lossFunction === 'mse') {
+          derivative = 1; // Linear activation derivative
+        } else if (isOutputLayer && this.config.lossFunction === 'crossentropy') {
+          // For cross-entropy with sigmoid, the gradient w.r.t. logit is already output - target.
+          // The sigmoid derivative is already incorporated in the cross-entropy gradient.
+          derivative = 1;
+        } else {
+          const activation = layer.activations[j];
+          derivative = this.activateDerivative(activation);
+        }
         deltas[j] = error[j] * derivative;
 
         // Update bias gradient
@@ -250,9 +276,16 @@ export function generateLinearDataset(numSamples: number = 20): Dataset {
   const inputs: number[][] = [];
   const targets: number[][] = [];
 
+  // Randomize the equation: y = mx + b
+  // Slope between -1 and 1, intercept between -0.5 and 0.5
+  const slope = (Math.random() * 2 - 1); // -1 to 1
+  const intercept = (Math.random() * 1 - 0.5); // -0.5 to 0.5
+
+  // Generate clean points along the line
+  // Use evenly spaced x values for training
   for (let i = 0; i < numSamples; i++) {
-    const x = Math.random() * 2 - 1; // -1 to 1
-    const y = x * 0.5 + 0.2 + (Math.random() - 0.5) * 0.1; // y = 0.5x + 0.2 + noise
+    const x = (i / (numSamples - 1)) * 2 - 1; // Evenly spaced from -1 to 1
+    const y = x * slope + intercept; // Clean line: y = mx + b (no noise)
     inputs.push([x]);
     targets.push([y]);
   }
@@ -261,28 +294,47 @@ export function generateLinearDataset(numSamples: number = 20): Dataset {
     name: 'Linear Regression',
     inputs,
     targets,
-    description: 'Simple linear regression with noise',
+    description: `Learn the line y = ${slope.toFixed(2)}x + ${intercept.toFixed(2)} through interpolation`,
+    metadata: {
+      slope,
+      intercept,
+    },
   };
 }
 
-export function generateCircleDataset(numSamples: number = 50): Dataset {
-  const inputs: number[][] = [];
-  const targets: number[][] = [];
+export function generateCircleDataset(numTrainSamples: number = 40, numTestSamples: number = 20): Dataset {
+  const trainInputs: number[][] = [];
+  const trainTargets: number[][] = [];
+  const testInputs: number[][] = [];
+  const testTargets: number[][] = [];
 
-  for (let i = 0; i < numSamples; i++) {
+  // Generate training set
+  for (let i = 0; i < numTrainSamples; i++) {
     const angle = Math.random() * 2 * Math.PI;
     const radius = Math.random() * 0.5 + (Math.random() < 0.5 ? 0 : 0.6);
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
-    inputs.push([x, y]);
-    targets.push([radius > 0.5 ? 1 : 0]);
+    trainInputs.push([x, y]);
+    trainTargets.push([radius > 0.5 ? 1 : 0]);
+  }
+
+  // Generate test set from the same circle (same decision boundary)
+  for (let i = 0; i < numTestSamples; i++) {
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = Math.random() * 0.5 + (Math.random() < 0.5 ? 0 : 0.6);
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    testInputs.push([x, y]);
+    testTargets.push([radius > 0.5 ? 1 : 0]);
   }
 
   return {
     name: 'Circle Classification',
-    inputs,
-    targets,
-    description: 'Classify points inside vs outside a circle',
+    inputs: trainInputs, // Training set
+    targets: trainTargets,
+    testInputs: testInputs, // Test set
+    testTargets: testTargets,
+    description: 'Classify points inside vs outside a circle (with separate train/test sets)',
   };
 }
 

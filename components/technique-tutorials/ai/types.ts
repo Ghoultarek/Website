@@ -5,6 +5,7 @@ export interface NetworkConfig {
   learningRate: number;
   activation: 'relu' | 'sigmoid' | 'tanh';
   lossFunction: 'mse' | 'crossentropy';
+  initializationScale?: number; // Optional: multiplier for weight initialization (larger = worse initial weights)
 }
 
 export interface Layer {
@@ -40,6 +41,13 @@ export interface Dataset {
   inputs: number[][];
   targets: number[][];
   description: string;
+  metadata?: {
+    slope?: number;
+    intercept?: number;
+  };
+  // Optional test set (for circle classification)
+  testInputs?: number[][];
+  testTargets?: number[][];
 }
 
 export interface BackpropStep {

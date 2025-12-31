@@ -35,7 +35,8 @@ interface BackpropVisualizationProps {
 export default function BackpropVisualization({ 
   width = 800, 
   height = 500,
-  weightSnapshots = []
+  weightSnapshots = [],
+  disabled = false
 }: BackpropVisualizationProps) {
   const [phase, setPhase] = useState<'forward' | 'loss' | 'backward' | 'update'>('forward');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -320,7 +321,11 @@ export default function BackpropVisualization({
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Backpropagation Visualization</h3>
         <p className="text-gray-600 text-sm mb-4">
           Watch how information flows forward through the network, then gradients flow backward during training.
-          {weightSnapshots.length > 0 && (
+          {disabled ? (
+            <span className="block mt-2 text-yellow-600 font-medium">
+              Please wait for the model to finish training
+            </span>
+          ) : weightSnapshots.length > 0 && (
             <span className="block mt-2 text-primary-600 font-medium">
               Linked to training data: Showing weight updates from {weightSnapshots.length} snapshots
             </span>
@@ -330,23 +335,30 @@ export default function BackpropVisualization({
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            disabled={disabled || weightSnapshots.length === 0}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
           <button
             onClick={handleStep}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            disabled={isPlaying}
+            disabled={disabled || isPlaying || weightSnapshots.length === 0}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Step
           </button>
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            disabled={disabled || weightSnapshots.length === 0}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Reset
           </button>
+          {disabled && (
+            <span className="text-sm text-gray-500 italic">
+              Wait for training to complete to interact with visualization
+            </span>
+          )}
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-600">Speed:</label>
             <input
@@ -356,7 +368,8 @@ export default function BackpropVisualization({
               step="100"
               value={speed}
               onChange={(e) => setSpeed(Number(e.target.value))}
-              className="w-32"
+              disabled={disabled}
+              className="w-32 disabled:opacity-50"
             />
             <span className="text-sm text-gray-600">{speed}ms</span>
           </div>
