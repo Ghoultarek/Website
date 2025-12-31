@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import PyTorchExample from './PyTorchExample';
 import BackpropToyExample from './BackpropToyExample';
 import ToyNetwork from './ToyNetwork';
+import TrainingPathologies from './TrainingPathologies';
 
 export interface WeightSnapshot {
   epoch: number;
@@ -22,6 +23,7 @@ export default function AITutorial() {
   const sections = [
     { id: 'intro', title: 'Introduction' },
     { id: 'backprop', title: 'Understanding Backpropagation' },
+    { id: 'pathologies', title: 'Observed Training Pathologies' },
     { id: 'pytorch', title: 'PyTorch Training Example' },
     { id: 'tryit', title: 'Try It Yourself' },
   ];
@@ -176,20 +178,10 @@ export default function AITutorial() {
         <ToyNetwork />
       </section>
 
-      {/* Footer */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mt-12">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Next Steps</h3>
-        <p className="text-gray-700 text-sm mb-4">
-          Now that you understand the fundamentals, you can experiment with:
-        </p>
-        <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-          <li>Different activation functions (ReLU, Sigmoid, Tanh)</li>
-          <li>Various loss functions (MSE, Cross-Entropy)</li>
-          <li>Different optimizers (SGD, Adam, RMSprop)</li>
-          <li>More complex architectures (deeper networks, convolutional layers)</li>
-          <li>Regularization techniques (dropout, weight decay)</li>
-        </ul>
-      </div>
+      {/* Training Pathologies Section */}
+      <section id="pathologies" className="mb-12 scroll-mt-8">
+        <TrainingPathologies />
+      </section>
     </div>
   );
 }

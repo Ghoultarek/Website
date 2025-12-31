@@ -307,13 +307,27 @@ export default function FuzzyCMeansDemo({ data: propData }: FuzzyCMeansDemoProps
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-blue-900 mb-2">Key Characteristics:</h4>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Soft clustering: points belong to multiple clusters with probabilities</li>
           <li>Useful when cluster boundaries are ambiguous</li>
           <li>Membership values provide confidence scores</li>
           <li>More flexible than hard clustering methods</li>
+          <li><strong>*</strong> Used in cyclist safety assessment research to identify different traffic regimes based on volume patterns</li>
+        </ul>
+      </div>
+
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h4 className="font-semibold text-red-900 mb-2">Common Pitfalls:</h4>
+        <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+          <li><strong>Fuzziness parameter m:</strong> Choosing m poorly affects cluster shapes. Too small (close to 1) = hard clustering. Too large = all memberships become equal.</li>
+          <li><strong>Number of clusters c:</strong> Still need to specify c in advance. Wrong choice leads to poor clustering quality.</li>
+          <li><strong>Initialization:</strong> Sensitive to initial membership matrix. Poor initialization can lead to local minima.</li>
+          <li><strong>Computational cost:</strong> More expensive than K-means due to membership calculations. Slower convergence.</li>
+          <li><strong>Interpretation:</strong> Membership degrees can be hard to interpret, especially when many points have similar memberships across clusters.</li>
+          <li><strong>Feature scaling:</strong> Like other distance-based methods, sensitive to feature scales. Normalize features before clustering.</li>
+          <li><strong>Convergence:</strong> May converge slowly or not at all if parameters are poorly chosen or data is ill-suited for fuzzy clustering.</li>
         </ul>
       </div>
     </div>

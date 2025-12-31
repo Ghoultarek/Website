@@ -252,7 +252,7 @@ centroids = kmeans.cluster_centers_`}</pre>
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-blue-900 mb-2">Key Characteristics:</h4>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Requires specifying <InlineMath math="k" /> in advance</li>
@@ -260,6 +260,19 @@ centroids = kmeans.cluster_centers_`}</pre>
           <li>Sensitive to initialization (can get stuck in local minima)</li>
           <li>Fast and scalable for large datasets</li>
           <li>Works well when clusters are well-separated</li>
+        </ul>
+      </div>
+
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h4 className="font-semibold text-red-900 mb-2">Common Pitfalls:</h4>
+        <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+          <li><strong>Wrong k value:</strong> Choosing k incorrectly leads to over-clustering or under-clustering. Use elbow method, silhouette score, or domain knowledge.</li>
+          <li><strong>Poor initialization:</strong> Random initialization can lead to poor local minima. Use k-means++ initialization for better results.</li>
+          <li><strong>Non-spherical clusters:</strong> K-means assumes spherical clusters. Fails on elongated, irregular, or overlapping clusters.</li>
+          <li><strong>Different cluster sizes:</strong> Tends to split large clusters and merge small ones when clusters have very different sizes.</li>
+          <li><strong>Outliers:</strong> Sensitive to outliers which can pull centroids away from true cluster centers. Consider outlier removal or robust variants.</li>
+          <li><strong>Feature scaling:</strong> Features with different scales bias the clustering toward features with larger ranges. Always normalize features.</li>
+          <li><strong>Empty clusters:</strong> Can produce empty clusters if initialization is poor or k is too large. Need to handle this in implementation.</li>
         </ul>
       </div>
     </div>

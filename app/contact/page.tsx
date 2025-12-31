@@ -1,7 +1,6 @@
 export default function Contact() {
   const contactInfo = [
     { label: 'Email', value: 'tarek.ghoul@ubc.ca', href: 'mailto:tarek.ghoul@ubc.ca', icon: '✉️' },
-    { label: 'Phone', value: '+1 (778) 960-2785', href: 'tel:+17789602785', icon: '📞' },
     { label: 'Location', value: 'Vancouver, British Columbia, Canada', href: null, icon: '📍' },
   ];
 

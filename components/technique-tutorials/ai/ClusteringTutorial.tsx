@@ -168,7 +168,7 @@ export default function ClusteringTutorial() {
               </p>
               
               <ul className="list-disc list-inside text-gray-800 space-y-2 mb-4 ml-4">
-                <li><strong>KNN:</strong> Instance-based learning, classifies based on nearest neighbors</li>
+                <li><strong>KNN:</strong> <em>(Not technically clustering)</em> Supervised classification algorithm that demonstrates distance-based methods</li>
                 <li><strong>K-Means:</strong> Partitional clustering with fixed number of clusters</li>
                 <li><strong>DBSCAN:</strong> Density-based clustering, finds clusters of arbitrary shape</li>
                 <li><strong>HDBSCAN:</strong> Hierarchical DBSCAN, finds clusters of varying densities</li>

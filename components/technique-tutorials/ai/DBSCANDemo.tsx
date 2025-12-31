@@ -277,13 +277,26 @@ labels = dbscan.fit_predict(X)
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-blue-900 mb-2">Key Advantages:</h4>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Finds clusters of arbitrary shape (not just spherical)</li>
           <li>Automatically identifies outliers/noise</li>
           <li>Doesn't require specifying number of clusters</li>
           <li>Handles clusters of varying densities (with HDBSCAN extension)</li>
+        </ul>
+      </div>
+
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h4 className="font-semibold text-red-900 mb-2">Common Pitfalls:</h4>
+        <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+          <li><strong>Parameter tuning:</strong> Choosing epsilon and min_samples is difficult and data-dependent. Too small epsilon = everything is noise. Too large = one big cluster.</li>
+          <li><strong>Varying densities:</strong> Struggles when clusters have very different densities. Dense clusters may merge, sparse clusters may be labeled as noise.</li>
+          <li><strong>High-dimensional data:</strong> Distance metrics become less meaningful in high dimensions, making density estimation unreliable.</li>
+          <li><strong>Chaining effect:</strong> Can create long chains connecting clusters that should be separate if epsilon is too large.</li>
+          <li><strong>Border points:</strong> Border points can belong to multiple clusters but are arbitrarily assigned to one, making results less stable.</li>
+          <li><strong>Computational complexity:</strong> Can be slow for large datasets, especially with large epsilon values that create many neighbors.</li>
+          <li><strong>Feature scaling:</strong> Like K-means, sensitive to feature scales. Normalize features before clustering.</li>
         </ul>
       </div>
     </div>

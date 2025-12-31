@@ -36,6 +36,18 @@ export default function Tools() {
                 </svg>
               </div>
             </Link>
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 opacity-75">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Reinforcement Learning</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Explore how reinforcement learning algorithms learn optimal policies through interaction with environments. Learn about value functions, policy gradients, and multi-agent systems for transportation applications.
+              </p>
+              <div className="flex items-center text-gray-500 font-medium text-sm">
+                Coming Soon
+                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
             {/* Hidden for now - Hierarchical Bayesian Models */}
             {false && (
               <Link 
@@ -120,6 +132,32 @@ export default function Tools() {
               </p>
               <div className="flex items-center text-primary-600 font-medium text-sm">
                 Explore Tutorial
+                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Routing Algorithms Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Routing Algorithms</h2>
+          <p className="text-gray-600 mb-6">
+            Compare pathfinding algorithms used in transportation and navigation systems.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link
+              href="/tools/routing-algorithms"
+              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+            >
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Dijkstra vs A*</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Interactive comparison of Dijkstra's algorithm and A* pathfinding. Visualize how each algorithm explores the search space and find optimal paths.
+              </p>
+              <div className="flex items-center text-primary-600 font-medium text-sm">
+                Explore Demo
                 <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

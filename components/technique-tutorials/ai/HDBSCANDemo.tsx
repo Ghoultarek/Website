@@ -229,13 +229,26 @@ cluster_labels = clusterer.fit_predict(X)
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-blue-900 mb-2">Advantages Over DBSCAN:</h4>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Handles clusters of varying densities better</li>
           <li>More robust to parameter selection</li>
           <li>Provides cluster stability scores</li>
           <li>Better at identifying noise/outliers</li>
+        </ul>
+      </div>
+
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h4 className="font-semibold text-red-900 mb-2">Common Pitfalls:</h4>
+        <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+          <li><strong>Min cluster size:</strong> Choosing min_cluster_size incorrectly can merge small but meaningful clusters or split large clusters.</li>
+          <li><strong>Computational cost:</strong> More expensive than DBSCAN due to hierarchical construction. Can be slow for very large datasets.</li>
+          <li><strong>High-dimensional data:</strong> Still struggles with high-dimensional data where distance metrics become less meaningful.</li>
+          <li><strong>Memory usage:</strong> Building the hierarchy requires storing more information than DBSCAN, increasing memory requirements.</li>
+          <li><strong>Parameter selection:</strong> While more robust than DBSCAN, min_cluster_size still needs careful tuning based on data characteristics.</li>
+          <li><strong>Feature scaling:</strong> Sensitive to feature scales. Always normalize features before clustering.</li>
+          <li><strong>Interpretation:</strong> The hierarchical structure can be complex to interpret, especially with many clusters at different levels.</li>
         </ul>
       </div>
     </div>

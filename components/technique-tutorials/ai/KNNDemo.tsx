@@ -105,6 +105,16 @@ export default function KNNDemo({ data: propData }: KNNDemoProps = {} as KNNDemo
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
       <h2 className="text-2xl font-semibold text-gray-900 mb-4">K-Nearest Neighbors (KNN)</h2>
       
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <p className="text-yellow-900 text-sm font-semibold mb-2">Note: KNN is not a clustering algorithm</p>
+        <p className="text-yellow-800 text-sm">
+          KNN is a <strong>supervised classification</strong> algorithm, not an unsupervised clustering algorithm. 
+          It requires labeled training data to make predictions. However, we include it here because it demonstrates 
+          how distance-based methods work and how parameter choices (k) affect decision boundaries, which are concepts 
+          relevant to understanding clustering algorithms.
+        </p>
+      </div>
+      
       <p className="text-gray-700 mb-6">
         KNN is a simple instance-based learning algorithm. To classify a new point, it finds the <InlineMath math="k" /> 
         nearest training examples and assigns the majority class. It's a lazy learner - it doesn't build a model, 
@@ -235,13 +245,25 @@ probabilities = knn.predict_proba([[x_new, y_new]])`}</pre>
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-blue-900 mb-2">Key Characteristics:</h4>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Non-parametric: makes no assumptions about data distribution</li>
           <li>Lazy learning: no training phase, just stores data</li>
           <li>Sensitive to k: small k = high variance, large k = high bias</li>
           <li>Can be slow for large datasets (must compute distances to all points)</li>
+        </ul>
+      </div>
+
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h4 className="font-semibold text-red-900 mb-2">Common Pitfalls:</h4>
+        <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+          <li><strong>Choosing k poorly:</strong> Too small k leads to overfitting and noisy predictions. Too large k leads to underfitting and missing local patterns.</li>
+          <li><strong>Curse of dimensionality:</strong> In high-dimensional spaces, all points become equidistant, making distance metrics meaningless.</li>
+          <li><strong>Imbalanced classes:</strong> Majority class can dominate predictions when k is large, especially with imbalanced training data.</li>
+          <li><strong>Computational cost:</strong> Requires computing distances to all training points for each prediction - very slow for large datasets.</li>
+          <li><strong>Feature scaling:</strong> Sensitive to feature scales - features with larger ranges dominate distance calculations. Always normalize features.</li>
+          <li><strong>Irrelevant features:</strong> Including irrelevant features increases noise and degrades performance. Feature selection is important.</li>
         </ul>
       </div>
     </div>
