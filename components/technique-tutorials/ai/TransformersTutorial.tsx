@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import LibrarySearchAnalogy from './LibrarySearchAnalogy';
 import AttentionExample from './AttentionExample';
 import SelfAttentionDemo from './SelfAttentionDemo';
+import QKVVisualization from './QKVVisualization';
 
 export default function TransformersTutorial() {
   const [activeSection, setActiveSection] = useState<string | null>('intro');
@@ -15,6 +16,7 @@ export default function TransformersTutorial() {
     { id: 'analogy', title: 'The Intuition' },
     { id: 'example', title: 'Concrete Example' },
     { id: 'formula', title: 'The Formula' },
+    { id: 'qkv-visualization', title: 'Q, K, V Visualization' },
     { id: 'demo', title: 'Interactive Demo' },
     { id: 'why', title: 'Why It Works' },
   ];
@@ -206,6 +208,13 @@ export default function TransformersTutorial() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* QKV Visualization Section */}
+      <section id="qkv-visualization" className="mb-12 scroll-mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+          <QKVVisualization />
         </div>
       </section>
 
