@@ -11,6 +11,9 @@ const nextConfig = {
   // If deploying to root domain, set basePath to ''
   basePath: process.env.NODE_ENV === 'production' ? `/${repoName}` : '',
   assetPrefix: process.env.NODE_ENV === 'production' ? `/${repoName}` : '',
+  // Security: Note that HTTP headers cannot be set for static exports
+  // Headers are configured via meta tags in app/layout.tsx
+  // For true HTTP headers, configure at GitHub Pages/CDN level if possible
 }
 
 module.exports = nextConfig

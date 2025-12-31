@@ -27,7 +27,10 @@ export default function CodeSnippets({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy code:', err);
+      // Only log errors in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy code:', err);
+      }
     }
   };
 

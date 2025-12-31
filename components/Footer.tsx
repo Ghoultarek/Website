@@ -4,7 +4,6 @@ export default function Footer() {
   const socialLinks = [
     { href: 'https://www.linkedin.com/in/tarek-ghoul/', label: 'LinkedIn', icon: 'linkedin' },
     { href: 'https://scholar.google.com/citations?user=-vy503AAAAAJ&hl=en', label: 'Google Scholar', icon: 'scholar' },
-    { href: 'https://orcid.org/0000-0002-2929-9750', label: 'ORCID', icon: 'orcid' },
   ];
 
   return (
@@ -40,7 +39,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white dark:text-white text-sm font-semibold mb-4">Connect</h4>
+            <h4 className="text-white dark:text-white text-sm font-semibold mb-4">External Links</h4>
             <ul className="space-y-2 text-sm">
               {socialLinks.map((link) => (
                 <li key={link.href}>

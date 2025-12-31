@@ -855,6 +855,43 @@ export default function ExtremeValueModels() {
                 Adjust the parameters below to see how they impact the shape of the distribution and the probability of crashes.
               </p>
 
+              {/* Bayesian Hierarchical Model Structure */}
+              <div className="mb-6 p-4 bg-indigo-50 dark:bg-[#171717] rounded-lg border border-indigo-200 dark:border-gray-700">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Bayesian Hierarchical Model Structure</h4>
+                <div className="text-sm text-gray-700 dark:text-white space-y-2">
+                  <p>
+                    While the basic GEV distribution depends on three parameters (<InlineMath math="\mu" />, <InlineMath math="\sigma" />, <InlineMath math="\xi" />), these alone cannot capture 
+                    the variability in traffic conditions or the relationships between explanatory variables. To address 
+                    this, we use a <strong>Bayesian hierarchical model</strong> that incorporates covariates, factors that 
+                    influence conflict severity, through linear relationships in the location and scale parameters.
+                  </p>
+                  <p>
+                    The hierarchical structure allows the GEV parameters to vary based on traffic conditions:
+                  </p>
+                  <div className="bg-gray-50 dark:bg-black border border-indigo-300 dark:border-gray-700 rounded-lg p-4 mt-3 space-y-3">
+                    <div className="flex justify-center">
+                      <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
+                    </div>
+                    <div className="flex justify-center">
+                      <BlockMath math="\zeta = \zeta_0 + \sum(\beta_\zeta \times \text{covariate})" />
+                    </div>
+                    <div className="flex justify-center">
+                      <BlockMath math="\sigma = \exp(\zeta)" />
+                    </div>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-600 dark:text-white">
+                    where <InlineMath math="\zeta" /> is the log-scale parameter (ensuring <InlineMath math="\sigma" /> remains positive), <InlineMath math="\mu_0" /> and 
+                    <InlineMath math="\zeta_0" /> are baseline parameters, and <InlineMath math="\beta_\mu" /> and <InlineMath math="\beta_\zeta" /> are 
+                    coefficients that quantify how each covariate affects location and scale, respectively. The shape parameter <InlineMath math="\xi" /> is typically held constant across scenarios.
+                  </p>
+                  <p className="mt-3 text-xs text-gray-600 dark:text-white">
+                    In practice, we often use Bayesian inference software such as Stan, WinBUGS, JAGS, or OpenBUGS to sample the posterior distributions of these parameters. 
+                    This approach provides a full distribution for all parameters rather than single point estimates, enabling proper uncertainty propagation through the model. 
+                    The interactive example below uses point estimates to help clarify the fundamental concepts and relationships.
+                  </p>
+                </div>
+              </div>
+
               {/* Two column layout - Parameters on left, Visualizations on right */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-4">
                 {/* Parameter Controls - Left Column */}
@@ -964,40 +1001,6 @@ export default function ExtremeValueModels() {
                       </div>
                     </div>
 
-                    </div>
-
-                    {/* Hierarchical Model Explanation */}
-                    <div className="pt-6 border-t border-gray-300 mt-6">
-                      <div className="mb-4 p-4 bg-indigo-50 dark:bg-[#171717] rounded-lg border border-indigo-200 dark:border-gray-700">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Bayesian Hierarchical Model Structure</h4>
-                      <div className="text-sm text-gray-700 dark:text-white space-y-2">
-                        <p>
-                          While the basic GEV distribution depends on three parameters (<InlineMath math="\mu" />, <InlineMath math="\sigma" />, <InlineMath math="\xi" />), these alone cannot capture 
-                          the variability in traffic conditions or the relationships between explanatory variables. To address 
-                          this, we use a <strong>Bayesian hierarchical model</strong> that incorporates covariates—factors that 
-                          influence conflict severity—through linear relationships in the location and scale parameters.
-                        </p>
-                        <p>
-                          The hierarchical structure allows the GEV parameters to vary based on traffic conditions:
-                        </p>
-                        <div className="bg-gray-50 dark:bg-black border border-indigo-300 dark:border-gray-700 rounded-lg p-4 mt-3 space-y-3">
-                          <div className="flex justify-center">
-                            <BlockMath math="\mu = \mu_0 + \sum(\beta_\mu \times \text{covariate})" />
-                          </div>
-                          <div className="flex justify-center">
-                            <BlockMath math="\zeta = \zeta_0 + \sum(\beta_\zeta \times \text{covariate})" />
-                          </div>
-                          <div className="flex justify-center">
-                            <BlockMath math="\sigma = \exp(\zeta)" />
-                          </div>
-                        </div>
-                        <p className="mt-2 text-xs text-gray-600 dark:text-white">
-                          where <InlineMath math="\zeta" /> is the log-scale parameter (ensuring <InlineMath math="\sigma" /> remains positive), <InlineMath math="\mu_0" /> and 
-                          <InlineMath math="\zeta_0" /> are baseline parameters, and <InlineMath math="\beta_\mu" /> and <InlineMath math="\beta_\zeta" /> are 
-                          coefficients that quantify how each covariate affects location and scale, respectively. The shape parameter <InlineMath math="\xi" /> is typically held constant across scenarios.
-                        </p>
-                      </div>
-                    </div>
                     </div>
 
                     {/* Covariates Section */}
@@ -1121,7 +1124,7 @@ export default function ExtremeValueModels() {
                       {/* Crash Risk Hero Metric */}
                       <div className={`px-6 py-4 rounded-lg border ${riskColors.border} bg-white shadow-md min-w-[200px]`}>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-700">Crash Risk (per block)</span>
+                          <span className="text-sm font-semibold text-gray-700 dark:text-white">Crash Risk (per block)</span>
                           <span className={`px-2 py-1 rounded text-xs font-semibold ${riskColors.badge}`}>
                             {crashRisk < 0.001 ? 'Low' : crashRisk < 0.01 ? 'Moderate' : 'High'}
                           </span>
@@ -1135,6 +1138,14 @@ export default function ExtremeValueModels() {
                               {crashRiskDelta > 0 ? '+' : ''}{formatCrashRisk(Math.abs(crashRiskDelta))}
                             </span>
                           )}
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-sm font-semibold text-gray-700 dark:text-white">VaR ({varLevel}th percentile):</span>
+                            <span className={`text-2xl font-bold ${riskColors.text}`}>
+                              {varValue.toFixed(3)}
+                            </span>
+                          </div>
                         </div>
                         {crashRiskInterpretation && (
                           <p className="text-xs text-gray-600 dark:text-white mt-2">
@@ -1658,7 +1669,7 @@ export default function ExtremeValueModels() {
                       account for time-of-day effects, violations will cluster during those periods.
                     </p>
                     <p className="text-sm text-gray-700 dark:text-white">
-                      The conditional coverage test is the most comprehensive—it tests both that violations occur at the correct rate 
+                      The conditional coverage test is the most comprehensive, it tests both that violations occur at the correct rate 
                       and that they are independent. A model passes if all three tests have p-values greater than 0.05.
                     </p>
                   </div>

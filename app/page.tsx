@@ -6,7 +6,7 @@ export default function Home() {
       {/* Hero & Content Section */}
       <section className="relative pt-8 pb-6 lg:pt-12 lg:pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-4 flex justify-between items-start">
+          <div className="mb-4 flex justify-between items-center">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-3 tracking-tight">
               Tarek Ghoul
             </h1>
@@ -107,7 +107,7 @@ export default function Home() {
             <div className="max-w-none mt-8">
               <p className="text-2xl font-medium text-start mb-2 pl-5 text-gray-800 dark:text-white">News</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="relative">
+                <Card className="relative flex flex-col">
                   <div className="mb-2">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Popular Science</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">July 27, 2023</p>
@@ -115,7 +115,7 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                     A new mapping algorithm aims to steer drivers towards the safest route
                   </h3>
-                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4">
+                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4 flex-grow">
                     Research on safest-route navigation algorithms featured in Popular Science, highlighting how real-time crash risk data 
                     can provide safer driving directions through cities.
                   </p>
@@ -123,7 +123,7 @@ export default function Home() {
                     href="https://www.popsci.com/technology/map-safest-route-algorithm/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors mt-auto"
                   >
                     Read Article
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-4 h-4 ml-1">
@@ -132,7 +132,7 @@ export default function Home() {
                   </a>
                 </Card>
 
-                <Card className="relative">
+                <Card className="relative flex flex-col">
                   <div className="mb-2">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">UBC Civil Engineering</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">April 4, 2024</p>
@@ -140,7 +140,7 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                     From Reaction to Prevention: Reimagining Road Safety Through Data
                   </h3>
-                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4">
+                  <p className="text-sm text-gray-700 dark:text-white opacity-70 dark:opacity-80 mb-4 flex-grow">
                     Winner of the 2024 Three Minute Thesis (3MT®) competition, discussing the shift from reactive to proactive 
                     approaches in traffic safety research.
                   </p>
@@ -148,7 +148,7 @@ export default function Home() {
                     href="https://civil.ubc.ca/from-reaction-to-prevention-reimagining-road-safety-through-data/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                    className="inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors mt-auto"
                   >
                     Read Article
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-4 h-4 ml-1">

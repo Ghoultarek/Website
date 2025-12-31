@@ -20,6 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Security Headers - Note: True HTTP headers should be configured at GitHub Pages/CDN level */}
+        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+        <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
