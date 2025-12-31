@@ -14,7 +14,7 @@ export default function PublicationCard({ publication }: PublicationCardProps) {
   const badge = statusBadge[publication.status];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 hover-lift animate-fade-in">
+    <div className="bg-white rounded-3xl shadow-md p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 hover-lift animate-fade-in">
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 flex-1 pr-4">
           {publication.title}

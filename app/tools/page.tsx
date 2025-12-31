@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Tools() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-beige-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Interactive Research Tools</h1>
@@ -23,7 +23,7 @@ export default function Tools() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Link 
               href="/tools/technique-tutorials/bhev"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Extreme Value Models</h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -36,7 +36,7 @@ export default function Tools() {
                 </svg>
               </div>
             </Link>
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 opacity-75">
+            <div className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 opacity-75">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Reinforcement Learning</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Explore how reinforcement learning algorithms learn optimal policies through interaction with environments. Learn about value functions, policy gradients, and multi-agent systems for transportation applications.
@@ -52,7 +52,7 @@ export default function Tools() {
             {false && (
               <Link 
                 href="/tools/technique-tutorials/hierarchical"
-                className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+                className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
               >
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Hierarchical Bayesian Models</h3>
                 <p className="text-gray-600 text-sm mb-4">
@@ -79,7 +79,7 @@ export default function Tools() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Link
               href="/tools/technique-tutorials/ai/neural-nets-backprop"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Neural Nets and Backpropagation</h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -94,7 +94,7 @@ export default function Tools() {
             </Link>
             <Link
               href="/tools/technique-tutorials/ai/transformers"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Transformers</h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -109,7 +109,7 @@ export default function Tools() {
             </Link>
             <Link
               href="/tools/technique-tutorials/ai/basic-ml"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Basic Machine Learning</h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -124,7 +124,7 @@ export default function Tools() {
             </Link>
             <Link
               href="/tools/technique-tutorials/ai/clustering"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Clustering</h3>
               <p className="text-gray-600 text-sm mb-4">
@@ -150,7 +150,7 @@ export default function Tools() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Link
               href="/tools/routing-algorithms"
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
+              className="bg-white rounded-3xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow hover:border-primary-400"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Dijkstra vs A*</h3>
               <p className="text-gray-600 text-sm mb-4">

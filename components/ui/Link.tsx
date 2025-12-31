@@ -14,7 +14,7 @@ export default function Link({
   className = '',
   ...props 
 }: LinkProps) {
-  const baseClasses = 'text-primary-600 hover:text-primary-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500';
+  const baseClasses = 'text-bluebell-500 hover:text-bluebell-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bluebell-500';
   const classes = `${baseClasses} ${className}`;
 
   if (external) {

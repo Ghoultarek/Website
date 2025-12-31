@@ -26,13 +26,13 @@ export default function Contact() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-beige-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Contact Information */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">Get in Touch</h2>
             <div className="space-y-4">
               {contactInfo.map((info) => (
@@ -57,7 +57,7 @@ export default function Contact() {
           </div>
 
           {/* Social Links */}
-          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">Connect Online</h2>
             <div className="space-y-3">
               {socialLinks.map((link) => (
@@ -66,7 +66,7 @@ export default function Contact() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${link.color} text-white px-6 py-3 rounded-lg font-semibold block text-center transition-colors`}
+                  className={`${link.color} text-white px-6 py-3 rounded-3xl font-semibold block text-center transition-colors`}
                 >
                   {link.name}
                 </a>
@@ -76,7 +76,7 @@ export default function Contact() {
         </div>
 
         {/* Additional Information */}
-        <div className="bg-primary-50 rounded-lg p-6 border border-primary-100">
+        <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Research Collaboration</h2>
           <p className="text-gray-700 mb-4">
             I&apos;m always interested in discussing research collaborations, opportunities, and potential projects 

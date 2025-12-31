@@ -11,9 +11,9 @@ export default function Card({
   className = '',
   ...props 
 }: CardProps) {
-  const baseClasses = 'bg-white border border-gray-200 p-3 rounded-none';
+  const baseClasses = 'bg-white border border-gray-200 p-6 rounded-3xl shadow-sm';
   const interactiveClasses = interactive 
-    ? 'hover:shadow transition-shadow duration-150 cursor-pointer' 
+    ? 'hover:shadow-md transition-shadow duration-150 cursor-pointer' 
     : '';
   
   const classes = `${baseClasses} ${interactiveClasses} ${className}`;

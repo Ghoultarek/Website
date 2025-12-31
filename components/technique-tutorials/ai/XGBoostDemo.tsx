@@ -35,7 +35,7 @@ export default function XGBoostDemo({
   const [learningRate, setLearningRate] = useState(0.1);
   const [maxDepth, setMaxDepth] = useState(3);
   const [selectedPointIndex, setSelectedPointIndex] = useState(0);
-  const [selectedIteration, setSelectedIteration] = useState(0);
+  const [selectedIteration, setSelectedIteration] = useState(10);
 
   // Generate classification problem: circular boundary (fallback if not provided)
   const generateData = (n: number): DataPoint[] => {

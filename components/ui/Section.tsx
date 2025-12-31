@@ -7,13 +7,13 @@ interface SectionProps extends HTMLAttributes<HTMLElement> {
 
 export default function Section({ 
   children, 
-  background = 'white',
+  background = 'gray',
   className = '',
   ...props 
 }: SectionProps) {
   const backgroundClasses = {
     white: 'bg-white',
-    gray: 'bg-gray-50',
+    gray: 'bg-beige-50',
   };
 
   const baseClasses = 'py-6';

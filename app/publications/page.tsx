@@ -17,7 +17,7 @@ export default function Publications() {
   const underReviewCount = publications.filter(p => p.status === 'under-review' || p.status === 'submitted').length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-beige-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Publications</h1>
@@ -73,7 +73,7 @@ export default function Publications() {
             href="https://scholar.google.com/citations?user=-vy503AAAAAJ&hl=en"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-3xl font-semibold hover:bg-primary-700 transition-colors"
           >
             View on Google Scholar →
           </a>
