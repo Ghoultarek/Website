@@ -327,6 +327,90 @@ export default function About() {
               </Card>
             </section>
 
+            {/* Talks */}
+            <section className="mb-6">
+              <Heading level={2} className="mb-4">Talks</Heading>
+              
+              {/* Conference Presentations */}
+              <div className="mb-6">
+                <Heading level={3} className="mb-4 text-lg">Conference Presentations</Heading>
+                <Card>
+                  <ul className="space-y-3 text-gray-700 dark:text-white text-sm">
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Beyond Crash Data: Computer Vision & AI for Real-Time Traffic Safety and Risk Prediction, Poster, ITE Canada 2025, Halifax, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2025</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Cyclist Safety Assessment Using Autonomous Vehicles, Poster, TRB Annual Meeting 2025, Washington DC, United States</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2025</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Real-time Dynamic Crash Risk Estimation: A Departure from Reactive Safety Approaches, Talk, TAC Conference 2024, Vancouver, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Real-Time Proactive Road Safety Monitoring and Optimization, Poster, Union of BC Municipalities Conference 2024, Vancouver, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Real-Time Proactive Road Safety Monitoring and Optimization, Poster, Rogers Telecommunications Symposium 2024, Vancouver, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Exploring the Potential of Real-Time Crash Risk-Based ITS on Urban Networks, Talk, CSCE 2024, Niagara, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Safest Route or Fastest Route? An Application of Real-Time Dynamic Crash Risk, Talk, ITE Canada 2024, Hamilton, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Modelling Lateral Interactions between Motorcycles and Vehicles in Mixed Traffic (on behalf of Ali Essa), Poster, TRB Annual Meeting 2024, Washington DC, United States</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Real-time Dynamic Hazardous Location Identification and Network Monitoring System, Talk, ITE Canada 2023, Winnipeg, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2023</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Real-time Signal-Vehicle Coupled Control Using Connected Vehicle Data, Talk, ITE Canada 2022, Vancouver, Canada</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2022</span>
+                    </li>
+                  </ul>
+                </Card>
+              </div>
+
+              {/* Invited Talks */}
+              <div className="mb-6">
+                <Heading level={3} className="mb-4 text-lg">Invited Talks</Heading>
+                <Card>
+                  <ul className="space-y-3 text-gray-700 dark:text-white text-sm">
+                    <li className="flex justify-between items-start gap-4">
+                      <span>The Applications of AI in Real-Time Crash Risk Applications, Invited Talk, Northeastern University, Vancouver</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">2025</span>
+                    </li>
+                  </ul>
+                </Card>
+              </div>
+
+              {/* Interviews */}
+              <div className="mb-6">
+                <Heading level={3} className="mb-4 text-lg">Interviews</Heading>
+                <Card>
+                  <ul className="space-y-3 text-gray-700 dark:text-white text-sm">
+                    <li className="flex justify-between items-start gap-4">
+                      <span>Global News Morning BC</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">26 September 2024</span>
+                    </li>
+                    <li className="flex justify-between items-start gap-4">
+                      <span>980 CKNW Radio: Mornings with Simi</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap ml-4">8 Aug 2023</span>
+                    </li>
+                  </ul>
+                </Card>
+              </div>
+            </section>
+
             {/* Publications */}
             <section className="mb-6">
               <Heading level={2} className="mb-4">Publications</Heading>
